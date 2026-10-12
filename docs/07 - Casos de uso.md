@@ -29,4 +29,5 @@ Los casos de uso se vinculan con los requisitos funcionales definidos anteriorme
 * **CU-09 y CU-10:** gestión y publicación de contenidos por el Colaborador.  
 * **CU-11 a CU-14:** funciones administrativas.
 
-![][image1]
+**Diagrama**
+<img width="1094" height="1500" alt="Casos de uso" src="https://github.com/user-attachments/assets/413e6f78-8b05-4ecd-9254-5162163b045b" />
