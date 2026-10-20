@@ -1,0 +1,47 @@
+# Entornos virtuales
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Archivos de caché y compilados de Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Archivos de configuración sensible y variables de entorno
+.env
+.env.*
+!.env.example
+*.log
+
+# Base de datos local (entorno de desarrollo)
+*.sqlite3
+*.sqlite3-journal
+*.db
+
+# Archivos estáticos recolectados y archivos multimedia subidos por usuarios
+/staticfiles/
+/media/
+
+# Pruebas unitarias, cobertura e historial
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+.tox/
+.nox/
+
+# Configuración de IDEs y editores de código
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db

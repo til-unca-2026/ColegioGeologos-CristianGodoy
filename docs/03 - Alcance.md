@@ -40,7 +40,7 @@ El proyecto contempla el análisis, diseño, desarrollo, pruebas y despliegue de
 * Alta y modificación de matriculados.  
 * Gestión de los estados de matrícula: activo, suspendido y dado de baja.  
 * Gestión del catálogo de especialidades.  
-* Creación y administración de cuentas de usuario.  
+* Creación y administración de cuentas de usuario (incluyendo asignación de cargos en la comisión directiva y foto institucional).  
 * Asignación de roles y permisos.  
 * Gestión de documentos y contenidos institucionales incluidos en el alcance.
 
