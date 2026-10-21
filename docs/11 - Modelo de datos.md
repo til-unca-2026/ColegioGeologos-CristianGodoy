@@ -14,7 +14,7 @@ Representa las cuentas que pueden iniciar sesión en la aplicación.
 | email, telefono | Datos de contacto. |
 | activo | Indica si la cuenta está habilitada. |
 | position | Si el usuario integra la comisión directiva. |
-| profile\_picture\_path | Ruta de la foto del usuario. |
+| profile\_picture | Foto de perfil del usuario (almacenada en Supabase Storage). |
 
 La contraseña no se almacena como texto ni se incorpora como un campo manual al diagrama: Django gestiona su almacenamiento seguro mediante su sistema de autenticación. Los roles se administran mediante grupos y permisos de Django.
 
