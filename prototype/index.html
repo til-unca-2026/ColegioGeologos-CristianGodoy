@@ -92,6 +92,7 @@
         <button onclick="goToScreen('inicio')" id="btn-mockup-inicio" class="screen-btn px-2.5 py-1 rounded bg-slate-800 hover:bg-emerald-700 text-slate-300 hover:text-white transition font-medium">1. Inicio</button>
         <button onclick="goToScreen('directorio')" id="btn-mockup-directorio" class="screen-btn px-2.5 py-1 rounded bg-slate-800 hover:bg-emerald-700 text-slate-300 hover:text-white transition font-medium">2. Directorio</button>
         <button onclick="goToScreen('perfil')" id="btn-mockup-perfil" class="screen-btn px-2.5 py-1 rounded bg-slate-800 hover:bg-emerald-700 text-slate-300 hover:text-white transition font-medium">3. Perfil Público</button>
+        <button onclick="goToScreen('novedades')" id="btn-mockup-novedades" class="screen-btn px-2.5 py-1 rounded bg-slate-800 hover:bg-emerald-700 text-slate-300 hover:text-white transition font-medium">★ Novedades y Noticias</button>
         <button onclick="goToScreen('login')" id="btn-mockup-login" class="screen-btn px-2.5 py-1 rounded bg-slate-800 hover:bg-emerald-700 text-slate-300 hover:text-white transition font-medium">4. Login</button>
         <button onclick="goToScreen('matriculado')" id="btn-mockup-matriculado" class="screen-btn px-2.5 py-1 rounded bg-slate-800 hover:bg-emerald-700 text-slate-300 hover:text-white transition font-medium">5. Panel Matriculado</button>
         <button onclick="goToScreen('contenidos')" id="btn-mockup-contenidos" class="screen-btn px-2.5 py-1 rounded bg-slate-800 hover:bg-emerald-700 text-slate-300 hover:text-white transition font-medium">6. Gestión Contenidos</button>
@@ -139,8 +140,7 @@
           <button onclick="goToScreen('inicio')" id="nav-link-inicio" class="px-3 py-1.5 rounded-md text-sm font-medium transition text-emerald-100 hover:text-white hover:bg-white/10">Inicio</button>
           <button onclick="goToScreen('inicio'); scrollToSection('seccion-institucional');" class="px-3 py-1.5 rounded-md text-sm font-medium text-emerald-100 hover:text-white hover:bg-white/10 transition">Institucional</button>
           <button onclick="goToScreen('directorio')" id="nav-link-directorio" class="px-3 py-1.5 rounded-md text-sm font-medium transition text-emerald-100 hover:text-white hover:bg-white/10">Directorio</button>
-          <button onclick="goToScreen('inicio'); scrollToSection('seccion-novedades');" class="px-3 py-1.5 rounded-md text-sm font-medium text-emerald-100 hover:text-white hover:bg-white/10 transition">Novedades</button>
-          <button onclick="goToScreen('inicio'); scrollToSection('seccion-eventos');" class="px-3 py-1.5 rounded-md text-sm font-medium text-emerald-100 hover:text-white hover:bg-white/10 transition">Eventos</button>
+          <button onclick="goToScreen('novedades')" id="nav-link-novedades" class="px-3 py-1.5 rounded-md text-sm font-medium text-emerald-100 hover:text-white hover:bg-white/10 transition">Novedades</button>
           <button onclick="goToScreen('inicio'); scrollToSection('seccion-documentos');" class="px-3 py-1.5 rounded-md text-sm font-medium text-emerald-100 hover:text-white hover:bg-white/10 transition">Documentos</button>
         </nav>
 
@@ -169,13 +169,13 @@
     <!-- ======================================================== -->
     <section id="screen-inicio" class="screen-view">
       <!-- Hero Section -->
-      <div class="relative bg-slate-900 text-white min-h-[460px] flex items-center justify-center overflow-hidden">
-        <!-- Imagen de Fondo Geológica de Alta Definición -->
+      <div class="relative bg-slate-950 text-white min-h-[460px] flex items-center justify-center overflow-hidden">
+        <!-- Imagen de Fondo Geológica de Alta Definición y Nítida -->
         <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1920&q=80" 
              alt="Paisaje Geológico y Montañas" 
-             class="absolute inset-0 w-full h-full object-cover object-center opacity-40">
-        <!-- Overlay Gradiente en Verde Institucional -->
-        <div class="absolute inset-0 bg-gradient-to-r from-[#143d32]/90 via-[#1b4332]/75 to-[#143d32]/85"></div>
+             class="absolute inset-0 w-full h-full object-cover object-center opacity-85">
+        <!-- Overlay sutil y neutral para contraste de texto sin teñir de verde la fotografía -->
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-900/40 to-slate-950/60"></div>
 
         <div class="relative z-10 max-w-4xl mx-auto px-4 py-16 text-center">
           <span class="inline-block px-3.5 py-1 mb-4 rounded-full bg-emerald-500/20 text-emerald-300 text-xs sm:text-sm font-semibold tracking-wide uppercase border border-emerald-400/30">
@@ -227,7 +227,7 @@
               <h3 class="text-lg font-bold text-slate-800 mb-2">Novedades y noticias</h3>
               <p class="text-sm text-slate-600 mb-4 leading-relaxed">Mantenete informado sobre las últimas novedades normativas y comunicados.</p>
             </div>
-            <button onclick="scrollToSection('seccion-novedades')" class="inline-flex items-center text-sm font-semibold text-emerald-700 hover:text-emerald-800 group-hover:translate-x-1 transition">
+            <button onclick="goToScreen('novedades')" class="inline-flex items-center text-sm font-semibold text-emerald-700 hover:text-emerald-800 group-hover:translate-x-1 transition">
               Ver noticias <span class="ml-1">→</span>
             </button>
           </div>
@@ -305,6 +305,9 @@
                 <span class="w-2.5 h-6 bg-emerald-700 rounded-sm inline-block"></span>
                 Novedades y Noticias
               </h3>
+              <button onclick="goToScreen('novedades')" class="text-xs font-semibold text-emerald-700 hover:text-emerald-900 flex items-center gap-1 hover:underline">
+                Ver todas <span>→</span>
+              </button>
             </div>
             <div id="home-news-container" class="space-y-4">
               <!-- Cargado dinámicamente -->
@@ -410,6 +413,149 @@
           <button class="px-3 py-1.5 rounded border border-slate-300 bg-white text-slate-700 text-sm hover:bg-slate-50">2</button>
           <button class="px-3 py-1.5 rounded border border-slate-300 bg-white text-slate-700 text-sm hover:bg-slate-50">3</button>
           <button class="px-3 py-1.5 rounded border border-slate-300 bg-white text-slate-700 text-sm hover:bg-slate-50">&gt;</button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- PANTALLA: LISTADO DE NOVEDADES, NOTICIAS Y EVENTOS       -->
+    <!-- ======================================================== -->
+    <section id="screen-novedades" class="screen-view hidden py-8 bg-slate-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Encabezado con breadcrumbs y filtros rápidos -->
+        <div class="mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <div class="flex items-center space-x-2 text-xs font-medium text-slate-500 mb-1">
+              <button onclick="goToScreen('inicio')" class="hover:text-emerald-700">Inicio</button>
+              <span>/</span>
+              <span class="text-emerald-800 font-semibold">Novedades y Noticias</span>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">Novedades, Noticias y Eventos</h1>
+            <p class="text-slate-600 text-sm sm:text-base mt-1">Manténgase al día con las actividades, comunicados y capacitaciones del Colegio.</p>
+          </div>
+
+          <!-- Selector de filtros por tipo -->
+          <div class="flex items-center gap-1.5 bg-white p-1.5 rounded-xl border border-slate-200 shadow-sm overflow-x-auto">
+            <button onclick="filterNovedades('todas')" id="nov-filter-todas" class="nov-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-800 text-white transition">Todas</button>
+            <button onclick="filterNovedades('Noticia')" id="nov-filter-noticia" class="nov-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition">Noticias</button>
+            <button onclick="filterNovedades('Novedad')" id="nov-filter-novedad" class="nov-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition">Novedades</button>
+            <button onclick="filterNovedades('Evento')" id="nov-filter-evento" class="nov-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition">Eventos</button>
+          </div>
+        </div>
+
+        <!-- Barra de búsqueda de novedades -->
+        <div class="bg-white rounded-xl p-3 sm:p-4 shadow-sm border border-slate-200 mb-6 flex flex-col sm:flex-row gap-3">
+          <div class="relative flex-1">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            </span>
+            <input type="text" id="novedades-search-input" oninput="renderNovedadesGrid()" placeholder="Buscar por título, temática o palabras clave..." 
+                   class="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-600 text-sm">
+          </div>
+          <div class="flex items-center gap-2 text-xs text-slate-500 shrink-0 self-center">
+            <span id="novedades-count-badge" class="font-semibold text-emerald-800 bg-emerald-50 px-2.5 py-1.5 rounded-lg border border-emerald-200">
+              Mostrando 4 publicaciones
+            </span>
+          </div>
+        </div>
+
+        <!-- Grid de Tarjetas de Novedades en 2 Columnas -->
+        <div id="novedades-grid-container" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+          <!-- Renderizado dinámicamente con JavaScript -->
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- PANTALLA: DETALLE COMPLETO DE UNA NOVEDAD / NOTICIA      -->
+    <!-- ======================================================== -->
+    <section id="screen-detalle-novedad" class="screen-view hidden py-8 bg-slate-50">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Botón Volver -->
+        <div class="mb-6 flex items-center justify-between">
+          <button onclick="goToScreen('novedades')" class="inline-flex items-center text-sm font-semibold text-emerald-700 hover:text-emerald-800 transition group">
+            <svg class="w-4 h-4 mr-1.5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            Volver a Novedades y Noticias
+          </button>
+          <button onclick="window.print()" class="hidden sm:inline-flex items-center text-xs font-medium text-slate-500 hover:text-slate-800 gap-1 bg-white px-2.5 py-1.5 rounded-lg border border-slate-200 shadow-sm">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+            Imprimir / Guardar
+          </button>
+        </div>
+
+        <!-- Artículo Completo -->
+        <article class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-8">
+          <!-- Imagen de Cabecera -->
+          <div class="h-64 sm:h-80 md:h-96 w-full relative overflow-hidden bg-slate-900">
+            <img id="det-nov-imagen" src="" alt="Imagen de cabecera" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
+            <div class="absolute bottom-4 left-4 right-4 flex items-center gap-2">
+              <span id="det-nov-tipo-badge" class="px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase bg-emerald-700 text-white shadow">
+                Noticia
+              </span>
+              <span id="det-nov-fecha-badge" class="px-3 py-1 rounded-full text-xs font-medium bg-black/50 text-white/90 backdrop-blur-sm">
+                10/04/2025
+              </span>
+            </div>
+          </div>
+
+          <!-- Contenido del Artículo -->
+          <div class="p-6 sm:p-10">
+            <!-- Metadatos de publicación -->
+            <div class="flex items-center space-x-3 text-xs text-slate-500 pb-4 border-b border-slate-100 mb-6">
+              <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs" id="det-nov-autor-avatar">
+                ML
+              </div>
+              <div>
+                <p class="font-semibold text-slate-900" id="det-nov-autor">Por María López</p>
+                <p class="text-[11px] text-slate-400">Prensa y Comunicación Institucional</p>
+              </div>
+            </div>
+
+            <!-- Título Principal -->
+            <h1 id="det-nov-titulo" class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 leading-tight mb-6">
+              Título de la novedad
+            </h1>
+
+            <!-- Bajada / Resumen Destacado -->
+            <div id="det-nov-bajada" class="text-base sm:text-lg text-slate-700 font-medium leading-relaxed bg-emerald-50/60 p-4 sm:p-5 rounded-xl border-l-4 border-emerald-600 mb-8">
+              Resumen destacado de la nota...
+            </div>
+
+            <!-- Cuerpo Extenso de la Nota -->
+            <div id="det-nov-cuerpo" class="prose max-w-none text-slate-700 text-sm sm:text-base leading-relaxed space-y-4">
+              <!-- Párrafos inyectados con JavaScript -->
+            </div>
+
+            <!-- Pie de la nota: Tags y Botón Compartir -->
+            <div class="mt-10 pt-6 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
+              <div class="flex items-center space-x-2 text-xs text-slate-500">
+                <span class="font-semibold">Etiquetas:</span>
+                <span class="px-2.5 py-1 bg-slate-100 rounded-md text-slate-700 font-medium">#Geología</span>
+                <span class="px-2.5 py-1 bg-slate-100 rounded-md text-slate-700 font-medium">#Institucional</span>
+                <span class="px-2.5 py-1 bg-slate-100 rounded-md text-slate-700 font-medium">#ColegioGeólogos</span>
+              </div>
+              <button onclick="alert('Enlace copiado al portapapeles para compartir.')" class="px-3.5 py-1.5 rounded-lg border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+                Compartir novedad
+              </button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Otras publicaciones recomendadas -->
+        <div class="mb-10">
+          <h3 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+            <span class="w-2 h-5 bg-emerald-700 rounded-sm"></span>
+            Otras publicaciones del Colegio
+          </h3>
+          <div id="det-nov-relacionadas" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Tarjetas recomendadas -->
+          </div>
         </div>
 
       </div>
@@ -575,11 +721,12 @@
       <div class="max-w-4xl w-full bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden grid grid-cols-1 md:grid-cols-2 my-6">
         
         <!-- Lado Izquierdo: Imagen y Presentación Institucional (Mockup 4) -->
-        <div class="relative bg-slate-900 text-white p-8 sm:p-12 flex flex-col justify-between overflow-hidden">
-          <!-- Fondo con Brújula Geológica y Rocas -->
+        <div class="relative bg-slate-950 text-white p-8 sm:p-12 flex flex-col justify-between overflow-hidden">
+          <!-- Fondo con Brújula Geológica y Rocas Nítido -->
           <img src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=1000&q=80" 
-               alt="Brújula de Geólogo y Rocas" class="absolute inset-0 w-full h-full object-cover opacity-30">
-          <div class="absolute inset-0 bg-gradient-to-b from-[#143d32]/90 via-[#1b4332]/85 to-[#0d2821]/95"></div>
+               alt="Brújula de Geólogo y Rocas" class="absolute inset-0 w-full h-full object-cover opacity-85">
+          <!-- Overlay neutral sin tinte verde para mantener los colores reales de la foto y garantizar legibilidad -->
+          <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/60 to-slate-950/70"></div>
 
           <div class="relative z-10">
             <!-- Escudo Circular -->
@@ -1129,7 +1276,7 @@
           <ul class="space-y-2 text-xs">
             <li><a href="javascript:void(0)" onclick="goToScreen('inicio')" class="hover:text-emerald-300">Inicio</a></li>
             <li><a href="javascript:void(0)" onclick="goToScreen('directorio')" class="hover:text-emerald-300">Directorio de Matriculados</a></li>
-            <li><a href="javascript:void(0)" onclick="goToScreen('inicio'); scrollToSection('seccion-novedades')" class="hover:text-emerald-300">Novedades y Noticias</a></li>
+            <li><a href="javascript:void(0)" onclick="goToScreen('novedades')" class="hover:text-emerald-300">Novedades y Noticias</a></li>
             <li><a href="javascript:void(0)" onclick="goToScreen('inicio'); scrollToSection('seccion-documentos')" class="hover:text-emerald-300">Resoluciones y Documentos</a></li>
           </ul>
         </div>
@@ -1512,38 +1659,209 @@
     const INITIAL_CONTENTS = [
       {
         id: 1,
-        titulo: 'Jornada de Geología Ambiental',
+        titulo: 'Jornada Provincial de Geología Ambiental y Gestión Hídrica',
         tipo: 'Evento',
         fecha: '15/04/2025',
         estado_publicacion: 'Publicado',
-        cuerpo: 'Encuentro anual sobre remediación de pasivos ambientales, normativas vigentes y gestión hídrica sustentable. Auditorio Central del Colegio.',
+        imagen: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80',
+        bajada: 'Especialistas debatirán sobre remediación de pasivos ambientales mineros, normativas hídricas y el rol pericial del geólogo en el marco del cambio climático.',
+        cuerpo: 'Encuentro anual sobre remediación de pasivos ambientales, normativas vigentes y gestión hídrica sustentable. Auditorio Central del Colegio de Geólogos con modalidad presencial y virtual para matriculados de todo el país...',
+        cuerpo_completo: `
+          <p class="lead font-medium text-slate-800 text-base sm:text-lg mb-4">
+            El Consejo Directivo del Colegio de Geólogos invita a la comunidad profesional, técnica y académica a participar de la <strong>Jornada Provincial de Geología Ambiental y Gestión Hídrica 2025</strong>, a desarrollarse en el Auditorio Central de nuestra sede institucional y transmitida en vivo para matriculados del interior.
+          </p>
+          <p class="mb-4">
+            Durante la jornada, un panel de destacados especialistas en hidrogeología, geoquímica y derecho ambiental expondrá los principales desafíos que atraviesa el ejercicio profesional ante las crecientes exigencias de sustentabilidad, auditorías de recursos hídricos subterráneos y control de efluentes industriales y mineros.
+          </p>
+          <h3 class="text-xl font-bold text-slate-900 mt-6 mb-3">Ejes temáticos de la jornada</h3>
+          <ul class="list-disc pl-5 space-y-2 mb-4 text-slate-700">
+            <li><strong>Modelación matemática y monitoreo de acuíferos:</strong> nuevas técnicas isotópicas y calibración piezométrica aplicadas a cuencas de zonas áridas.</li>
+            <li><strong>Pasivos ambientales y remediación:</strong> metodologías de contención de drenaje ácido y encapsulamiento seguro de colas de flotación.</li>
+            <li><strong>Marco normativo y peritaje judicial:</strong> responsabilidades civiles y penales, valor legal de la firma del profesional matriculado en Estudios de Impacto Ambiental (EsIA).</li>
+            <li><strong>Innovación en captación hídrica:</strong> diseño de pozos de alto rendimiento y protocolos de ensayos de bombeo estandarizados.</li>
+          </ul>
+          <p class="mb-4">
+            La actividad acreditará puntaje para el programa de formación continua del Colegio y otorgará certificado oficial de asistencia. Al finalizar las ponencias magistrales, se abrirá un espacio de debate con las autoridades de la Dirección Provincial de Minería y la Autoridad del Agua.
+          </p>
+          <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 my-6 text-sm text-amber-900">
+            <h4 class="font-bold text-amber-950 mb-1">Información para la inscripción</h4>
+            <p><strong>Fecha:</strong> 15 de Abril de 2025 de 09:00 a 18:00 hs.<br>
+            <strong>Lugar:</strong> Sede Central del Colegio de Geólogos / Plataforma Zoom HD.<br>
+            <strong>Aranceles:</strong> Sin costo para matriculados con cuota al día. Estudiantes avanzados y público general arancel bonificado.</p>
+          </div>
+        `,
         autor: 'María López'
       },
       {
         id: 2,
-        titulo: 'Nuevas normativas para la actividad minera',
+        titulo: 'Nuevo marco normativo obligatorio para informes de impacto en actividad minera',
         tipo: 'Noticia',
         fecha: '10/04/2025',
-        estado_publicacion: 'Publicado',
-        cuerpo: 'El Consejo Directivo aprobó el nuevo marco de visado obligatorio para informes de impacto ambiental en exploraciones mineras.',
+        imagen: 'https://images.unsplash.com/photo-1578328819058-b69f3a3b0f6b?auto=format&fit=crop&w=800&q=80',
+        bajada: 'Se aprobó la resolución que establece el visado técnico obligatorio para todas las exploraciones y cateos geológicos en territorio provincial.',
+        cuerpo: 'El Consejo Directivo aprobó el nuevo marco de visado obligatorio para informes de impacto ambiental en exploraciones mineras, garantizando la intervención exclusiva de profesionales habilitados...',
+        cuerpo_completo: `
+          <p class="lead font-medium text-slate-800 text-base sm:text-lg mb-4">
+            Mediante la Resolución de Directorio N° 48/2025, el Colegio de Geólogos ha promulgado el nuevo reglamento de <strong>Visado Técnico Obligatorio y Registro de Responsabilidad Geológica</strong> para todos los proyectos de prospección, exploración minera y mapeo geoquímico.
+          </p>
+          <p class="mb-4">
+            Esta medida histórica representa una conquista fundamental en defensa de las incumbencias exclusivas de nuestra profesión, erradicando el intrusismo laboral y asegurando que cada estudio técnico presentado ante los organismos estatales cuente con la supervisión de un geólogo matriculado con habilitación activa.
+          </p>
+          <h3 class="text-xl font-bold text-slate-900 mt-6 mb-3">Principales disposiciones de la resolución</h3>
+          <p class="mb-3">
+            El instrumento establece tres categorías de intervención según la envergadura del proyecto minero:
+          </p>
+          <ol class="list-decimal pl-5 space-y-2 mb-4 text-slate-700">
+            <li><strong>Etapa de Prospección inicial y muestreo superficial:</strong> Obligación de acompañar informe sumario de línea de base ambiental con código de visado digital seguro expedido por el Colegio.</li>
+            <li><strong>Perforaciones y trincheras de exploración:</strong> Plan de contingencia hídrica supervisado obligatoriamente por un geólogo especialista en hidrogeología o geoquímica.</li>
+            <li><strong>Estudios de Prefactibilidad y Factibilidad:</strong> Informe geológico-geotécnico suscrito por comisiones de profesionales colegiados, garantizando la estabilidad de taludes y escombreras.</li>
+          </ol>
+          <blockquote class="p-4 my-6 bg-slate-50 border-l-4 border-emerald-600 rounded-r-xl italic text-slate-700 text-sm">
+            "La rigurosidad técnica de los informes geológicos es el único camino para compatibilizar la producción sustentable con la protección irrestricta de nuestros recursos hídricos y ecosistemas de altura."
+            <footer class="mt-2 text-xs font-semibold not-italic text-slate-900">— Consejo Directivo, Colegio de Geólogos.</footer>
+          </blockquote>
+          <p class="mb-4">
+            A partir del próximo mes, el sistema digital del Colegio permitirá la carga telemática del visado con código QR de verificación instantánea, agilizando los tiempos administrativos de las empresas comitentes y los profesionales intervinientes.
+          </p>
+        `,
         autor: 'María López'
       },
       {
         id: 3,
-        titulo: 'Charla sobre hidrogeología',
+        titulo: 'Masterclass: Modelización numérica de acuíferos y cambio climático',
         tipo: 'Evento',
         fecha: '05/04/2025',
-        estado_publicacion: 'Publicado',
-        cuerpo: 'Metodologías modernas en modelización de acuíferos y preservación de napas freáticas frente al cambio climático.',
+        imagen: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80',
+        bajada: 'Capacitación práctica intensiva sobre el software MODFLOW y algoritmos estocásticos para la evaluación de reservas de agua subterránea.',
+        cuerpo: 'Metodologías modernas en modelización de acuíferos y preservación de napas freáticas frente al cambio climático. Análisis de casos reales y simulación hidrodinámica...',
+        cuerpo_completo: `
+          <p class="lead font-medium text-slate-800 text-base sm:text-lg mb-4">
+            En el marco del ciclo de actualización profesional 2025, el Colegio ofrece la Masterclass intensiva <strong>"Modelización Numérica de Acuíferos Complejos mediante MODFLOW 6 y Python"</strong>, dictada por docentes investigadores del Instituto de Hidrología de Llanuras.
+          </p>
+          <p class="mb-4">
+            El curso está diseñado para geólogos, ingenieros geólogos y profesionales de las geociencias que deseen incorporar herramientas computacionales de última generación para la simulación del flujo de agua subterránea, transporte de solutos y recarga inducida.
+          </p>
+          <h3 class="text-xl font-bold text-slate-900 mt-6 mb-3">Contenidos del programa</h3>
+          <ul class="list-disc pl-5 space-y-2 mb-4 text-slate-700">
+            <li>Fundamentos de la ecuación de flujo y discretización en mallas no estructuradas (DISV).</li>
+            <li>Integración de SIG (QGIS) con paquetes de entrada de MODFLOW mediante FloPy.</li>
+            <li>Calibración automatizada y análisis de sensibilidad con PEST++.</li>
+            <li>Simulación de escenarios de estrés hídrico bajo proyecciones de cambio climático IPCC AR6.</li>
+          </ul>
+          <p class="mb-4">
+            Los asistentes recibirán material didáctico digitalizado, datasets georreferenciados para ejercicios prácticos y acceso a la grabación en alta definición durante 90 días posteriores a la sesión en vivo.
+          </p>
+        `,
         autor: 'María López'
       },
       {
         id: 4,
-        titulo: 'Reunión de comisión directiva',
+        titulo: 'Resolución arancelaria: Actualización de la Unidad Arancelaria Básica (UAB)',
         tipo: 'Novedad',
         fecha: '01/04/2025',
-        estado_publicacion: 'Borrador',
-        cuerpo: 'Tratamiento del balance anual, actualización de la unidad arancelaria básica e informe de fiscalización profesional.',
+        imagen: 'https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=800&q=80',
+        bajada: 'Se aprobó el nuevo valor de referencia para honorarios mínimos orientativos correspondientes al segundo trimestre del corriente año.',
+        cuerpo: 'Tratamiento del balance trimestral, actualización de la unidad arancelaria básica e informe del Tribunal de Ética y Fiscalización Profesional...',
+        cuerpo_completo: `
+          <p class="lead font-medium text-slate-800 text-base sm:text-lg mb-4">
+            El Consejo Directivo del Colegio de Geólogos comunica a todos los matriculados la actualización de la <strong>Unidad Arancelaria Básica (UAB)</strong>, la cual entra en vigencia a partir del primer día hábil del corriente mes conforme a los índices de variación salarial y costos de insumos de campaña.
+          </p>
+          <p class="mb-4">
+            La actualización periódica de la UAB busca salvaguardar el poder adquisitivo de los honorarios profesionales mínimos orientativos en estudios de mecánica de suelos, prospección geoeléctrica, pericias judiciales e informes de canteras y áridos.
+          </p>
+          <h3 class="text-xl font-bold text-slate-900 mt-6 mb-3">Valores de referencia para tareas frecuentes</h3>
+          <div class="overflow-x-auto my-4 border border-slate-200 rounded-xl">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200">
+                <tr>
+                  <th class="px-4 py-3">Tipo de Trabajo Geológico</th>
+                  <th class="px-4 py-3">UAB Mínimas</th>
+                  <th class="px-4 py-3">Plazo orientativo</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100 text-slate-600">
+                <tr>
+                  <td class="px-4 py-3 font-medium text-slate-900">Estudio de Suelos para vivienda unifamiliar</td>
+                  <td class="px-4 py-3 text-emerald-700 font-bold">12 UAB</td>
+                  <td class="px-4 py-3">10 días hábiles</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-medium text-slate-900">Informe Hidrogeológico para perforación domiciliaria / agro</td>
+                  <td class="px-4 py-3 text-emerald-700 font-bold">18 UAB</td>
+                  <td class="px-4 py-3">15 días hábiles</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-medium text-slate-900">Línea de Base Ambiental para exploración superficial</td>
+                  <td class="px-4 py-3 text-emerald-700 font-bold">35 UAB</td>
+                  <td class="px-4 py-3">25 días hábiles</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-medium text-slate-900">Peritaje judicial oficial (día de campo)</td>
+                  <td class="px-4 py-3 text-emerald-700 font-bold">8 UAB / jornada</td>
+                  <td class="px-4 py-3">Según juzgado</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="text-xs text-slate-500 mb-4">
+            Nota: Los matriculados pueden descargar la planilla de cálculo de honorarios actualizada desde la sección de Documentos Institucionales en el portal de autogestión.
+          </p>
+        `,
+        autor: 'María López'
+      },
+      {
+        id: 5,
+        titulo: 'Firma de convenio marco de cooperación con la Universidad Nacional',
+        tipo: 'Noticia',
+        fecha: '25/03/2025',
+        imagen: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=800&q=80',
+        bajada: 'Acuerdo estratégico para pasantías profesionales, becas de posgrado y uso compartido de laboratorios de difracción de rayos X y microscopía óptica.',
+        cuerpo: 'El Colegio y la Facultad de Ciencias Exactas y Naturales rubricaron un acuerdo que beneficiará a jóvenes graduados y matriculados activos para investigación aplicada...',
+        cuerpo_completo: `
+          <p class="lead font-medium text-slate-800 text-base sm:text-lg mb-4">
+            En un acto solemne llevado a cabo en el Rectorado de la Universidad Nacional, las autoridades de nuestra institución firmaron un amplio <strong>Convenio Marco de Asistencia Técnica, Pasantías e Investigación Científica</strong>.
+          </p>
+          <p class="mb-4">
+            El acuerdo contempla una serie de beneficios de impacto directo para toda la matrícula activa, facilitando el acceso a equipamiento de alta complejidad que muchas veces resulta costoso para el profesional independiente.
+          </p>
+          <h3 class="text-xl font-bold text-slate-900 mt-6 mb-3">Beneficios contemplados en el convenio</h3>
+          <ul class="list-disc pl-5 space-y-2 mb-4 text-slate-700">
+            <li><strong>Acceso a Laboratorios de Ensayos Especiales:</strong> Aranceles institucionales reducidos para análisis de difracción de rayos X (DRX), microscopía electrónica de barrido (MEB) y fluorescencia.</li>
+            <li><strong>Bolsa de Trabajo y Pasantías Rentadas:</strong> Integración de jóvenes matriculados en proyectos de vinculación tecnológica entre la universidad y empresas mineras o de infraestructura.</li>
+            <li><strong>Becas de Posgrado:</strong> Descuentos del 30% en diplomaturas, especializaciones y maestrías dictadas por el Departamento de Geología.</li>
+          </ul>
+          <p class="mb-4">
+            Las bases y condiciones para postular a las líneas de financiamiento conjunto estarán disponibles a partir de la próxima semana a través de la Secretaría de Vinculación Institucional del Colegio.
+          </p>
+        `,
+        autor: 'María López'
+      },
+      {
+        id: 6,
+        titulo: 'Campaña de Verificación y Regularización de Matrículas 2025',
+        tipo: 'Novedad',
+        fecha: '18/03/2025',
+        imagen: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80',
+        bajada: 'Cronograma para la entrega de credenciales digitales inteligentes con firma criptográfica y actualización de datos de contacto en el directorio público.',
+        cuerpo: 'Se encuentra abierta la campaña anual de renovación de credenciales y regularización administrativa para garantizar el ejercicio legal en todo el territorio...',
+        cuerpo_completo: `
+          <p class="lead font-medium text-slate-800 text-base sm:text-lg mb-4">
+            La Comisión de Matrícula y Ejercicio Profesional recuerda que se encuentra en curso la <strong>Campaña Anual de Actualización de Datos y Renovación de Credencial Digital 2025</strong>.
+          </p>
+          <p class="mb-4">
+            Conforme a lo resuelto por la Asamblea General Ordinaria, este año se implementa la nueva credencial con código criptográfico que permite a empresas contratistas, entes gubernamentales y juzgados verificar la habilitación profesional en tiempo real escaneando el código QR único.
+          </p>
+          <h3 class="text-xl font-bold text-slate-900 mt-6 mb-3">Pasos para renovar tu credencial</h3>
+          <ol class="list-decimal pl-5 space-y-2 mb-4 text-slate-700">
+            <li>Ingresá a tu panel de matriculado con tu correo y contraseña.</li>
+            <li>Revisá y actualizá tus datos de contacto (teléfono, domicilio profesional y especialidad).</li>
+            <li>Configurá tus opciones de visibilidad pública conforme a la Ley de Protección de Datos Personales.</li>
+            <li>Generá y descargá tu credencial en formato digital para tu smartphone o billetera virtual.</li>
+          </ol>
+          <p class="mb-4">
+            Para aquellos profesionales con cuotas pendientes, el Colegio ofrece planes de pago en hasta 6 cuotas sin interés mediante convenio con entidades bancarias provinciales.
+          </p>
+        `,
         autor: 'María López'
       }
     ];
@@ -1592,6 +1910,8 @@
       currentRole: 'publico', // 'publico', 'matriculado', 'colaborador', 'admin'
       currentScreen: 'inicio',
       selectedProfessionalId: 1,
+      selectedNovedadId: 2, // ID de la novedad activa para vista detallada
+      novedadesFilterType: 'todas',
       contentFilterTab: 'todas',
       loggedUser: null
     };
@@ -1602,6 +1922,7 @@
     window.addEventListener('DOMContentLoaded', () => {
       populateSpecialtySelects();
       renderHomeContents();
+      renderNovedadesGrid();
       filterDirectory();
       renderAdminMatriculados();
       renderContenidosTable();
@@ -1636,6 +1957,16 @@
       // Si es perfil, actualizar datos
       if (screenId === 'perfil') {
         loadProfileData(state.selectedProfessionalId);
+      }
+
+      // Si es novedades, refrescar grid
+      if (screenId === 'novedades') {
+        renderNovedadesGrid();
+      }
+
+      // Si es detalle de novedad, cargar nota completa
+      if (screenId === 'detalle-novedad') {
+        loadNovedadDetalle(state.selectedNovedadId);
       }
 
       // Si es panel de matriculado, cargar datos del matriculado logueado (Juan Pérez id:2 por defecto)
@@ -2014,6 +2345,7 @@
         c.estado_publicacion = c.estado_publicacion === 'Publicado' ? 'Borrador' : 'Publicado';
         renderContenidosTable();
         renderHomeContents();
+        renderNovedadesGrid();
         showToast(`Publicación cambiada a: ${c.estado_publicacion}`);
       }
     }
@@ -2023,6 +2355,7 @@
         state.contents = state.contents.filter(x => x.id !== id);
         renderContenidosTable();
         renderHomeContents();
+        renderNovedadesGrid();
         showToast('Publicación eliminada');
       }
     }
@@ -2040,7 +2373,15 @@
         titulo,
         tipo,
         estado_publicacion: estado,
+        imagen: tipo === 'Evento' 
+          ? 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80'
+          : (tipo === 'Noticia' ? 'https://images.unsplash.com/photo-1578328819058-b69f3a3b0f6b?auto=format&fit=crop&w=800&q=80' : 'https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=800&q=80'),
+        bajada: cuerpo.slice(0, 140) + '...',
         cuerpo,
+        cuerpo_completo: `
+          <p class="lead font-medium text-slate-800 text-base sm:text-lg mb-4">${cuerpo}</p>
+          <p class="mb-4">El Colegio de Geólogos continuará comunicando novedades al respecto a través de sus canales oficiales y boletín para matriculados.</p>
+        `,
         fecha: formatDate(fecha),
         autor: state.loggedUser ? state.loggedUser.name : 'María López'
       };
@@ -2049,6 +2390,7 @@
       closeModal('modal-crear-contenido');
       renderContenidosTable();
       renderHomeContents();
+      renderNovedadesGrid();
       showToast('Nuevo contenido publicado con éxito');
     }
 
@@ -2221,14 +2563,22 @@
       if (newsContainer) {
         const news = state.contents.filter(c => c.estado_publicacion === 'Publicado' && c.tipo !== 'Evento');
         newsContainer.innerHTML = news.slice(0, 2).map(n => `
-          <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition">
-            <div class="flex items-center space-x-2 text-xs text-emerald-700 font-semibold mb-2">
-              <span class="uppercase tracking-wider">${n.tipo}</span>
-              <span>•</span>
-              <span class="text-slate-400 font-normal">${n.fecha}</span>
+          <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between group">
+            <div>
+              <div class="flex items-center space-x-2 text-xs text-emerald-700 font-semibold mb-2">
+                <span class="uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-50">${n.tipo}</span>
+                <span>•</span>
+                <span class="text-slate-400 font-normal">${n.fecha}</span>
+              </div>
+              <h4 class="font-bold text-slate-900 text-base mb-2 group-hover:text-emerald-800 transition cursor-pointer" onclick="goToNovedadDetalle(${n.id})">${n.titulo}</h4>
+              <p class="text-sm text-slate-600 leading-relaxed mb-4 line-clamp-2">${n.cuerpo.slice(0, 140)}...</p>
             </div>
-            <h4 class="font-bold text-slate-900 text-base mb-1.5">${n.titulo}</h4>
-            <p class="text-sm text-slate-600 leading-relaxed">${n.cuerpo}</p>
+            <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+              <span class="text-xs text-slate-400">Por ${n.autor || 'Prensa'}</span>
+              <button onclick="goToNovedadDetalle(${n.id})" class="inline-flex items-center text-xs font-bold text-emerald-700 hover:text-emerald-800 transition">
+                Leer noticia completa <span class="ml-1 font-normal">→</span>
+              </button>
+            </div>
           </div>
         `).join('');
       }
@@ -2236,14 +2586,17 @@
       if (eventsContainer) {
         const events = state.contents.filter(c => c.estado_publicacion === 'Publicado' && c.tipo === 'Evento');
         eventsContainer.innerHTML = events.slice(0, 2).map(e => `
-          <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition flex items-start space-x-4">
+          <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition flex items-start space-x-4 group">
             <div class="bg-emerald-50 text-emerald-800 rounded-lg p-2.5 text-center min-w-[55px] shrink-0 border border-emerald-100">
               <span class="block text-xs font-bold uppercase">ABR</span>
               <span class="block text-lg font-extrabold">${e.fecha.split('/')[0]}</span>
             </div>
-            <div>
-              <h4 class="font-bold text-slate-900 text-base mb-1">${e.titulo}</h4>
-              <p class="text-sm text-slate-600 leading-relaxed">${e.cuerpo}</p>
+            <div class="flex-1">
+              <h4 class="font-bold text-slate-900 text-base mb-1 group-hover:text-emerald-800 transition cursor-pointer" onclick="goToNovedadDetalle(${e.id})">${e.titulo}</h4>
+              <p class="text-sm text-slate-600 leading-relaxed mb-3 line-clamp-2">${e.cuerpo.slice(0, 120)}...</p>
+              <button onclick="goToNovedadDetalle(${e.id})" class="inline-flex items-center text-xs font-bold text-emerald-700 hover:text-emerald-800 transition">
+                Ver detalle e inscripción <span class="ml-1">→</span>
+              </button>
             </div>
           </div>
         `).join('');
@@ -2265,6 +2618,222 @@
           </div>
         `).join('');
       }
+    }
+
+    // ----------------------------------------------------
+    // MÓDULO PÚBLICO: NOVEDADES, NOTICIAS Y EVENTOS
+    // ----------------------------------------------------
+    function filterNovedades(type) {
+      state.novedadesFilterType = type;
+      
+      const buttons = {
+        'todas': document.getElementById('nov-filter-todas'),
+        'Noticia': document.getElementById('nov-filter-noticia'),
+        'Novedad': document.getElementById('nov-filter-novedad'),
+        'Evento': document.getElementById('nov-filter-evento')
+      };
+
+      Object.keys(buttons).forEach(key => {
+        const btn = buttons[key];
+        if (btn) {
+          if (key.toLowerCase() === type.toLowerCase()) {
+            btn.className = "nov-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-800 text-white shadow-sm transition";
+          } else {
+            btn.className = "nov-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition";
+          }
+        }
+      });
+
+      renderNovedadesGrid();
+    }
+
+    function renderNovedadesGrid() {
+      const container = document.getElementById('novedades-grid-container');
+      if (!container) return;
+
+      const q = (document.getElementById('novedades-search-input')?.value || '').toLowerCase().trim();
+      
+      // Filtrar solo las que están en estado "Publicado" (los borradores no los ve el público)
+      let items = state.contents.filter(c => c.estado_publicacion === 'Publicado');
+
+      // Filtro por tipo
+      if (state.novedadesFilterType && state.novedadesFilterType !== 'todas') {
+        items = items.filter(c => c.tipo.toLowerCase() === state.novedadesFilterType.toLowerCase());
+      }
+
+      // Filtro por búsqueda de texto
+      if (q) {
+        items = items.filter(c => 
+          c.titulo.toLowerCase().includes(q) ||
+          c.cuerpo.toLowerCase().includes(q) ||
+          (c.bajada && c.bajada.toLowerCase().includes(q))
+        );
+      }
+
+      const countBadge = document.getElementById('novedades-count-badge');
+      if (countBadge) {
+        countBadge.innerText = `Mostrando ${items.length} publicación${items.length === 1 ? '' : 'es'}`;
+      }
+
+      if (items.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-1 md:col-span-2 bg-white rounded-2xl p-10 text-center border border-slate-200">
+            <svg class="w-12 h-12 mx-auto text-slate-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/></svg>
+            <h4 class="text-base font-bold text-slate-800 mb-1">No se encontraron novedades o noticias</h4>
+            <p class="text-xs text-slate-500 max-w-sm mx-auto mb-4">No hay publicaciones activas que coincidan con los criterios de búsqueda o el filtro seleccionado.</p>
+            <button onclick="filterNovedades('todas'); document.getElementById('novedades-search-input').value = ''; renderNovedadesGrid();" class="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-semibold">
+              Restablecer filtros
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      // Renderizar el conjunto de tarjetas en dos columnas
+      container.innerHTML = items.map(n => {
+        // Tag según tipo
+        let typeColor = 'bg-emerald-100 text-emerald-800 border-emerald-200';
+        if (n.tipo === 'Evento') typeColor = 'bg-amber-100 text-amber-800 border-amber-200';
+        if (n.tipo === 'Novedad') typeColor = 'bg-blue-100 text-blue-800 border-blue-200';
+
+        // Imagen de la tarjeta
+        const defaultImg = 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=600&q=80';
+        const imgUrl = n.imagen || defaultImg;
+
+        // Extracto / inicio de descripción con tres puntos
+        const rawText = n.bajada || n.cuerpo || '';
+        const excerpt = rawText.length > 130 ? rawText.substring(0, 130).trim() + '...' : rawText + '...';
+
+        return `
+          <div class="bg-white rounded-2xl shadow-sm border border-slate-200/90 overflow-hidden hover:shadow-xl hover:border-emerald-300 transition-all duration-300 flex flex-col justify-between group">
+            <div>
+              <!-- Imagen y badges -->
+              <div class="relative h-48 sm:h-52 w-full overflow-hidden bg-slate-100 cursor-pointer" onclick="goToNovedadDetalle(${n.id})">
+                <img src="${imgUrl}" alt="${n.titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+                <div class="absolute top-3 left-3">
+                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider border shadow-sm backdrop-blur-sm ${typeColor}">
+                    ${n.tipo}
+                  </span>
+                </div>
+                <div class="absolute bottom-2.5 right-3 text-white text-xs font-medium bg-black/60 px-2.5 py-0.5 rounded-full backdrop-blur-sm">
+                  ${n.fecha}
+                </div>
+              </div>
+
+              <!-- Cuerpo de la tarjeta -->
+              <div class="p-5 sm:p-6">
+                <h3 class="text-lg sm:text-xl font-bold text-slate-900 group-hover:text-emerald-800 transition line-clamp-2 mb-2 leading-snug cursor-pointer" onclick="goToNovedadDetalle(${n.id})">
+                  ${n.titulo}
+                </h3>
+                <p class="text-sm text-slate-600 leading-relaxed mb-4">
+                  ${excerpt}
+                </p>
+              </div>
+            </div>
+
+            <!-- Footer con autor y botón de leer completo -->
+            <div class="px-5 sm:px-6 pb-5 pt-0 mt-auto flex items-center justify-between border-t border-slate-100 pt-3">
+              <span class="text-xs text-slate-400 font-medium">
+                Por ${n.autor || 'Prensa'}
+              </span>
+              <button onclick="goToNovedadDetalle(${n.id})" 
+                      class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-emerald-50 text-emerald-800 hover:bg-emerald-700 hover:text-white font-semibold text-xs transition duration-200 shadow-sm border border-emerald-200 group-hover:border-emerald-700">
+                Leer ${n.tipo ? n.tipo.toLowerCase() : 'nota'} completa <span class="ml-1.5 transition-transform group-hover:translate-x-1">→</span>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function goToNovedadDetalle(id) {
+      state.selectedNovedadId = id;
+      goToScreen('detalle-novedad');
+    }
+
+    function loadNovedadDetalle(id) {
+      const item = state.contents.find(c => c.id === id) || state.contents[0];
+      if (!item) return;
+
+      const imgEl = document.getElementById('det-nov-imagen');
+      if (imgEl) {
+        imgEl.src = item.imagen || 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=80';
+      }
+
+      const tipoBadge = document.getElementById('det-nov-tipo-badge');
+      if (tipoBadge) {
+        tipoBadge.innerText = item.tipo;
+        if (item.tipo === 'Evento') tipoBadge.className = 'px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase bg-amber-600 text-white shadow';
+        else if (item.tipo === 'Novedad') tipoBadge.className = 'px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase bg-blue-600 text-white shadow';
+        else tipoBadge.className = 'px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase bg-emerald-700 text-white shadow';
+      }
+
+      const fechaBadge = document.getElementById('det-nov-fecha-badge');
+      if (fechaBadge) fechaBadge.innerText = item.fecha;
+
+      const tituloEl = document.getElementById('det-nov-titulo');
+      if (tituloEl) tituloEl.innerText = item.titulo;
+
+      const autorEl = document.getElementById('det-nov-autor');
+      if (autorEl) autorEl.innerText = `Por ${item.autor || 'Secretaría de Prensa y Comunicación'}`;
+
+      const avatarEl = document.getElementById('det-nov-autor-avatar');
+      if (avatarEl) {
+        const initials = (item.autor || 'ML').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+        avatarEl.innerText = initials;
+      }
+
+      const bajadaEl = document.getElementById('det-nov-bajada');
+      if (bajadaEl) {
+        bajadaEl.innerText = item.bajada || item.cuerpo;
+      }
+
+      const cuerpoEl = document.getElementById('det-nov-cuerpo');
+      if (cuerpoEl) {
+        if (item.cuerpo_completo) {
+          cuerpoEl.innerHTML = item.cuerpo_completo;
+        } else {
+          cuerpoEl.innerHTML = `
+            <p class="lead font-medium text-slate-800 text-base sm:text-lg mb-4">
+              ${item.cuerpo}
+            </p>
+            <p class="mb-4">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+            </p>
+            <h3 class="text-xl font-bold text-slate-900 mt-6 mb-3">Aspectos normativos e institucionales</h3>
+            <p class="mb-4">
+              Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+            </p>
+            <ul class="list-disc pl-5 space-y-2 mb-4 text-slate-700">
+              <li>Cumplimiento estricto del código de ética y leyes del ejercicio profesional vigentes.</li>
+              <li>Reconocimiento de honorarios mínimos y aportes previsionales correspondientes.</li>
+              <li>Asesoramiento legal continuo a través del área técnica del Colegio.</li>
+            </ul>
+            <p class="mb-4">
+              Para mayor información y consultas sobre esta temática, comunicarse vía correo electrónico a la secretaría del Colegio o agendar una cita en nuestra sede administrativa.
+            </p>
+          `;
+        }
+      }
+
+      // Publicaciones relacionadas
+      const relContainer = document.getElementById('det-nov-relacionadas');
+      if (relContainer) {
+        const others = state.contents.filter(c => c.id !== item.id && c.estado_publicacion === 'Publicado').slice(0, 2);
+        relContainer.innerHTML = others.map(o => `
+          <div onclick="goToNovedadDetalle(${o.id})" class="bg-white p-4 rounded-xl border border-slate-200 hover:border-emerald-500 hover:shadow-md cursor-pointer transition flex items-center space-x-3">
+            <img src="${o.imagen || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=300&q=80'}" alt="${o.titulo}" class="w-16 h-16 rounded-lg object-cover shrink-0">
+            <div class="overflow-hidden">
+              <span class="text-[10px] uppercase font-bold text-emerald-700">${o.tipo} • ${o.fecha}</span>
+              <h4 class="text-xs sm:text-sm font-bold text-slate-900 truncate hover:text-emerald-800 transition">${o.titulo}</h4>
+              <p class="text-xs text-slate-500 truncate mt-0.5">${o.bajada || o.cuerpo}</p>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     // ----------------------------------------------------
@@ -2340,6 +2909,7 @@
       renderContenidosTable();
       renderAdminMatriculados();
       renderHomeContents();
+      renderNovedadesGrid();
       syncMatriculadoView();
       showToast('Datos del prototipo restaurados a valores iniciales');
     }
