@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Inicio - Colegio de Geólogos{% endblock %}
+
+{% block content %}
+<section class="hero-section py-5 text-center shadow-inner">
+    <div class="container py-4">
+        <h1 class="display-5 fw-bold mb-3">Portal del Colegio de Geólogos</h1>
+        <p class="lead text-light-emphasis col-lg-8 mx-auto mb-4">
+            Sistema de gestión de matrícula, expedientes, resoluciones y servicios para profesionales geólogos.
+        </p>
+        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+            <a href="{% url 'admin:index' %}" class="btn btn-warning btn-lg px-4 gap-3 fw-semibold">
+                <i class="bi bi-shield-lock me-1"></i> Acceso Administrativo
+            </a>
+            <a href="#estado" class="btn btn-outline-light btn-lg px-4">
+                <i class="bi bi-info-circle me-1"></i> Estado del Sistema
+            </a>
+        </div>
+    </div>
+</section>
+
+<div class="container my-5" id="estado">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="text-primary fs-3 mb-2"><i class="bi bi-hdd-network"></i></div>
+                    <h5 class="card-title fw-bold">Base de Datos</h5>
+                    <p class="card-text text-secondary">Conectado a PostgreSQL (Supabase).</p>
+                    <span class="badge bg-success-subtle text-success">Activo</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="text-warning fs-3 mb-2"><i class="bi bi-file-earmark-check"></i></div>
+                    <h5 class="card-title fw-bold">Archivos Estáticos</h5>
+                    <p class="card-text text-secondary">Entrega optimizada con WhiteNoise.</p>
+                    <span class="badge bg-success-subtle text-success">Configurado</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="text-info fs-3 mb-2"><i class="bi bi-cloud-arrow-up"></i></div>
+                    <h5 class="card-title fw-bold">Supabase Storage</h5>
+                    <p class="card-text text-secondary">Bucket listo para gestión de legajos y documentación.</p>
+                    <span class="badge bg-success-subtle text-success">Listo</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

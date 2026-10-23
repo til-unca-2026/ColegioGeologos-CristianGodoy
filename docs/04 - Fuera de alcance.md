@@ -12,6 +12,5 @@ Las siguientes funcionalidades no forman parte de la propuesta inicial:
 * Aplicación móvil nativa para Android o iOS.  
 * Integraciones con sistemas externos de terceros.  
 * Biblioteca digital avanzada con funcionalidades adicionales a la consulta y descarga de documentos contemplados.  
-* Gestión avanzada de autoridades institucionales si requiere un módulo específico no priorizado.
 
 La incorporación de funcionalidades adicionales requerirá revisar su impacto en el tiempo disponible.

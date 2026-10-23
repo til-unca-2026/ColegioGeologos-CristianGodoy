@@ -13,6 +13,8 @@ Representa las cuentas que pueden iniciar sesión en la aplicación.
 | nombre, apellido | Datos personales. |
 | email, telefono | Datos de contacto. |
 | activo | Indica si la cuenta está habilitada. |
+| position | Si el usuario integra la comisión directiva. |
+| profile\_picture | Foto de perfil del usuario (almacenada en Supabase Storage). |
 
 La contraseña no se almacena como texto ni se incorpora como un campo manual al diagrama: Django gestiona su almacenamiento seguro mediante su sistema de autenticación. Los roles se administran mediante grupos y permisos de Django.
 
@@ -29,7 +31,6 @@ Representa el perfil profesional de una persona matriculada en el Colegio.
 | estado | activo, suspendido o dado de baja. |
 | email\_publico | Autoriza o impide mostrar el correo en el directorio. |
 | telefono\_publico | Autoriza o impide mostrar el teléfono en el directorio. |
-| foto\_storage\_path | Referencia opcional a una foto almacenada. |
 | usuario\_id | Cuenta asociada, única y obligatoria. |
 | especialidad\_id | Especialidad profesional. |
 
