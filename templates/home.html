@@ -1,57 +1,205 @@
 {% extends 'base.html' %}
 
-{% block title %}Inicio - Colegio de Geólogos{% endblock %}
+{% block title %}Inicio | Colegio de Geólogos{% endblock %}
 
 {% block content %}
-<section class="hero-section py-5 text-center shadow-inner">
-    <div class="container py-4">
-        <h1 class="display-5 fw-bold mb-3">Portal del Colegio de Geólogos</h1>
-        <p class="lead text-light-emphasis col-lg-8 mx-auto mb-4">
-            Sistema de gestión de matrícula, expedientes, resoluciones y servicios para profesionales geólogos.
+<section class="relative flex min-h-[460px] items-center justify-center overflow-hidden bg-slate-950 text-white">
+    <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1920&q=80"
+        alt="Paisaje de montañas" class="absolute inset-0 h-full w-full object-cover object-center opacity-85">
+    <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-900/40 to-slate-950/60"></div>
+
+    <div class="relative z-10 mx-auto max-w-4xl px-4 py-16 text-center">
+        <span
+            class="mb-4 inline-block rounded-full border border-emerald-400/30 bg-emerald-500/20 px-3.5 py-1 text-xs font-semibold uppercase tracking-wide text-emerald-300 sm:text-sm">
+            Institución Oficial y Reguladora
+        </span>
+        <h1 class="mb-4 text-3xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
+            Colegio de Geólogos de Catamarca
+        </h1>
+        <p class="mx-auto mb-8 max-w-2xl text-lg font-light leading-relaxed text-emerald-100 sm:text-xl">
+            Profesionales al servicio de la sociedad y del desarrollo sostenible
         </p>
-        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-            <a href="{% url 'admin:index' %}" class="btn btn-warning btn-lg px-4 gap-3 fw-semibold">
-                <i class="bi bi-shield-lock me-1"></i> Acceso Administrativo
+        <div class="flex flex-wrap items-center justify-center gap-4">
+            <a href="#"
+                class="transform rounded-lg bg-emerald-600 px-6 py-3 font-medium text-white shadow-lg transition hover:scale-[1.02] hover:bg-emerald-500 hover:shadow-emerald-900/40 active:scale-95">
+                Conocé más
             </a>
-            <a href="#estado" class="btn btn-outline-light btn-lg px-4">
-                <i class="bi bi-info-circle me-1"></i> Estado del Sistema
+            <a href="#"
+                class="transform rounded-lg border border-white/25 bg-white/10 px-6 py-3 font-medium text-white backdrop-blur-sm transition hover:scale-[1.02] hover:bg-white/20 active:scale-95">
+                Consultar Directorio
             </a>
         </div>
     </div>
 </section>
 
-<div class="container my-5" id="estado">
-    <div class="row g-4">
-        <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm">
-                <div class="card-body">
-                    <div class="text-primary fs-3 mb-2"><i class="bi bi-hdd-network"></i></div>
-                    <h5 class="card-title fw-bold">Base de Datos</h5>
-                    <p class="card-text text-secondary">Conectado a PostgreSQL (Supabase).</p>
-                    <span class="badge bg-success-subtle text-success">Activo</span>
+<section id="seccion-accesos"
+    class="relative z-20 mx-auto -mt-10 mb-16 w-full max-w-7xl px-4 sm:-mt-14 sm:px-6 lg:px-8"
+    aria-label="Accesos rápidos">
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <article
+            class="group flex flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-6 shadow-md transition-all duration-300 hover:shadow-xl">
+            <div>
+                <div
+                    class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700 transition group-hover:scale-110 group-hover:bg-emerald-700 group-hover:text-white">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+                    </svg>
                 </div>
+                <h2 class="mb-2 text-lg font-bold text-slate-800">Directorio de matriculados</h2>
+                <p class="mb-4 text-sm leading-relaxed text-slate-600">
+                    Buscá profesionales registrados en el Colegio y verificá su habilitación vigente.
+                </p>
             </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm">
-                <div class="card-body">
-                    <div class="text-warning fs-3 mb-2"><i class="bi bi-file-earmark-check"></i></div>
-                    <h5 class="card-title fw-bold">Archivos Estáticos</h5>
-                    <p class="card-text text-secondary">Entrega optimizada con WhiteNoise.</p>
-                    <span class="badge bg-success-subtle text-success">Configurado</span>
+            <a href="#"
+                class="inline-flex items-center text-sm font-semibold text-emerald-700 transition group-hover:translate-x-1 hover:text-emerald-800">
+                Ver directorio <span class="ml-1" aria-hidden="true">→</span>
+            </a>
+        </article>
+
+        <article
+            class="group flex flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-6 shadow-md transition-all duration-300 hover:shadow-xl">
+            <div>
+                <div
+                    class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700 transition group-hover:scale-110 group-hover:bg-emerald-700 group-hover:text-white">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                    </svg>
                 </div>
+                <h2 class="mb-2 text-lg font-bold text-slate-800">Novedades y noticias</h2>
+                <p class="mb-4 text-sm leading-relaxed text-slate-600">
+                    Mantenete informado sobre las últimas novedades normativas y comunicados.
+                </p>
             </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm">
-                <div class="card-body">
-                    <div class="text-info fs-3 mb-2"><i class="bi bi-cloud-arrow-up"></i></div>
-                    <h5 class="card-title fw-bold">Supabase Storage</h5>
-                    <p class="card-text text-secondary">Bucket listo para gestión de legajos y documentación.</p>
-                    <span class="badge bg-success-subtle text-success">Listo</span>
+            <a href="#"
+                class="inline-flex items-center text-sm font-semibold text-emerald-700 transition group-hover:translate-x-1 hover:text-emerald-800">
+                Ver noticias <span class="ml-1" aria-hidden="true">→</span>
+            </a>
+        </article>
+
+        <article
+            class="group flex flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-6 shadow-md transition-all duration-300 hover:shadow-xl">
+            <div>
+                <div
+                    class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700 transition group-hover:scale-110 group-hover:bg-emerald-700 group-hover:text-white">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
                 </div>
+                <h2 class="mb-2 text-lg font-bold text-slate-800">Eventos</h2>
+                <p class="mb-4 text-sm leading-relaxed text-slate-600">
+                    Capacitaciones, charlas técnicas, jornadas de campo y actividades académicas.
+                </p>
             </div>
+            <a href="#"
+                class="inline-flex items-center text-sm font-semibold text-emerald-700 transition group-hover:translate-x-1 hover:text-emerald-800">
+                Ver eventos <span class="ml-1" aria-hidden="true">→</span>
+            </a>
+        </article>
+
+        <article
+            class="group flex flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-6 shadow-md transition-all duration-300 hover:shadow-xl">
+            <div>
+                <div
+                    class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700 transition group-hover:scale-110 group-hover:bg-emerald-700 group-hover:text-white">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                </div>
+                <h2 class="mb-2 text-lg font-bold text-slate-800">Documentos institucionales</h2>
+                <p class="mb-4 text-sm leading-relaxed text-slate-600">
+                    Normativas, resoluciones, leyes, código de ética y tabla de honorarios.
+                </p>
+            </div>
+            <a href="#"
+                class="inline-flex items-center text-sm font-semibold text-emerald-700 transition group-hover:translate-x-1 hover:text-emerald-800">
+                Ver documentos <span class="ml-1" aria-hidden="true">→</span>
+            </a>
+        </article>
+    </div>
+</section>
+
+<section id="seccion-institucional" class="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+    <div class="mb-12 rounded-2xl border border-emerald-100 bg-emerald-50/70 p-6 sm:p-10">
+        <div class="max-w-3xl">
+            <h2 class="mb-3 text-2xl font-bold text-slate-900 sm:text-3xl">
+                ¿Qué profesional necesita su proyecto?
+            </h2>
+            <p class="mb-6 leading-relaxed text-slate-600">
+                El ejercicio de la geología abarca áreas estratégicas con impacto directo en obras públicas, medio
+                ambiente, exploración minera y recursos hídricos. Contratar a un geólogo matriculado garantiza respaldo
+                legal y solvencia técnica.
+            </p>
+            <ul class="grid grid-cols-2 gap-3 text-sm font-medium text-slate-700 sm:grid-cols-3">
+                <li class="flex items-center space-x-2 rounded-lg border border-emerald-200 bg-white px-3 py-2">
+                    <span class="text-emerald-600" aria-hidden="true">✓</span><span>Hidrogeología</span>
+                </li>
+                <li class="flex items-center space-x-2 rounded-lg border border-emerald-200 bg-white px-3 py-2">
+                    <span class="text-emerald-600" aria-hidden="true">✓</span><span>Geotecnia y Suelos</span>
+                </li>
+                <li class="flex items-center space-x-2 rounded-lg border border-emerald-200 bg-white px-3 py-2">
+                    <span class="text-emerald-600" aria-hidden="true">✓</span><span>Minería y Yacimientos</span>
+                </li>
+                <li class="flex items-center space-x-2 rounded-lg border border-emerald-200 bg-white px-3 py-2">
+                    <span class="text-emerald-600" aria-hidden="true">✓</span><span>Evaluación Ambiental</span>
+                </li>
+                <li class="flex items-center space-x-2 rounded-lg border border-emerald-200 bg-white px-3 py-2">
+                    <span class="text-emerald-600" aria-hidden="true">✓</span><span>Cartografía y SIG</span>
+                </li>
+                <li class="flex items-center space-x-2 rounded-lg border border-emerald-200 bg-white px-3 py-2">
+                    <span class="text-emerald-600" aria-hidden="true">✓</span><span>Peritajes Judiciales</span>
+                </li>
+            </ul>
         </div>
     </div>
-</div>
+
+    <div class="mb-12 grid grid-cols-1 gap-8 lg:grid-cols-2">
+        <section id="seccion-novedades" aria-labelledby="novedades-title">
+            <div class="mb-4 flex items-center justify-between">
+                <h2 id="novedades-title" class="flex items-center gap-2 text-xl font-bold text-slate-900">
+                    <span class="inline-block h-6 w-2.5 rounded-sm bg-emerald-700" aria-hidden="true"></span>
+                    Novedades y Noticias
+                </h2>
+            </div>
+            <div class="rounded-xl border border-slate-200 bg-white p-6 text-sm text-slate-600 shadow-sm">
+                Próximamente vas a encontrar aquí las novedades y comunicados del Colegio.
+            </div>
+        </section>
+
+        <section id="seccion-eventos" aria-labelledby="eventos-title">
+            <div class="mb-4 flex items-center justify-between">
+                <h2 id="eventos-title" class="flex items-center gap-2 text-xl font-bold text-slate-900">
+                    <span class="inline-block h-6 w-2.5 rounded-sm bg-emerald-700" aria-hidden="true"></span>
+                    Próximos Eventos y Capacitaciones
+                </h2>
+            </div>
+            <div class="rounded-xl border border-slate-200 bg-white p-6 text-sm text-slate-600 shadow-sm">
+                Próximamente vas a encontrar aquí las actividades y capacitaciones del Colegio.
+            </div>
+        </section>
+    </div>
+
+    <section id="seccion-documentos" class="mb-12 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8"
+        aria-labelledby="documentos-title">
+        <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <h2 id="documentos-title" class="text-xl font-bold text-slate-900">
+                    Documentación Institucional y Normativas
+                </h2>
+                <p class="text-sm text-slate-500">
+                    Reglamentos, resoluciones, instructivos y escalas arancelarias vigentes
+                </p>
+            </div>
+            <span class="w-fit rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
+                Acceso Libre
+            </span>
+        </div>
+        <div class="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-6 text-center text-sm text-slate-600">
+            La documentación institucional estará disponible próximamente.
+        </div>
+    </section>
+</section>
 {% endblock %}

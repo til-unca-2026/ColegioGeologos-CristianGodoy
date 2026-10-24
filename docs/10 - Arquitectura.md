@@ -7,9 +7,9 @@
 
   * Procesa las solicitudes, valida formularios, gestiona la autenticación, aplica permisos por rol y conecta la interfaz con la base de datos y el almacenamiento de archivos. También proporciona Django Admin para la gestión administrativa.
 
-* **Frontend:** HTML, CSS, JavaScript y Bootstrap.
+* **Frontend:** HTML, CSS, JavaScript y Tailwind CSS.
 
-  * Sitio institucional, directorio público, panel del matriculado y paneles de gestión. Se desarrollará con HTML, CSS, JavaScript y Bootstrap.
+  * Sitio institucional, directorio público, panel del matriculado y paneles de gestión. Se desarrollará con HTML, CSS, JavaScript y Tailwind CSS.
 
 * **Autenticación y autorización:** sistema de autenticación y permisos de Django. No se utilizará Supabase Auth en esta propuesta.  
 * **Base de datos:** PostgreSQL administrado por Supabase, accedido desde Django mediante su ORM.
