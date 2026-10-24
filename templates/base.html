@@ -79,17 +79,31 @@
 
                 <div class="flex items-center space-x-3">
                     {% if user.is_authenticated %}
-                    <span class="hidden lg:inline text-sm text-emerald-100">
-                        Hola, {{ user.get_full_name|default:user.username }}
-                    </span>
-                    <a href="{% url 'admin:index' %}"
-                        class="rounded-lg bg-emerald-700 hover:bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition">
-                        Panel de gestión
-                    </a>
+                    {% if user.profile_picture %}
+                    <img src="{{ user.profile_picture.url }}"
+                        alt="Foto de perfil de {{ user.get_full_name|default:user.username }}"
+                        class="h-10 w-10 rounded-full border-2 border-emerald-200 object-cover">
                     {% else %}
-                    <a href="{% url 'admin:login' %}"
+                    <span aria-label="Iniciales de {{ user.get_full_name|default:user.username }}"
+                        class="flex h-10 w-10 items-center justify-center rounded-full border-2 border-emerald-200 bg-emerald-700 text-sm font-bold text-white">
+                        {{ user.first_name|first|upper|default:"?" }}{{ user.last_name|first|upper|default:"?" }}
+                    </span>
+                    {% endif %}
+                    <a href="#"
+                        class="rounded-lg bg-emerald-700 hover:bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition">
+                        Autogestión
+                    </a>
+                    <form method="post" action="{% url 'accounts:logout' %}">
+                        {% csrf_token %}
+                        <button type="submit"
+                            class="rounded-lg border border-emerald-200/50 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10">
+                            Salir
+                        </button>
+                    </form>
+                    {% else %}
+                    <a href="{% url 'accounts:login' %}"
                         class="rounded-lg bg-emerald-700 hover:bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow transition">
-                        Ingreso al Sistema
+                        Ingresar
                     </a>
                     {% endif %}
 
@@ -119,6 +133,20 @@
             </div>
         </div>
     </header>
+
+    {% if messages %}
+    <div class="mx-auto w-full max-w-7xl space-y-2 px-4 pt-4 sm:px-6 lg:px-8" aria-live="polite">
+        {% for message in messages %}
+        <div class="rounded-lg border px-4 py-3 text-sm
+            {% if message.tags == 'error' %}border-red-200 bg-red-50 text-red-700
+            {% elif message.tags == 'success' %}border-emerald-200 bg-emerald-50 text-emerald-800
+            {% else %}border-slate-200 bg-slate-50 text-slate-700{% endif %}"
+            role="{% if message.tags == 'error' %}alert{% else %}status{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 
     <main class="flex-1 flex flex-col">
         {% block content %}{% endblock %}
