@@ -1,10 +1,33 @@
 # core/storage.py
-import os
 import mimetypes
+from threading import Lock
 from django.core.files.storage import Storage
 from django.core.files.base import ContentFile
 from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 from django.utils.deconstruct import deconstructible
+from supabase import Client, create_client
+
+
+_supabase_client: Client | None = None
+_supabase_client_lock = Lock()
+
+
+def get_supabase_client() -> Client:
+    global _supabase_client
+
+    if _supabase_client is None:
+        with _supabase_client_lock:
+            if _supabase_client is None:
+                url = settings.SUPABASE_URL
+                key = settings.SUPABASE_KEY
+                if not url or not key:
+                    raise ImproperlyConfigured(
+                        "SUPABASE_URL and SUPABASE_KEY must be configured to use Supabase Storage."
+                    )
+                _supabase_client = create_client(url, key)
+
+    return _supabase_client
 
 
 @deconstructible
@@ -19,8 +42,7 @@ class SupabaseStorage(Storage):
 
     @property
     def client(self):
-        from core.settings import supabase
-        return supabase
+        return get_supabase_client()
 
     def _save(self, name, content):
         # Normalizar barras a estilo Unix para storage
