@@ -9,7 +9,7 @@
 
 * **Frontend:** HTML, CSS, JavaScript y Tailwind CSS.
 
-  * Sitio institucional, directorio público, panel del matriculado y paneles de gestión. Se desarrollará con HTML, CSS, JavaScript y Tailwind CSS.
+  * Sitio institucional, directorio público, panel del matriculado y paneles de gestión. `npm run build:css` compila Tailwind con su CLI; `build.sh` ejecuta ese paso antes de `collectstatic`, que prepara el CSS resultante para WhiteNoise.
 
 * **Autenticación y autorización:** sistema de autenticación y permisos de Django. No se utilizará Supabase Auth en esta propuesta.  
 * **Base de datos:** PostgreSQL administrado por Supabase, accedido desde Django mediante su ORM.

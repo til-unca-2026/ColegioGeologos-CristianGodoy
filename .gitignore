@@ -5,6 +5,8 @@ env/
 ENV/
 env.bak/
 venv.bak/
+/node_modules/
+/static/css/tailwind.css
 
 # Archivos de caché y compilados de Python
 __pycache__/
