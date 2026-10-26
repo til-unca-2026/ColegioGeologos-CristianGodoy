@@ -5,6 +5,10 @@ set -o errexit
 # Instalar dependencias
 pip install -r requirements.txt
 
+# Compilar Tailwind antes de recolectar los archivos estáticos
+npm ci
+npm run build:css
+
 # Recolectar archivos estáticos para WhiteNoise
 python manage.py collectstatic --no-input
 
