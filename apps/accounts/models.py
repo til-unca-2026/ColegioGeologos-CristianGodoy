@@ -28,6 +28,10 @@ class User(AbstractUser):
         null=True,
         verbose_name="Foto de perfil"
     )
+    must_change_password = models.BooleanField(
+        default=False,
+        verbose_name="Debe cambiar la contraseña",
+    )
     
     class Meta:
         db_table = 'usuarios'
