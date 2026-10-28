@@ -1,6 +1,10 @@
 from django.contrib.auth import get_user_model
-from django.test import TestCase
+from django.contrib.auth.tokens import default_token_generator
+from django.core import mail
+from django.test import TestCase, override_settings
 from django.urls import reverse
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 
 
 class AuthenticationViewsTests(TestCase):
@@ -53,3 +57,65 @@ class AuthenticationViewsTests(TestCase):
         self.assertRedirects(response, reverse("home"))
         self.assertContains(response, "Cerraste sesión correctamente.")
         self.assertFalse(response.wsgi_request.user.is_authenticated)
+
+
+@override_settings(EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend")
+class PasswordRecoveryTests(TestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(
+            username="matriculado",
+            email="matriculado@example.com",
+            password="Temporal123!",
+            must_change_password=True,
+        )
+
+    def test_password_reset_page_and_email(self):
+        response = self.client.post(
+            reverse("accounts:password_reset"),
+            {"email": self.user.email},
+        )
+
+        self.assertRedirects(response, reverse("accounts:password_reset_done"))
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn("password-reset", mail.outbox[0].body)
+
+    def test_must_change_password_redirects_other_pages(self):
+        self.client.force_login(self.user)
+
+        response = self.client.get(reverse("home"))
+
+        self.assertRedirects(response, reverse("accounts:password_change"))
+
+    def test_password_change_clears_mandatory_flag(self):
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            reverse("accounts:password_change"),
+            {
+                "old_password": "Temporal123!",
+                "new_password1": "NuevaClaveSegura123!",
+                "new_password2": "NuevaClaveSegura123!",
+            },
+        )
+
+        self.assertRedirects(response, reverse("home"))
+        self.user.refresh_from_db()
+        self.assertFalse(self.user.must_change_password)
+
+    def test_password_reset_clears_mandatory_flag(self):
+        uid = urlsafe_base64_encode(force_bytes(self.user.pk))
+        token = default_token_generator.make_token(self.user)
+
+        confirm_url = reverse("accounts:password_reset_confirm", args=[uid, token])
+        self.client.get(confirm_url)
+        response = self.client.post(
+            reverse("accounts:password_reset_confirm", args=[uid, "set-password"]),
+            {
+                "new_password1": "NuevaClaveSegura456!",
+                "new_password2": "NuevaClaveSegura456!",
+            },
+        )
+
+        self.assertRedirects(response, reverse("accounts:password_reset_complete"))
+        self.user.refresh_from_db()
+        self.assertFalse(self.user.must_change_password)

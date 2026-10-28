@@ -66,6 +66,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'accounts.middleware.MustChangePasswordMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -93,15 +94,16 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL'),
+        default=env('DATABASE_URL', default=None),
         conn_max_age=600,
         ssl_require=True
     )
 }
 
-SUPABASE_URL = os.environ.get("SUPABASE_URL")
-SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
-SUPABASE_STORAGE_BUCKET = os.environ.get("SUPABASE_STORAGE_BUCKET", "colegio-media")
+# Supabase
+SUPABASE_URL = env("SUPABASE_URL", default=None)
+SUPABASE_KEY = env("SUPABASE_KEY", default=None)
+SUPABASE_STORAGE_BUCKET = env("SUPABASE_STORAGE_BUCKET", default="colegio-media")
 
 
 AUTH_USER_MODEL = 'accounts.User'
@@ -112,6 +114,20 @@ LOGOUT_REDIRECT_URL = 'home'
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
+
+EMAIL_BACKEND = env(
+    'EMAIL_BACKEND',
+    default='django.core.mail.backends.console.EmailBackend',
+)
+EMAIL_HOST = env('EMAIL_HOST', default='')
+EMAIL_PORT = env.int('EMAIL_PORT', default=587)
+EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS', default=True)
+EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
+DEFAULT_FROM_EMAIL = env(
+    'DEFAULT_FROM_EMAIL',
+    default='Colegio de Geólogos de Catamarca <no-reply@localhost>',
+)
 
 AUTH_PASSWORD_VALIDATORS = [
     {
