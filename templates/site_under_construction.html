@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Sitio en construcción | Colegio de Geólogos de Catamarca{% endblock %}
+
+{% block content %}
+<main class="flex min-h-[calc(100vh-4rem)] items-center justify-center p-2 sm:p-4">
+    <h1 class="sr-only">Sección en construcción - Colegio de Geólogos de Catamarca</h1>
+    <figure class="w-full max-w-7xl">
+        <img
+            src="{% static 'img/construccion.jpg' %}"
+            alt="Ilustración informativa: sección del sitio web actualmente en construcción"
+            class="mx-auto max-h-[calc(100vh-6rem)] w-full object-contain rounded-lg"
+            loading="eager"
+        >
+        <figcaption class="sr-only">Estamos trabajando en esta sección. Podés usar la barra de navegación superior para dirigirte a otras áreas del sitio.</figcaption>
+    </figure>
+</main>
+{% endblock %}

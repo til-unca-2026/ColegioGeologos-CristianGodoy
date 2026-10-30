@@ -45,15 +45,25 @@
                     </span>
                 </a>
 
-                <nav class="hidden md:flex items-center space-x-1 lg:space-x-2" aria-label="Navegación principal">
-                    <button type="button"
-                        class="px-3 py-1.5 rounded-md text-sm font-medium text-emerald-100 hover:text-white hover:bg-white/10 transition">Institucional</button>
-                    <button type="button"
-                        class="px-3 py-1.5 rounded-md text-sm font-medium text-emerald-100 hover:text-white hover:bg-white/10 transition">Directorio</button>
-                    <button type="button"
-                        class="px-3 py-1.5 rounded-md text-sm font-medium text-emerald-100 hover:text-white hover:bg-white/10 transition">Novedades</button>
-                    <button type="button"
-                        class="px-3 py-1.5 rounded-md text-sm font-medium text-emerald-100 hover:text-white hover:bg-white/10 transition">Documentos</button>
+                <nav class="hidden md:block" aria-label="Navegación principal">
+                    <ul class="flex items-center space-x-1 lg:space-x-2">
+                        <li>
+                            <a href="{% url 'home' %}#seccion-institucional"
+                                class="block rounded-md px-3 py-1.5 text-sm font-medium text-emerald-100 transition hover:bg-white/10 hover:text-white">Institucional</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'site_under_construction' %}"
+                                class="block rounded-md px-3 py-1.5 text-sm font-medium text-emerald-100 transition hover:bg-white/10 hover:text-white">Directorio</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'home' %}#seccion-novedades"
+                                class="block rounded-md px-3 py-1.5 text-sm font-medium text-emerald-100 transition hover:bg-white/10 hover:text-white">Novedades</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'home' %}#seccion-documentos"
+                                class="block rounded-md px-3 py-1.5 text-sm font-medium text-emerald-100 transition hover:bg-white/10 hover:text-white">Documentos</a>
+                        </li>
+                    </ul>
                 </nav>
 
                 <div class="flex items-center space-x-3">
@@ -98,14 +108,24 @@
                         </summary>
                         <nav class="absolute right-0 top-full mt-2 w-56 rounded-lg border border-emerald-900 bg-[#143d32] p-2 shadow-xl"
                             aria-label="Navegación móvil">
-                            <button type="button"
-                                class="block w-full rounded-md px-3 py-2 text-left text-sm text-emerald-100 hover:bg-white/10 hover:text-white">Institucional</button>
-                            <button type="button"
-                                class="block w-full rounded-md px-3 py-2 text-left text-sm text-emerald-100 hover:bg-white/10 hover:text-white">Directorio</button>
-                            <button type="button"
-                                class="block w-full rounded-md px-3 py-2 text-left text-sm text-emerald-100 hover:bg-white/10 hover:text-white">Novedades</button>
-                            <button type="button"
-                                class="block w-full rounded-md px-3 py-2 text-left text-sm text-emerald-100 hover:bg-white/10 hover:text-white">Documentos</button>
+                            <ul>
+                                <li>
+                                    <a href="{% url 'home' %}#seccion-institucional"
+                                        class="block w-full rounded-md px-3 py-2 text-left text-sm text-emerald-100 hover:bg-white/10 hover:text-white">Institucional</a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'site_under_construction' %}"
+                                        class="block w-full rounded-md px-3 py-2 text-left text-sm text-emerald-100 hover:bg-white/10 hover:text-white">Directorio</a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'home' %}#seccion-novedades"
+                                        class="block w-full rounded-md px-3 py-2 text-left text-sm text-emerald-100 hover:bg-white/10 hover:text-white">Novedades</a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'home' %}#seccion-documentos"
+                                        class="block w-full rounded-md px-3 py-2 text-left text-sm text-emerald-100 hover:bg-white/10 hover:text-white">Documentos</a>
+                                </li>
+                            </ul>
                         </nav>
                     </details>
                 </div>
@@ -152,11 +172,11 @@
                 <div>
                     <h2 class="font-semibold text-white mb-3 text-sm">Secciones</h2>
                     <ul class="space-y-2 text-xs">
-                        <li><a href="" class="hover:text-emerald-300">Inicio</a></li>
-                        <li><a href="" class="hover:text-emerald-300">Institucional</a></li>
-                        <li><a href="" class="hover:text-emerald-300">Directorio</a></li>
-                        <li><a href="" class="hover:text-emerald-300">Novedades</a></li>
-                        <li><a href="" class="hover:text-emerald-300">Documentos</a></li>
+                        <li><a href="{% url 'home' %}" class="hover:text-emerald-300">Inicio</a></li>
+                        <li><a href="{% url 'home' %}#seccion-institucional" class="hover:text-emerald-300">Institucional</a></li>
+                        <li><a href="{% url 'site_under_construction' %}" class="hover:text-emerald-300">Directorio</a></li>
+                        <li><a href="{% url 'home' %}#seccion-novedades" class="hover:text-emerald-300">Novedades</a></li>
+                        <li><a href="{% url 'home' %}#seccion-documentos" class="hover:text-emerald-300">Documentos</a></li>
                     </ul>
                 </div>
 

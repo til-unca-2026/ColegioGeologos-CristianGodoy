@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Error 500 - Error interno del servidor | Colegio de Geólogos de Catamarca{% endblock %}
+
+{% block content %}
+<main class="flex min-h-[calc(100vh-4rem)] items-center justify-center p-2 sm:p-4">
+    <h1 class="sr-only">Error 500: Error interno del servidor - Colegio de Geólogos de Catamarca</h1>
+    <figure class="w-full max-w-7xl">
+        <img
+            src="{% static 'img/error500.jpg' %}"
+            alt="Ilustración informativa: Error 500, ocurrió un error interno en el servidor"
+            class="mx-auto max-h-[calc(100vh-6rem)] w-full object-contain rounded-lg"
+            loading="eager"
+        >
+        <figcaption class="sr-only">Ocurrió un error inesperado al procesar la solicitud. Podés volver a intentarlo o usar el menú superior para dirigirte a otra sección.</figcaption>
+    </figure>
+</main>
+{% endblock %}
