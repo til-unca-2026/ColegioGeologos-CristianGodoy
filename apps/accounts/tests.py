@@ -60,6 +60,38 @@ class AuthenticationViewsTests(TestCase):
 
 
 @override_settings(EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend")
+    def test_dashboard_requires_login(self):
+        response = self.client.get(reverse("accounts:dashboard"))
+        self.assertRedirects(response, f"{reverse('accounts:login')}?next={reverse('accounts:dashboard')}")
+
+    def test_dashboard_authenticated_user_access(self):
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("accounts:dashboard"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "accounts/dashboard.html")
+        self.assertContains(response, "Mi Perfil y Autogestión")
+        self.assertContains(response, self.user.username)
+
+    def test_dashboard_superuser_sees_admin_sections(self):
+        self.user.is_superuser = True
+        self.user.save()
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("accounts:dashboard"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Padrón de Matriculados")
+        self.assertContains(response, "Cuentas de Usuarios")
+        self.assertContains(response, "Roles y permisos")
+
+    def test_dashboard_user_with_permission_sees_assigned_section(self):
+        from django.contrib.auth.models import Permission
+        perm = Permission.objects.get(codename="view_user", content_type__app_label="accounts")
+        self.user.user_permissions.add(perm)
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("accounts:dashboard"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Cuentas de Usuarios")
+
+
 class PasswordRecoveryTests(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create_user(

@@ -68,7 +68,7 @@
                         {{ user.first_name|first|upper|default:"?" }}{{ user.last_name|first|upper|default:"?" }}
                     </span>
                     {% endif %}
-                    <a href="#"
+                    <a href="{% url 'accounts:dashboard' %}"
                         class="rounded-lg bg-emerald-700 hover:bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition">
                         Autogestión
                     </a>

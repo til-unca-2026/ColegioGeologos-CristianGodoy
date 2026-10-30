@@ -1,5 +1,6 @@
 from django.contrib import messages
-from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth import get_user_model, update_session_auth_hash
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import (
     LoginView,
     LogoutView,
@@ -7,6 +8,32 @@ from django.contrib.auth.views import (
     PasswordResetConfirmView,
 )
 from django.urls import reverse_lazy
+from django.views.generic import TemplateView
+
+
+class DashboardView(LoginRequiredMixin, TemplateView):
+    template_name = "accounts/dashboard.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+
+        # Pestaña activa por query param (?tab=...)
+        current_tab = self.request.GET.get("tab", "perfil")
+
+        # Capacidad de gestión administrativa basada en permisos Django
+        can_manage_users = user.has_perm("accounts.view_user") or user.has_perm("accounts.add_user")
+
+        context.update({
+            "current_tab": current_tab,
+            "can_manage_users": can_manage_users,
+        })
+
+        if can_manage_users:
+            User = get_user_model()
+            context["users_list"] = User.objects.all().order_by("-date_joined")[:15]
+
+        return context
 
 
 class AccountLoginView(LoginView):

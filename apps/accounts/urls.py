@@ -6,11 +6,13 @@ from .views import (
     AccountLogoutView,
     AccountPasswordChangeView,
     AccountPasswordResetConfirmView,
+    DashboardView,
 )
 
 app_name = "accounts"
 
 urlpatterns = [
+    path("dashboard/", DashboardView.as_view(), name="dashboard"),
     path("login/", AccountLoginView.as_view(), name="login"),
     path("logout/", AccountLogoutView.as_view(), name="logout"),
     path("password/change/", AccountPasswordChangeView.as_view(), name="password_change"),
