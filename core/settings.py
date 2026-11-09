@@ -51,11 +51,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_countries',
+    'phonenumber_field',
     'accounts',
     'directory',
     'content',
     'documents',
 ]
+
+COUNTRIES_FIRST = ['AR']
+PHONENUMBER_DEFAULT_REGION = 'AR'
+PHONENUMBER_DB_FORMAT = 'E164'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -96,7 +102,7 @@ DATABASES = {
     'default': dj_database_url.config(
         default=env('DATABASE_URL', default=None),
         conn_max_age=600,
-        ssl_require=True
+        ssl_require=False if env('DATABASE_URL', default='').startswith('sqlite') else True
     )
 }
 

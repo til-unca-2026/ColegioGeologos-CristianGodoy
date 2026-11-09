@@ -1,0 +1,486 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} | Dashboard Colegio de Geólogos{% endblock %}
+
+{% block content %}
+<section class="min-h-[calc(100vh-105px)] bg-slate-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto space-y-6">
+
+        <!-- Navegación de migas de pan y encabezado -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+                <nav class="flex items-center text-xs text-slate-500 mb-2 space-x-2">
+                    <a href="{% url 'accounts:dashboard' %}?tab=admin_usuarios" class="hover:text-emerald-700 font-medium">Dashboard</a>
+                    <span>/</span>
+                    <a href="{% url 'accounts:dashboard' %}?tab=admin_usuarios" class="hover:text-emerald-700 font-medium">Cuentas de Usuarios</a>
+                    <span>/</span>
+                    <span class="text-slate-700 font-semibold">{% if is_edit %}Editar{% else %}Nuevo{% endif %}</span>
+                </nav>
+                <h1 class="text-2xl font-bold text-slate-900">{{ title }}</h1>
+                <p class="text-sm text-slate-500 mt-1">
+                    {% if is_edit %}
+                    Actualice los datos personales, domicilio, contacto y grupo asignado a la cuenta.
+                    {% else %}
+                    Complete el formulario para dar de alta un nuevo usuario, cumpliendo con la Ley 25.326 y asignándole su grupo institucional.
+                    {% endif %}
+                </p>
+            </div>
+            <div>
+                <a href="{% url 'accounts:dashboard' %}?tab=admin_usuarios"
+                   class="inline-flex items-center px-4 py-2 border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 transition shadow-sm">
+                    <svg class="w-4 h-4 mr-1.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                    Volver a Usuarios
+                </a>
+            </div>
+        </div>
+
+        <!-- Formulario Principal -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <form method="post" enctype="multipart/form-data" novalidate class="p-6 sm:p-10 divide-y divide-slate-100">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                <div class="p-4 mb-6 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-sm">
+                    {{ form.non_field_errors }}
+                </div>
+                {% endif %}
+
+                <!-- SECCIÓN 1: ROL Y GRUPO DE DJANGO -->
+                <div class="py-8 first:pt-0">
+                    <div class="border-b border-slate-200 pb-3 mb-6">
+                        <h2 class="text-base font-semibold text-slate-900 flex items-center gap-2.5">
+                            <span class="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold">1</span>
+                            Grupo Institucional y Nivel de Acceso
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-1 ml-8">
+                            Seleccione el grupo de Django admin que define las capacidades del usuario en la plataforma.
+                        </p>
+                    </div>
+
+                    <div class="ml-8 space-y-5">
+                        <div>
+                            <label for="{{ form.group.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                                {{ form.group.label }} <span class="text-rose-600">*</span>
+                            </label>
+                            {{ form.group }}
+                            {% if form.group.help_text %}
+                            <p class="mt-1 text-xs text-slate-500">{{ form.group.help_text }}</p>
+                            {% endif %}
+                            {% if form.group.errors %}
+                            <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.group.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        <!-- Tarjetas explicativas de grupos -->
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-1">
+                            <div class="p-3.5 rounded-lg border border-emerald-200 bg-emerald-50/50">
+                                <span class="text-xs font-bold text-emerald-800 block">Matriculados</span>
+                                <span class="text-[11px] text-emerald-700 leading-tight block mt-0.5">
+                                    Acceso al portal de autogestión, consulta de estado matricular y pagos.
+                                </span>
+                            </div>
+                            <div class="p-3.5 rounded-lg border border-purple-200 bg-purple-50/50">
+                                <span class="text-xs font-bold text-purple-800 block">Colaboradores</span>
+                                <span class="text-[11px] text-purple-700 leading-tight block mt-0.5">
+                                    Generación y redacción de contenidos (noticias, eventos, novedades).
+                                </span>
+                            </div>
+                            <div class="p-3.5 rounded-lg border border-rose-200 bg-rose-50/50">
+                                <span class="text-xs font-bold text-rose-800 block">Administradores</span>
+                                <span class="text-[11px] text-rose-700 leading-tight block mt-0.5">
+                                    Gestión completa desde el Dashboard: usuarios, documentos, contenidos y padrón.
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN 2: IDENTIFICACIÓN Y CREDENCIALES -->
+                <div class="py-8">
+                    <div class="border-b border-slate-200 pb-3 mb-6">
+                        <h2 class="text-base font-semibold text-slate-900 flex items-center gap-2.5">
+                            <span class="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold">2</span>
+                            Credenciales de Inicio de Sesión
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-1 ml-8">
+                            Datos para autenticarse en el sistema.
+                        </p>
+                    </div>
+
+                    <div class="ml-8 grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                            <label for="{{ form.username.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                                Nombre de usuario <span class="text-rose-600">*</span>
+                            </label>
+                            {{ form.username }}
+                            {% if form.username.errors %}
+                            <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.username.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label for="{{ form.email.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                                Correo electrónico <span class="text-rose-600">*</span>
+                            </label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                            <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.email.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        {% if not is_edit %}
+                        <div class="md:col-span-2">
+                            <label for="{{ form.password.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                                Contraseña inicial <span class="text-rose-600">*</span>
+                            </label>
+                            {{ form.password }}
+                            {% if form.password.help_text %}
+                            <p class="mt-1 text-xs text-slate-500">{{ form.password.help_text }}</p>
+                            {% endif %}
+                            {% if form.password.errors %}
+                            <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.password.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        {% else %}
+                        <div class="md:col-span-2">
+                            <label for="{{ form.new_password.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                                {{ form.new_password.label }}
+                            </label>
+                            {{ form.new_password }}
+                            {% if form.new_password.help_text %}
+                            <p class="mt-1 text-xs text-slate-500">{{ form.new_password.help_text }}</p>
+                            {% endif %}
+                            {% if form.new_password.errors %}
+                            <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.new_password.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- SECCIÓN 3: DATOS PERSONALES Y DE IDENTIDAD (Ley 25.326) -->
+                <div class="py-8">
+                    <div class="border-b border-slate-200 pb-3 mb-6">
+                        <h2 class="text-base font-semibold text-slate-900 flex items-center gap-2.5">
+                            <span class="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold">3</span>
+                            Datos de Identidad Personal (Protegidos Ley 25.326)
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-1 ml-8">
+                            Información personal oficial y datos civiles.
+                        </p>
+                    </div>
+
+                    <div class="ml-8 grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                            <label for="{{ form.first_name.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                                Nombre de pila <span class="text-rose-600">*</span>
+                            </label>
+                            {{ form.first_name }}
+                            {% if form.first_name.errors %}
+                            <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.first_name.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label for="{{ form.last_name.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                                Apellido <span class="text-rose-600">*</span>
+                            </label>
+                            {{ form.last_name }}
+                            {% if form.last_name.errors %}
+                            <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.last_name.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label for="{{ form.dni.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                                DNI / Documento <span class="text-rose-600">*</span>
+                            </label>
+                            {{ form.dni }}
+                            {% if form.dni.errors %}
+                            <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.dni.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label for="{{ form.cuil_cuit.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                                CUIL / CUIT <span class="text-rose-600">*</span>
+                            </label>
+                            {{ form.cuil_cuit }}
+                            {% if form.cuil_cuit.errors %}
+                            <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.cuil_cuit.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label for="{{ form.fecha_nacimiento.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                                Fecha de nacimiento <span class="text-rose-600">*</span>
+                            </label>
+                            {{ form.fecha_nacimiento }}
+                            {% if form.fecha_nacimiento.errors %}
+                            <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.fecha_nacimiento.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label for="{{ form.lugar_nacimiento.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                                Lugar de nacimiento <span class="text-rose-600">*</span>
+                            </label>
+                            {{ form.lugar_nacimiento }}
+                            {% if form.lugar_nacimiento.errors %}
+                            <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.lugar_nacimiento.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label for="{{ form.nacionalidad.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                                Nacionalidad
+                            </label>
+                            {{ form.nacionalidad }}
+                            {% if form.nacionalidad.errors %}
+                            <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.nacionalidad.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN 4: DOMICILIO REAL (Ley 25.326) -->
+                <div class="py-8">
+                    <div class="border-b border-slate-200 pb-3 mb-6">
+                        <h2 class="text-base font-semibold text-slate-900 flex items-center gap-2.5">
+                            <span class="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold">4</span>
+                            Domicilio Real (Protegido Ley 25.326)
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-1 ml-8">
+                            Lugar de residencia particular del usuario.
+                        </p>
+                    </div>
+
+                    <div class="ml-8 grid grid-cols-1 md:grid-cols-3 gap-5">
+                        <div class="md:col-span-2">
+                            <label for="{{ form.domicilio_real_calle.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                                Calle <span class="text-rose-600">*</span>
+                            </label>
+                            {{ form.domicilio_real_calle }}
+                            {% if form.domicilio_real_calle.errors %}
+                            <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.domicilio_real_calle.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label for="{{ form.domicilio_real_numero.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                                Número <span class="text-rose-600">*</span>
+                            </label>
+                            {{ form.domicilio_real_numero }}
+                            {% if form.domicilio_real_numero.errors %}
+                            <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.domicilio_real_numero.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label for="{{ form.domicilio_real_piso_depto.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                                Piso / Depto (Opcional)
+                            </label>
+                            {{ form.domicilio_real_piso_depto }}
+                        </div>
+
+                        <div>
+                            <label for="{{ form.domicilio_real_localidad.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                                Localidad <span class="text-rose-600">*</span>
+                            </label>
+                            {{ form.domicilio_real_localidad }}
+                            {% if form.domicilio_real_localidad.errors %}
+                            <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.domicilio_real_localidad.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label for="{{ form.domicilio_real_provincia.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                                Provincia / Región <span class="text-rose-600">*</span>
+                            </label>
+                            {{ form.domicilio_real_provincia }}
+                            <datalist id="lista-provincias-argentinas">
+                                <option value="Catamarca">
+                                <option value="Buenos Aires">
+                                <option value="Ciudad Autónoma de Buenos Aires">
+                                <option value="Chaco">
+                                <option value="Chubut">
+                                <option value="Córdoba">
+                                <option value="Corrientes">
+                                <option value="Entre Ríos">
+                                <option value="Formosa">
+                                <option value="Jujuy">
+                                <option value="La Pampa">
+                                <option value="La Rioja">
+                                <option value="Mendoza">
+                                <option value="Misiones">
+                                <option value="Neuquén">
+                                <option value="Río Negro">
+                                <option value="Salta">
+                                <option value="San Juan">
+                                <option value="San Luis">
+                                <option value="Santa Cruz">
+                                <option value="Santa Fe">
+                                <option value="Santiago del Estero">
+                                <option value="Tierra del Fuego, Antártida e Islas del Atlántico Sur">
+                                <option value="Tucumán">
+                            </datalist>
+                            <p class="mt-1 text-[11px] text-slate-400">Elija de la lista o escriba libremente si reside en el extranjero.</p>
+                            {% if form.domicilio_real_provincia.errors %}
+                            <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.domicilio_real_provincia.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label for="{{ form.domicilio_real_cp.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                                Código Postal <span class="text-rose-600">*</span>
+                            </label>
+                            {{ form.domicilio_real_cp }}
+                            {% if form.domicilio_real_cp.errors %}
+                            <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.domicilio_real_cp.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label for="{{ form.domicilio_real_pais.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                                País de Residencia
+                            </label>
+                            {{ form.domicilio_real_pais }}
+                            {% if form.domicilio_real_pais.errors %}
+                            <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.domicilio_real_pais.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN 5: CONTACTO, VISIBILIDAD Y FOTO -->
+                <div class="py-8">
+                    <div class="border-b border-slate-200 pb-3 mb-6">
+                        <h2 class="text-base font-semibold text-slate-900 flex items-center gap-2.5">
+                            <span class="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold">5</span>
+                            Contacto, Preferencias Públicas y Foto
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-1 ml-8">
+                            Canales de comunicación y permisos de visibilidad para el padrón/directorio.
+                        </p>
+                    </div>
+
+                    <div class="ml-8 space-y-5">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div>
+                                <label for="{{ form.phone.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                                    Teléfono de contacto (Formato internacional)
+                                </label>
+                                {{ form.phone }}
+                                {% if form.phone.errors %}
+                                <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.phone.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+
+                            <div>
+                                <label for="{{ form.profile_picture.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                                    Foto de perfil (Supabase Storage)
+                                </label>
+                                {{ form.profile_picture }}
+                                {% if form.profile_picture.errors %}
+                                <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.profile_picture.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="p-4 bg-slate-50 rounded-lg border border-slate-200 space-y-3.5">
+                            <p class="text-xs font-bold text-slate-700 uppercase tracking-wide">Preferencias de Privacidad en Directorio</p>
+                            
+                            <div class="flex items-start">
+                                <div class="flex items-center h-5">
+                                    {{ form.publicar_email }}
+                                </div>
+                                <div class="ml-3 text-xs">
+                                    <label for="{{ form.publicar_email.id_for_label }}" class="font-medium text-slate-800">
+                                        Publicar Correo Electrónico
+                                    </label>
+                                    <p class="text-slate-500">
+                                        Permite mostrar la dirección de correo en las fichas públicas del Colegio.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start">
+                                <div class="flex items-center h-5">
+                                    {{ form.publicar_telefono }}
+                                </div>
+                                <div class="ml-3 text-xs">
+                                    <label for="{{ form.publicar_telefono.id_for_label }}" class="font-medium text-slate-800">
+                                        Publicar Teléfono de Contacto
+                                    </label>
+                                    <p class="text-slate-500">
+                                        Permite mostrar el número telefónico en los perfiles públicos.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN 6: ESTADO Y POLÍTICAS DE SEGURIDAD -->
+                <div class="py-8">
+                    <div class="border-b border-slate-200 pb-3 mb-6">
+                        <h2 class="text-base font-semibold text-slate-900 flex items-center gap-2.5">
+                            <span class="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold">6</span>
+                            Estado y Seguridad de la Cuenta
+                        </h2>
+                    </div>
+
+                    <div class="ml-8 space-y-4">
+                        <div class="flex items-start">
+                            <div class="flex items-center h-5">
+                                {{ form.must_change_password }}
+                            </div>
+                            <div class="ml-3 text-xs">
+                                <label for="{{ form.must_change_password.id_for_label }}" class="font-medium text-slate-800">
+                                    Debe cambiar la contraseña en el próximo inicio
+                                </label>
+                                <p class="text-slate-500">
+                                    Obliga al usuario a ingresar una nueva contraseña al iniciar sesión. Recomendado siempre para cuentas nuevas.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <div class="flex items-center h-5">
+                                {{ form.is_active }}
+                            </div>
+                            <div class="ml-3 text-xs">
+                                <label for="{{ form.is_active.id_for_label }}" class="font-medium text-slate-800">
+                                    Cuenta Activa
+                                </label>
+                                <p class="text-slate-500">
+                                    Si se desmarca, el usuario queda inhabilitado para iniciar sesión en la plataforma.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BOTONES DE ACCIÓN -->
+                <div class="pt-8 flex items-center justify-end gap-3">
+                    <a href="{% url 'accounts:dashboard' %}?tab=admin_usuarios"
+                       class="px-5 py-2.5 rounded-lg border border-slate-300 text-slate-700 text-sm font-semibold hover:bg-slate-50 transition shadow-sm">
+                        Cancelar
+                    </a>
+                    <button type="submit"
+                            class="px-6 py-2.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-sm font-semibold transition shadow-sm inline-flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        {% if is_edit %}Guardar Cambios{% else %}Crear Usuario{% endif %}
+                    </button>
+                </div>
+
+            </form>
+        </div>
+
+    </div>
+</section>
+{% endblock %}
