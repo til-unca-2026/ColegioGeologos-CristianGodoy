@@ -7,12 +7,22 @@ from .views import (
     AccountPasswordChangeView,
     AccountPasswordResetConfirmView,
     DashboardView,
+    MembresiaComisionCreateView,
+    MembresiaComisionEditView,
+    MembresiaComisionFinalizarView,
+    UserCreateView,
+    UserEditView,
 )
 
 app_name = "accounts"
 
 urlpatterns = [
     path("dashboard/", DashboardView.as_view(), name="dashboard"),
+    path("dashboard/users/create/", UserCreateView.as_view(), name="user_create"),
+    path("dashboard/users/<int:pk>/edit/", UserEditView.as_view(), name="user_edit"),
+    path("dashboard/comision/create/", MembresiaComisionCreateView.as_view(), name="comision_create"),
+    path("dashboard/comision/<int:pk>/edit/", MembresiaComisionEditView.as_view(), name="comision_edit"),
+    path("dashboard/comision/<int:pk>/finalizar/", MembresiaComisionFinalizarView.as_view(), name="comision_finalizar"),
     path("login/", AccountLoginView.as_view(), name="login"),
     path("logout/", AccountLogoutView.as_view(), name="logout"),
     path("password/change/", AccountPasswordChangeView.as_view(), name="password_change"),
