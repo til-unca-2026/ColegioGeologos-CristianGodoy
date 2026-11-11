@@ -10,7 +10,7 @@
 
             <!-- SIDEBAR UNIFICADO -->
             <aside class="lg:col-span-1">
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sticky top-24">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto overscroll-contain custom-scroll">
                     <!-- Cabecera de Usuario -->
                     <div class="flex flex-col items-center text-center pb-5 border-b border-slate-100">
                         {% if user.profile_picture %}
@@ -68,10 +68,10 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
-                            Mis datos y perfil
+                            Mis datos
                         </a>
 
-                        <!-- SECCIÓN MATRICULADO (Visible si el usuario tiene matrícula o permisos) -->
+                        <!-- SECCIÓN PROFESIONAL -->
                         {% if mi_matricula or perms.directory.view_matriculado or user.is_superuser %}
                         <div class="pt-3">
                             <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">Profesional</span>
@@ -82,11 +82,11 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
-                            Mi Matrícula
+                            Mi matrícula
                         </a>
                         {% endif %}
 
-                        <!-- SECCIÓN CONTENIDOS (Controlada por permisos de contenidos) -->
+                        <!-- SECCIÓN PRENSA & DIFUSIÓN -->
                         {% if perms.content.add_article or perms.content.change_article or user.is_superuser %}
                         <div class="pt-3">
                             <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">Prensa & Difusión</span>
@@ -97,16 +97,53 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
                             </svg>
-                            Gestión de contenidos
+                            Contenidos
                         </a>
                         {% endif %}
 
-                        <!-- SECCIÓN ADMINISTRACIÓN (Controlada por permisos administrativos) -->
+                        <!-- SECCIÓN ADMINISTRACIÓN -->
                         {% if perms.accounts.view_user or perms.accounts.add_user or perms.directory.add_matriculado or perms.auth.view_group or user.is_superuser %}
                         <div class="pt-3">
                             <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">Administración</span>
                         </div>
 
+                        <!-- 1. Usuarios y sub-elementos (Comisiones, Roles y permisos) -->
+                        {% if perms.accounts.view_user or perms.accounts.add_user or user.is_superuser %}
+                        <a href="?tab=admin_usuarios" data-tab-btn="admin_usuarios"
+                            class="nav-tab-link flex items-center px-3 py-2 rounded-lg transition {% if current_tab == 'admin_usuarios' %}bg-emerald-50 text-emerald-800 font-semibold border-l-4 border-emerald-700{% else %}text-slate-600 hover:bg-slate-50 hover:text-slate-900{% endif %}">
+                            <svg class="w-4 h-4 mr-3 {% if current_tab == 'admin_usuarios' %}text-emerald-700{% else %}text-slate-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                            </svg>
+                            Usuarios
+                        </a>
+
+                        <div class="ml-4 pl-3 border-l border-slate-200 space-y-1">
+                            {% if can_manage_comision %}
+                            <a href="?tab=admin_comision" data-tab-btn="admin_comision"
+                                class="nav-tab-link flex items-center px-2 py-1.5 rounded-md text-xs transition {% if current_tab == 'admin_comision' %}bg-emerald-50 text-emerald-800 font-semibold{% else %}text-slate-500 hover:bg-slate-50 hover:text-slate-800{% endif %}">
+                                <svg class="w-3.5 h-3.5 mr-2 {% if current_tab == 'admin_comision' %}text-emerald-700{% else %}text-slate-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                                Comisiones
+                            </a>
+                            {% endif %}
+
+                            {% if perms.auth.view_group or perms.auth.view_permission or user.is_superuser %}
+                            <a href="?tab=admin_roles" data-tab-btn="admin_roles"
+                                class="nav-tab-link flex items-center px-2 py-1.5 rounded-md text-xs transition {% if current_tab == 'admin_roles' %}bg-emerald-50 text-emerald-800 font-semibold{% else %}text-slate-500 hover:bg-slate-50 hover:text-slate-800{% endif %}">
+                                <svg class="w-3.5 h-3.5 mr-2 {% if current_tab == 'admin_roles' %}text-emerald-700{% else %}text-slate-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                </svg>
+                                Roles y permisos
+                            </a>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+
+                        <!-- 2. Matriculados y sub-elementos (Especialidades, Universidades) -->
                         {% if perms.directory.view_matriculado or perms.directory.add_matriculado or user.is_superuser %}
                         <a href="?tab=admin_matriculados" data-tab-btn="admin_matriculados"
                             class="nav-tab-link flex items-center px-3 py-2 rounded-lg transition {% if current_tab == 'admin_matriculados' %}bg-emerald-50 text-emerald-800 font-semibold border-l-4 border-emerald-700{% else %}text-slate-600 hover:bg-slate-50 hover:text-slate-900{% endif %}">
@@ -114,10 +151,9 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
                             </svg>
-                            Padrón de Matriculados
+                            Matriculados
                         </a>
 
-                        <!-- Sub-directorio de Catálogos del Padrón -->
                         <div class="ml-4 pl-3 border-l border-slate-200 space-y-1">
                             <a href="?tab=admin_especialidades" data-tab-btn="admin_especialidades"
                                 class="nav-tab-link flex items-center px-2 py-1.5 rounded-md text-xs transition {% if current_tab == 'admin_especialidades' %}bg-emerald-50 text-emerald-800 font-semibold{% else %}text-slate-500 hover:bg-slate-50 hover:text-slate-800{% endif %}">
@@ -136,45 +172,22 @@
                         </div>
                         {% endif %}
 
-                        {% if perms.accounts.view_user or perms.accounts.add_user or user.is_superuser %}
-                        <a href="?tab=admin_usuarios" data-tab-btn="admin_usuarios"
-                            class="nav-tab-link flex items-center px-3 py-2 rounded-lg transition {% if current_tab == 'admin_usuarios' %}bg-emerald-50 text-emerald-800 font-semibold border-l-4 border-emerald-700{% else %}text-slate-600 hover:bg-slate-50 hover:text-slate-900{% endif %}">
-                            <svg class="w-4 h-4 mr-3 {% if current_tab == 'admin_usuarios' %}text-emerald-700{% else %}text-slate-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <!-- 3. Documentos (vacío por ahora) -->
+                        <a href="?tab=admin_documentos" data-tab-btn="admin_documentos"
+                            class="nav-tab-link flex items-center px-3 py-2 rounded-lg transition {% if current_tab == 'admin_documentos' %}bg-emerald-50 text-emerald-800 font-semibold border-l-4 border-emerald-700{% else %}text-slate-600 hover:bg-slate-50 hover:text-slate-900{% endif %}">
+                            <svg class="w-4 h-4 mr-3 {% if current_tab == 'admin_documentos' %}text-emerald-700{% else %}text-slate-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                    d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                             </svg>
-                            Cuentas de Usuarios
+                            Documentos
                         </a>
-                        {% endif %}
-
-                        {% if can_manage_comision %}
-                        <a href="?tab=admin_comision" data-tab-btn="admin_comision"
-                            class="nav-tab-link flex items-center px-3 py-2 rounded-lg transition {% if current_tab == 'admin_comision' %}bg-emerald-50 text-emerald-800 font-semibold border-l-4 border-emerald-700{% else %}text-slate-600 hover:bg-slate-50 hover:text-slate-900{% endif %}">
-                            <svg class="w-4 h-4 mr-3 {% if current_tab == 'admin_comision' %}text-emerald-700{% else %}text-slate-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                            </svg>
-                            Cargos y Comisiones
-                        </a>
-                        {% endif %}
-
-                        {% if perms.auth.view_group or perms.auth.view_permission or user.is_superuser %}
-                        <a href="?tab=admin_roles" data-tab-btn="admin_roles"
-                            class="nav-tab-link flex items-center px-3 py-2 rounded-lg transition {% if current_tab == 'admin_roles' %}bg-emerald-50 text-emerald-800 font-semibold border-l-4 border-emerald-700{% else %}text-slate-600 hover:bg-slate-50 hover:text-slate-900{% endif %}">
-                            <svg class="w-4 h-4 mr-3 {% if current_tab == 'admin_roles' %}text-emerald-700{% else %}text-slate-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                            </svg>
-                            Roles y permisos
-                        </a>
-                        {% endif %}
 
                         {% endif %}
 
                         <!-- ACCIONES COMUNES -->
-                        <div class="pt-4 border-t border-slate-100">
+                        <div class="pt-4 border-t border-slate-100 space-y-1">
                             <a href="{% url 'accounts:password_change' %}"
-                                class="flex items-center px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-50 text-xs">
+                                class="flex items-center px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-50 text-sm font-medium transition">
                                 <svg class="w-4 h-4 mr-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
@@ -184,7 +197,7 @@
                             <form method="post" action="{% url 'accounts:logout' %}">
                                 {% csrf_token %}
                                 <button type="submit"
-                                    class="w-full flex items-center px-3 py-2 rounded-lg text-red-600 hover:bg-red-50 text-xs font-medium transition">
+                                    class="w-full flex items-center px-3 py-2 rounded-lg text-red-600 hover:bg-red-50 text-sm font-medium transition">
                                     <svg class="w-4 h-4 mr-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -1349,6 +1362,29 @@
                 </div>
                 {% endif %}
 
+                <!-- TAB: DOCUMENTOS (ADMINISTRACIÓN - VACÍO POR AHORA) -->
+                <div id="tab-admin_documentos" class="tab-pane {% if current_tab != 'admin_documentos' %}hidden{% endif %} space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-slate-900">Gestión de Documentos</h1>
+                            <p class="text-sm text-slate-500 mt-1">Administración de resoluciones, actas, estatutos y documentación oficial del Colegio.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl border border-dashed border-slate-300 p-12 text-center max-w-xl mx-auto space-y-3 my-8">
+                        <div class="w-14 h-14 mx-auto rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center">
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-base font-bold text-slate-800">Módulo en Desarrollo</h3>
+                        <p class="text-xs text-slate-500 max-w-sm mx-auto">
+                            Este espacio está reservado para la carga, clasificación y resguardo de la documentación legal e institucional. Próximamente estará disponible.
+                        </p>
+                    </div>
+                </div>
+
             </main>
 
         </div>
@@ -1391,6 +1427,12 @@
                 if (activePane) {
                     activePane.classList.remove('hidden');
                 }
+
+                // Desplazar suavemente a la parte superior de la página
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
 
                 // Actualizar URL sin recargar
                 history.replaceState(null, '', '?tab=' + targetTab);

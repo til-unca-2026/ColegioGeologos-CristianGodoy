@@ -6,6 +6,7 @@ from .views import (
     AccountLogoutView,
     AccountPasswordChangeView,
     AccountPasswordResetConfirmView,
+    AutoridadesView,
     DashboardView,
     MembresiaComisionCreateView,
     MembresiaComisionEditView,
@@ -17,6 +18,7 @@ from .views import (
 app_name = "accounts"
 
 urlpatterns = [
+    path("autoridades/", AutoridadesView.as_view(), name="autoridades"),
     path("dashboard/", DashboardView.as_view(), name="dashboard"),
     path("dashboard/users/create/", UserCreateView.as_view(), name="user_create"),
     path("dashboard/users/<int:pk>/edit/", UserEditView.as_view(), name="user_edit"),
