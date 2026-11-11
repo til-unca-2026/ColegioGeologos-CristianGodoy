@@ -7,11 +7,12 @@ from django.contrib.auth.views import (
     PasswordChangeView,
     PasswordResetConfirmView,
 )
+from django.db.models import Case, When, Value, IntegerField, Q
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import View
-from django.views.generic import CreateView, TemplateView, UpdateView
+from django.views.generic import CreateView, ListView, TemplateView, UpdateView
 
 from .forms import (
     AdminUserCreateForm,
@@ -336,3 +337,33 @@ class AccountPasswordResetConfirmView(PasswordResetConfirmView):
             self.user.must_change_password = False
             self.user.save(update_fields=["must_change_password"])
         return response
+
+
+class AutoridadesView(ListView):
+    template_name = "accounts/autoridades.html"
+    context_object_name = "autoridades"
+
+    def get_queryset(self):
+        hoy = timezone.now().date()
+        cargo_order = [
+            MembresiaComision.Cargo.PRESIDENTE,
+            MembresiaComision.Cargo.VICEPRESIDENTE,
+            MembresiaComision.Cargo.SECRETARIO,
+            MembresiaComision.Cargo.PROSECRETARIO,
+            MembresiaComision.Cargo.TESORERO,
+            MembresiaComision.Cargo.PROTESORERO,
+            MembresiaComision.Cargo.VOCAL_TITULAR,
+            MembresiaComision.Cargo.VOCAL_SUPLENTE,
+        ]
+        whens = [When(cargo=cargo, then=Value(i)) for i, cargo in enumerate(cargo_order)]
+
+        return (
+            MembresiaComision.objects.filter(
+                comision=MembresiaComision.Comision.DIRECTIVA,
+                fecha_desde__lte=hoy,
+            )
+            .filter(Q(fecha_hasta__isnull=True) | Q(fecha_hasta__gte=hoy))
+            .select_related("usuario")
+            .annotate(cargo_priority=Case(*whens, default=Value(99), output_field=IntegerField()))
+            .order_by("cargo_priority", "-fecha_desde", "usuario__last_name", "usuario__first_name")
+        )

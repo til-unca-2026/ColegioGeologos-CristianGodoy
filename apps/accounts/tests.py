@@ -407,3 +407,82 @@ class MembresiaComisionDashboardViewsTests(TestCase):
         self.assertEqual(self.geologo.domicilio_real_localidad, "San Fernando del Valle de Catamarca")
         self.assertEqual(self.geologo.modificado_por, self.geologo)
 
+
+class AutoridadesPublicViewTests(TestCase):
+    def setUp(self):
+        user_model = get_user_model()
+        from django.utils import timezone
+        import datetime
+        self.hoy = timezone.now().date()
+
+        self.user1 = user_model.objects.create_user(
+            username="presidente_user",
+            first_name="Carlos",
+            last_name="Gómez",
+            password="pass",
+            must_change_password=False,
+        )
+        self.user2 = user_model.objects.create_user(
+            username="secretario_user",
+            first_name="Ana",
+            last_name="Martínez",
+            password="pass",
+            must_change_password=False,
+        )
+        self.user_ex = user_model.objects.create_user(
+            username="ex_user",
+            first_name="Pedro",
+            last_name="Antiguo",
+            password="pass",
+            must_change_password=False,
+        )
+
+        from apps.accounts.models import MembresiaComision
+        # Miembro vigente presidente
+        MembresiaComision.objects.create(
+            usuario=self.user1,
+            comision=MembresiaComision.Comision.DIRECTIVA,
+            cargo=MembresiaComision.Cargo.PRESIDENTE,
+            fecha_desde=self.hoy - datetime.timedelta(days=100),
+            fecha_hasta=None,
+        )
+        # Miembro vigente secretario
+        MembresiaComision.objects.create(
+            usuario=self.user2,
+            comision=MembresiaComision.Comision.DIRECTIVA,
+            cargo=MembresiaComision.Cargo.SECRETARIO,
+            fecha_desde=self.hoy - datetime.timedelta(days=100),
+            fecha_hasta=self.hoy + datetime.timedelta(days=200),
+        )
+        # Miembro cuyo mandato ya finalizó
+        MembresiaComision.objects.create(
+            usuario=self.user_ex,
+            comision=MembresiaComision.Comision.DIRECTIVA,
+            cargo=MembresiaComision.Cargo.VOCAL_TITULAR,
+            fecha_desde=self.hoy - datetime.timedelta(days=400),
+            fecha_hasta=self.hoy - datetime.timedelta(days=10),
+        )
+
+    def test_autoridades_page_status_and_template(self):
+        response = self.client.get(reverse("accounts:autoridades"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "accounts/autoridades.html")
+
+    def test_only_vigentes_directiva_are_displayed(self):
+        response = self.client.get(reverse("accounts:autoridades"))
+        content = response.content.decode()
+
+        self.assertIn("Carlos Gómez", content)
+        self.assertIn("Presidente", content)
+        self.assertIn("Ana Martínez", content)
+        self.assertIn("Secretario", content)
+        # Mandato vencido no debe mostrarse
+        self.assertNotIn("Pedro Antiguo", content)
+
+    def test_navbar_contains_autoridades_link_in_institucional(self):
+        response = self.client.get(reverse("home"))
+        content = response.content.decode()
+        self.assertIn(reverse("accounts:autoridades"), content)
+        self.assertIn("Autoridades", content)
+
+
