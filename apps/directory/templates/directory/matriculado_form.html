@@ -1,0 +1,533 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} | Colegio de Geólogos de Catamarca{% endblock %}
+
+{% block content %}
+<div class="min-h-[calc(100vh-140px)] bg-slate-100 py-8">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Migas de pan / Volver -->
+        <div class="mb-6 flex items-center justify-between">
+            <a href="{% url 'accounts:dashboard' %}?tab=admin_matriculados"
+                class="inline-flex items-center text-sm font-medium text-slate-500 hover:text-slate-800 transition">
+                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Volver al Padrón de Matriculados
+            </a>
+            {% if is_edit %}
+            <a href="{% url 'directory:matriculado_detail' form.instance.pk %}"
+                class="inline-flex items-center text-xs font-semibold text-emerald-700 hover:text-emerald-800 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200">
+                Ver Ficha Completa
+            </a>
+            {% endif %}
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <!-- Cabecera -->
+            <div class="p-6 sm:p-8 bg-slate-50/70 border-b border-slate-200/80">
+                <h1 class="text-2xl font-bold text-slate-900">{{ title }}</h1>
+                <p class="text-sm text-slate-500 mt-1">
+                    {% if is_edit %}
+                    Modifique los datos institucionales o el domicilio profesional del matriculado.
+                    {% else %}
+                    Asigne el número de matrícula y libro/folio institucional a un usuario del sistema.
+                    {% endif %}
+                </p>
+            </div>
+
+            <form method="post" enctype="multipart/form-data" class="p-6 sm:p-8 space-y-8">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                <div class="p-4 rounded-xl bg-red-50 border border-red-200 text-sm text-red-700">
+                    {{ form.non_field_errors }}
+                </div>
+                {% endif %}
+
+                <!-- SECCIÓN 1: VINCULACIÓN Y MATRÍCULA -->
+                <div class="space-y-4">
+                    <h2 class="text-base font-bold text-slate-900 pb-2 border-b border-slate-100 flex items-center">
+                        <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-xs font-bold mr-2">1</span>
+                        Identificación Matricular
+                    </h2>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- Usuario -->
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="{{ form.usuario.id_for_label }}">
+                                <span id="label-usuario-texto">Usuario del sistema</span> <span class="text-red-500">*</span>
+                            </label>
+                            {{ form.usuario }}
+                            {% if form.usuario.help_text %}
+                            <p class="text-xs text-slate-500 mt-1">{{ form.usuario.help_text }}</p>
+                            {% endif %}
+                            {% if form.usuario.errors %}
+                            <p class="text-xs text-red-600 mt-1">{{ form.usuario.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        <!-- Número de Matrícula -->
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="{{ form.numero_matricula.id_for_label }}">
+                                {{ form.numero_matricula.label }} <span class="text-red-500">*</span>
+                            </label>
+                            {{ form.numero_matricula }}
+                            {% if form.numero_matricula.errors %}
+                            <p class="text-xs text-red-600 mt-1">{{ form.numero_matricula.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        <!-- Fecha de Matriculación -->
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="{{ form.fecha_matriculacion.id_for_label }}">
+                                {{ form.fecha_matriculacion.label }} <span class="text-red-500">*</span>
+                            </label>
+                            {{ form.fecha_matriculacion }}
+                            {% if form.fecha_matriculacion.errors %}
+                            <p class="text-xs text-red-600 mt-1">{{ form.fecha_matriculacion.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        <!-- Libro -->
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="{{ form.libro.id_for_label }}">
+                                {{ form.libro.label }} <span class="text-red-500">*</span>
+                            </label>
+                            {{ form.libro }}
+                            {% if form.libro.errors %}
+                            <p class="text-xs text-red-600 mt-1">{{ form.libro.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        <!-- Folio -->
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="{{ form.folio.id_for_label }}">
+                                {{ form.folio.label }} <span class="text-red-500">*</span>
+                            </label>
+                            {{ form.folio }}
+                            {% if form.folio.errors %}
+                            <p class="text-xs text-red-600 mt-1">{{ form.folio.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        <!-- TÍTULO UNIVERSITARIO HABILITANTE (Alta de Matrícula) -->
+                        {% if not is_edit %}
+                        <div class="sm:col-span-2 pt-4 pb-2 border-t border-slate-100">
+                            <div class="mb-3">
+                                <h3 class="text-sm font-bold text-slate-900 flex items-center">
+                                    <span class="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-xs font-bold mr-1.5">🎓</span>
+                                    Título Universitario Habilitante
+                                </h3>
+                                <p class="text-xs text-slate-500 mt-0.5">Título con el que el profesional accede a la matrícula.</p>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50/70 p-4 rounded-xl border border-slate-200">
+                                <div>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="{{ titulo_form.denominacion.id_for_label }}">
+                                        Denominación del Título <span class="text-red-500">*</span>
+                                    </label>
+                                    {{ titulo_form.denominacion }}
+                                    {% if titulo_form.denominacion.errors %}
+                                    <p class="text-xs text-red-600 mt-1">{{ titulo_form.denominacion.errors.0 }}</p>
+                                    {% endif %}
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="{{ titulo_form.tipo.id_for_label }}">
+                                        Nivel / Tipo <span class="text-red-500">*</span>
+                                    </label>
+                                    {{ titulo_form.tipo }}
+                                    {% if titulo_form.tipo.errors %}
+                                    <p class="text-xs text-red-600 mt-1">{{ titulo_form.tipo.errors.0 }}</p>
+                                    {% endif %}
+                                </div>
+
+                                <div class="sm:col-span-2">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-600" for="{{ titulo_form.emitido_por.id_for_label }}">
+                                            Universidad Emisora <span class="text-red-500">*</span>
+                                        </label>
+                                        {% if perms.directory.add_universidad or user.is_superuser %}
+                                        <button type="button" onclick="openUniversidadModal()"
+                                            class="inline-flex items-center text-xs font-semibold text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-2.5 py-1 rounded-md border border-emerald-200 transition">
+                                            <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                            </svg>
+                                            Nueva Universidad
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                    {{ titulo_form.emitido_por }}
+                                    {% if titulo_form.emitido_por.errors %}
+                                    <p class="text-xs text-red-600 mt-1">{{ titulo_form.emitido_por.errors.0 }}</p>
+                                    {% endif %}
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="{{ titulo_form.fecha_egreso.id_for_label }}">
+                                        Fecha de Egreso <span class="text-red-500">*</span>
+                                    </label>
+                                    {{ titulo_form.fecha_egreso }}
+                                    {% if titulo_form.fecha_egreso.errors %}
+                                    <p class="text-xs text-red-600 mt-1">{{ titulo_form.fecha_egreso.errors.0 }}</p>
+                                    {% endif %}
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="{{ titulo_form.fecha_expedicion.id_for_label }}">
+                                        Fecha de Expedición <span class="text-red-500">*</span>
+                                    </label>
+                                    {{ titulo_form.fecha_expedicion }}
+                                    {% if titulo_form.fecha_expedicion.errors %}
+                                    <p class="text-xs text-red-600 mt-1">{{ titulo_form.fecha_expedicion.errors.0 }}</p>
+                                    {% endif %}
+                                </div>
+
+                                <div class="sm:col-span-2">
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="{{ titulo_form.escaneo_diploma.id_for_label }}">
+                                        Escaneo del Diploma (PDF / Imagen)
+                                    </label>
+                                    {{ titulo_form.escaneo_diploma }}
+                                    {% if titulo_form.escaneo_diploma.errors %}
+                                    <p class="text-xs text-red-600 mt-1">{{ titulo_form.escaneo_diploma.errors.0 }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Especialidades -->
+                        <div class="sm:col-span-2">
+                            <div class="flex items-center justify-between mb-1">
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600" for="{{ form.especialidades.id_for_label }}">
+                                    {{ form.especialidades.label }} (Mantener Ctrl/Cmd presionado para seleccionar varias)
+                                </label>
+                                {% if perms.directory.add_especialidad or user.is_superuser %}
+                                <button type="button" onclick="openEspecialidadModal()"
+                                    class="inline-flex items-center text-xs font-semibold text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-2.5 py-1 rounded-md border border-emerald-200 transition">
+                                    <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                    </svg>
+                                    Nueva Especialidad
+                                </button>
+                                {% endif %}
+                            </div>
+                            {{ form.especialidades }}
+                            {% if form.especialidades.errors %}
+                            <p class="text-xs text-red-600 mt-1">{{ form.especialidades.errors.0 }}</p>
+                            {% endif %}
+                            <p class="text-[11px] text-slate-400 mt-1">Si la especialidad no figura en la lista, podés agregarla haciendo clic en "+ Nueva Especialidad".</p>
+                        </div>
+
+                        <!-- Jubilado -->
+                        <div class="sm:col-span-2 pt-2">
+                            <label class="inline-flex items-center space-x-2 text-sm text-slate-700 cursor-pointer">
+                                {{ form.jubilado }}
+                                <span class="font-medium">Profesional Jubilado</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN 2: DOMICILIO PROFESIONAL (PÚBLICO) -->
+                <div class="space-y-4 pt-4 border-t border-slate-100">
+                    <h2 class="text-base font-bold text-slate-900 pb-2 border-b border-slate-100 flex items-center">
+                        <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-xs font-bold mr-2">2</span>
+                        Domicilio Profesional (Público)
+                    </h2>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="{{ form.domicilio_profesional_calle.id_for_label }}">
+                                Calle
+                            </label>
+                            {{ form.domicilio_profesional_calle }}
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="{{ form.domicilio_profesional_numero.id_for_label }}">
+                                Número
+                            </label>
+                            {{ form.domicilio_profesional_numero }}
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="{{ form.domicilio_profesional_piso_depto.id_for_label }}">
+                                Piso / Depto / Of.
+                            </label>
+                            {{ form.domicilio_profesional_piso_depto }}
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="{{ form.domicilio_profesional_localidad.id_for_label }}">
+                                Localidad
+                            </label>
+                            {{ form.domicilio_profesional_localidad }}
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="{{ form.domicilio_profesional_provincia.id_for_label }}">
+                                Provincia
+                            </label>
+                            {{ form.domicilio_profesional_provincia }}
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="{{ form.domicilio_profesional_pais.id_for_label }}">
+                                País
+                            </label>
+                            {{ form.domicilio_profesional_pais }}
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="{{ form.domicilio_profesional_cp.id_for_label }}">
+                                Código Postal
+                            </label>
+                            {{ form.domicilio_profesional_cp }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BOTONES DE ACCIÓN -->
+                <div class="flex items-center justify-end space-x-3 pt-6 border-t border-slate-200">
+                    <a href="{% url 'accounts:dashboard' %}?tab=admin_matriculados"
+                        class="px-5 py-2.5 rounded-lg border border-slate-300 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition">
+                        Cancelar
+                    </a>
+                    <button type="submit"
+                        class="px-6 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold shadow-sm transition">
+                        {% if is_edit %}Guardar Cambios{% else %}Dar de Alta Matrícula{% endif %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: CREAR NUEVA UNIVERSIDAD (AJAX) -->
+<div id="modal-universidad" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm hidden">
+    <div class="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-md p-6 m-4">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div>
+                <h3 class="text-base font-bold text-slate-900">Nueva Universidad</h3>
+                <p class="text-xs text-slate-500">Se agregará al catálogo oficial de instituciones.</p>
+            </div>
+            <button type="button" onclick="closeUniversidadModal()" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
+        </div>
+
+        <form id="form-ajax-universidad" class="space-y-4 pt-4">
+            {% csrf_token %}
+            <div id="modal-universidad-error" class="hidden p-3 rounded-lg bg-red-50 border border-red-200 text-xs text-red-700"></div>
+
+            <div>
+                <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Nombre Completo <span class="text-red-500">*</span></label>
+                {{ universidad_form.nombre }}
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Sigla</label>
+                    {{ universidad_form.sigla }}
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">País</label>
+                    {{ universidad_form.pais }}
+                </div>
+            </div>
+
+            <div class="flex items-center justify-end space-x-2 pt-4 border-t border-slate-100">
+                <button type="button" onclick="closeUniversidadModal()"
+                    class="px-4 py-2 rounded-lg border border-slate-300 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition">
+                    Cancelar
+                </button>
+                <button type="submit" id="btn-submit-universidad"
+                    class="px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-sm transition">
+                    Guardar Universidad
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL: CREAR NUEVA ESPECIALIDAD (AJAX) -->
+<div id="modal-especialidad" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm hidden">
+    <div class="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-md p-6 m-4">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div>
+                <h3 class="text-base font-bold text-slate-900">Nueva Especialidad</h3>
+                <p class="text-xs text-slate-500">Se agregará al catálogo oficial y quedará seleccionada.</p>
+            </div>
+            <button type="button" onclick="closeEspecialidadModal()" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
+        </div>
+
+        <form id="form-ajax-especialidad" class="space-y-4 pt-4">
+            {% csrf_token %}
+            <div id="modal-especialidad-error" class="hidden p-3 rounded-lg bg-red-50 border border-red-200 text-xs text-red-700"></div>
+
+            <div>
+                <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Nombre de la Especialidad <span class="text-red-500">*</span></label>
+                {{ especialidad_form.nombre }}
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Descripción (Opcional)</label>
+                {{ especialidad_form.descripcion }}
+            </div>
+
+            <div class="flex items-center justify-end space-x-2 pt-4 border-t border-slate-100">
+                <button type="button" onclick="closeEspecialidadModal()"
+                    class="px-4 py-2 rounded-lg border border-slate-300 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition">
+                    Cancelar
+                </button>
+                <button type="submit" id="btn-submit-especialidad"
+                    class="px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-sm transition">
+                    Guardar Especialidad
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{ usuarios_nombres_json|json_script:"usuarios-nombres-data" }}
+
+<script>
+// --- MODAL Y AJAX: UNIVERSIDADES ---
+function openUniversidadModal() {
+    const errorBox = document.getElementById('modal-universidad-error');
+    errorBox.classList.add('hidden');
+    errorBox.innerText = '';
+    document.getElementById('modal-universidad').classList.remove('hidden');
+    const inputNombre = document.querySelector('#modal-universidad input[name="nombre"]');
+    if (inputNombre) inputNombre.focus();
+}
+
+function closeUniversidadModal() {
+    document.getElementById('modal-universidad').classList.add('hidden');
+}
+
+document.getElementById('form-ajax-universidad')?.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btn-submit-universidad');
+    const errorBox = document.getElementById('modal-universidad-error');
+    errorBox.classList.add('hidden');
+
+    btn.disabled = true;
+    btn.innerText = 'Guardando...';
+
+    const formData = new FormData(this);
+
+    try {
+        const response = await fetch("{% url 'directory:universidad_create_ajax' %}", {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            }
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            // Agregar la nueva opción al select de universidad del título
+            const selectUniv = document.getElementById('{{ titulo_form.emitido_por.id_for_label }}');
+            if (selectUniv) {
+                const newOption = new Option(data.nombre, data.id, true, true);
+                selectUniv.add(newOption);
+            }
+
+            document.getElementById('form-ajax-universidad').reset();
+            closeUniversidadModal();
+        } else {
+            errorBox.innerText = data.error || 'Ocurrió un error al guardar la universidad.';
+            errorBox.classList.remove('hidden');
+        }
+    } catch (err) {
+        errorBox.innerText = 'Error de conexión con el servidor. Intente nuevamente.';
+        errorBox.classList.remove('hidden');
+    } finally {
+        btn.disabled = false;
+        btn.innerText = 'Guardar Universidad';
+    }
+});
+
+// --- MODAL Y AJAX: ESPECIALIDADES ---
+function openEspecialidadModal() {
+    const errorBox = document.getElementById('modal-especialidad-error');
+    errorBox.classList.add('hidden');
+    errorBox.innerText = '';
+    document.getElementById('modal-especialidad').classList.remove('hidden');
+    const inputNombre = document.querySelector('#modal-especialidad input[name="nombre"]');
+    if (inputNombre) inputNombre.focus();
+}
+
+function closeEspecialidadModal() {
+    document.getElementById('modal-especialidad').classList.add('hidden');
+}
+
+document.getElementById('form-ajax-especialidad')?.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btn-submit-especialidad');
+    const errorBox = document.getElementById('modal-especialidad-error');
+    errorBox.classList.add('hidden');
+    
+    btn.disabled = true;
+    btn.innerText = 'Guardando...';
+
+    const formData = new FormData(this);
+
+    try {
+        const response = await fetch("{% url 'directory:especialidad_create_ajax' %}", {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            }
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            // Agregar la nueva opción al select de especialidades
+            const selectEspecialidades = document.getElementById('{{ form.especialidades.id_for_label }}');
+            if (selectEspecialidades) {
+                const newOption = new Option(data.nombre, data.id, true, true);
+                selectEspecialidades.add(newOption);
+            }
+
+            // Resetear form y cerrar modal
+            document.getElementById('form-ajax-especialidad').reset();
+            closeEspecialidadModal();
+        } else {
+            errorBox.innerText = data.error || 'Ocurrió un error al guardar la especialidad.';
+            errorBox.classList.remove('hidden');
+        }
+    } catch (err) {
+        errorBox.innerText = 'Error de conexión con el servidor. Intente nuevamente.';
+        errorBox.classList.remove('hidden');
+    } finally {
+        btn.disabled = false;
+        btn.innerText = 'Guardar Especialidad';
+    }
+});
+
+// --- ACTUALIZACIÓN DINÁMICA DEL LABEL DE USUARIO SEGÚN DNI SELECCIONADO ---
+document.addEventListener('DOMContentLoaded', function() {
+    const selectUsuario = document.getElementById('{{ form.usuario.id_for_label }}');
+    const labelUsuarioTexto = document.getElementById('label-usuario-texto');
+    const dataElement = document.getElementById('usuarios-nombres-data');
+    const usuariosNombres = dataElement ? JSON.parse(dataElement.textContent) : {};
+
+    function updateUsuarioLabel() {
+        if (!selectUsuario || !labelUsuarioTexto) return;
+        const selectedId = selectUsuario.value;
+        if (selectedId && usuariosNombres[selectedId]) {
+            labelUsuarioTexto.innerHTML = `Usuario del sistema: <span class="text-emerald-700 normal-case font-extrabold">${usuariosNombres[selectedId]}</span>`;
+        } else {
+            labelUsuarioTexto.innerText = 'Usuario del sistema';
+        }
+    }
+
+    if (selectUsuario) {
+        selectUsuario.addEventListener('change', updateUsuarioLabel);
+        updateUsuarioLabel(); // Inicializar si ya viene con valor (ej. error de validación)
+    }
+});
+</script>
+{% endblock %}
+

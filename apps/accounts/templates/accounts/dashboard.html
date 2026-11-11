@@ -71,8 +71,8 @@
                             Mis datos y perfil
                         </a>
 
-                        <!-- SECCIÓN MATRICULADO (Controlada por permisos de matrícula) -->
-                        {% if perms.directory.view_matriculado or perms.directory.change_matriculado or user.is_superuser %}
+                        <!-- SECCIÓN MATRICULADO (Visible si el usuario tiene matrícula o permisos) -->
+                        {% if mi_matricula or perms.directory.view_matriculado or user.is_superuser %}
                         <div class="pt-3">
                             <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">Profesional</span>
                         </div>
@@ -116,6 +116,24 @@
                             </svg>
                             Padrón de Matriculados
                         </a>
+
+                        <!-- Sub-directorio de Catálogos del Padrón -->
+                        <div class="ml-4 pl-3 border-l border-slate-200 space-y-1">
+                            <a href="?tab=admin_especialidades" data-tab-btn="admin_especialidades"
+                                class="nav-tab-link flex items-center px-2 py-1.5 rounded-md text-xs transition {% if current_tab == 'admin_especialidades' %}bg-emerald-50 text-emerald-800 font-semibold{% else %}text-slate-500 hover:bg-slate-50 hover:text-slate-800{% endif %}">
+                                <svg class="w-3.5 h-3.5 mr-2 {% if current_tab == 'admin_especialidades' %}text-emerald-700{% else %}text-slate-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                </svg>
+                                Especialidades
+                            </a>
+                            <a href="?tab=admin_universidades" data-tab-btn="admin_universidades"
+                                class="nav-tab-link flex items-center px-2 py-1.5 rounded-md text-xs transition {% if current_tab == 'admin_universidades' %}bg-emerald-50 text-emerald-800 font-semibold{% else %}text-slate-500 hover:bg-slate-50 hover:text-slate-800{% endif %}">
+                                <svg class="w-3.5 h-3.5 mr-2 {% if current_tab == 'admin_universidades' %}text-emerald-700{% else %}text-slate-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                </svg>
+                                Universidades
+                            </a>
+                        </div>
                         {% endif %}
 
                         {% if perms.accounts.view_user or perms.accounts.add_user or user.is_superuser %}
@@ -518,69 +536,147 @@
                     </div>
                 </div>
 
-                <!-- TAB 2: MI MATRÍCULA (Controlada por permisos de matrícula) -->
-                {% if perms.directory.view_matriculado or perms.directory.change_matriculado or user.is_superuser %}
+                <!-- TAB 2: MI MATRÍCULA (Visible si el usuario tiene matrícula o permisos) -->
+                {% if mi_matricula or perms.directory.view_matriculado or user.is_superuser %}
                 <div id="tab-matricula" class="tab-pane {% if current_tab != 'matricula' %}hidden{% endif %} space-y-6">
                     <div class="flex items-center justify-between">
                         <div>
                             <h1 class="text-2xl font-bold text-slate-900">Panel del Matriculado</h1>
-                            <p class="text-sm text-slate-500 mt-1">Estado de tu matrícula profesional y configuración de visibilidad pública.</p>
+                            <p class="text-sm text-slate-500 mt-1">Estado de tu matrícula profesional y datos institucionales asentados en el Colegio.</p>
                         </div>
                     </div>
 
-                    <!-- Tarjeta: Información Profesional (Inspirada en Pantalla 5) -->
+                    {% if mi_matricula %}
+                    <!-- Tarjeta: Información Profesional Real -->
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8">
-                        <h3 class="text-base font-bold text-slate-900 pb-3 border-b border-slate-100 mb-4">Información Profesional</h3>
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100 mb-6">
+                            <div>
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Matrícula Provincial</span>
+                                <h3 class="text-2xl font-extrabold text-emerald-700">MP-{{ mi_matricula.numero_matricula }}</h3>
+                                <p class="text-xs text-slate-500 mt-0.5">Libro {{ mi_matricula.libro }} | Folio {{ mi_matricula.folio }}</p>
+                            </div>
+                            <div>
+                                {% if mi_estado_actual.estado == 'ACTIVA' %}
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-500 mr-2"></span>
+                                    Habilitado / Activa
+                                </span>
+                                {% elif mi_estado_actual.estado == 'SUSPENDIDA' %}
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800">
+                                    <span class="w-2 h-2 rounded-full bg-amber-500 mr-2"></span>
+                                    Suspendida
+                                </span>
+                                {% else %}
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800">
+                                    <span class="w-2 h-2 rounded-full bg-rose-500 mr-2"></span>
+                                    Baja
+                                </span>
+                                {% endif %}
+                                {% if mi_matricula.jubilado %}
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 ml-1.5">
+                                    Jubilado
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-6 text-sm">
                             <div>
-                                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Nombre y Apellido</span>
+                                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Profesional</span>
                                 <p class="font-medium text-slate-900 mt-0.5">{{ user.get_full_name|default:user.username }}</p>
                             </div>
                             <div>
-                                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Número de Matrícula</span>
-                                <p class="font-medium text-slate-900 mt-0.5">MP-{{ user.id|stringformat:"04d" }}</p>
+                                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Fecha de Matriculación</span>
+                                <p class="font-medium text-slate-900 mt-0.5">{{ mi_matricula.fecha_matriculacion|date:"d/m/Y" }}</p>
                             </div>
                             <div>
-                                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Estado</span>
-                                <p class="mt-0.5">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
-                                        Activa
+                                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Especialidades</span>
+                                <div class="mt-1 flex flex-wrap gap-1.5">
+                                    {% for esp in mi_matricula.especialidades.all %}
+                                    <span class="inline-block bg-emerald-50 text-emerald-700 text-xs px-2.5 py-0.5 rounded font-medium border border-emerald-200">
+                                        {{ esp.nombre }}
                                     </span>
-                                </p>
+                                    {% empty %}
+                                    <p class="text-xs text-slate-400">Sin especialidades registradas</p>
+                                    {% endfor %}
+                                </div>
                             </div>
                             <div>
-                                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Colegio</span>
+                                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Colegio Habilitante</span>
                                 <p class="font-medium text-slate-900 mt-0.5">Colegio de Geólogos de Catamarca</p>
                             </div>
                         </div>
+
                         <div class="mt-6 p-3.5 bg-blue-50/80 border border-blue-200/60 rounded-xl text-xs text-blue-900 flex items-start space-x-2">
                             <span class="text-blue-500 font-bold shrink-0">ⓘ</span>
-                            <span>Los datos de habilitación y número de matrícula son validados administrativamente por el Colegio.</span>
+                            <span>Los datos de habilitación y número de matrícula son administrados por el Colegio. Para modificaciones o solicitud de trámites, contacte a secretaría.</span>
                         </div>
                     </div>
 
-                    <!-- Tarjeta: Datos de Contacto y Privacidad -->
+                    <!-- Tarjeta: Títulos Registrados -->
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8">
-                        <h3 class="text-base font-bold text-slate-900 pb-3 border-b border-slate-100 mb-4">Datos de Contacto y Visibilidad</h3>
-                        <div class="space-y-3 text-sm">
-                            <div class="flex items-center space-x-3">
-                                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                </svg>
-                                <span class="text-slate-500 w-24">Email:</span>
-                                <span class="font-medium text-slate-900">{{ user.email|default:"No informado" }}</span>
+                        <h3 class="text-base font-bold text-slate-900 pb-3 border-b border-slate-100 mb-4">Títulos y Habilitaciones</h3>
+                        <div class="divide-y divide-slate-100">
+                            {% for tit in mis_titulos %}
+                            <div class="py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                <div>
+                                    <div class="flex items-center space-x-2">
+                                        <h4 class="font-bold text-slate-900 text-sm">{{ tit.denominacion }}</h4>
+                                        <span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-100 text-slate-700">
+                                            {{ tit.get_tipo_display }}
+                                        </span>
+                                    </div>
+                                    <p class="text-xs text-slate-500 mt-0.5">
+                                        Universidad: <strong class="text-slate-700">{{ tit.emitido_por.nombre }}</strong> ({{ tit.emitido_por.sigla|default:tit.emitido_por.pais.name }})
+                                    </p>
+                                    <p class="text-xs text-slate-400 mt-0.5">
+                                        Egreso: {{ tit.fecha_egreso|date:"d/m/Y" }} | Expedición: {{ tit.fecha_expedicion|date:"d/m/Y" }}
+                                    </p>
+                                </div>
+
+                                {% if tit.escaneo_diploma %}
+                                <a href="{{ tit.escaneo_diploma.url }}" target="_blank"
+                                    class="inline-flex items-center text-xs font-semibold text-emerald-700 hover:text-emerald-800 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200 self-start sm:self-auto">
+                                    <svg class="w-4 h-4 mr-1 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    Ver Diploma
+                                </a>
+                                {% endif %}
                             </div>
-                            <div class="flex items-center space-x-3">
-                                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                </svg>
-                                <span class="text-slate-500 w-24">Teléfono:</span>
-                                <span class="font-medium text-slate-900">{{ user.phone|default:"No informado" }}</span>
-                            </div>
+                            {% empty %}
+                            <p class="py-4 text-xs text-slate-400">No se encontraron títulos registrados.</p>
+                            {% endfor %}
                         </div>
                     </div>
+
+                    <!-- Tarjeta: Domicilio Profesional -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8">
+                        <h3 class="text-base font-bold text-slate-900 pb-3 border-b border-slate-100 mb-4">Domicilio Profesional Registrado (Público)</h3>
+                        <p class="text-sm text-slate-700">
+                            {% if mi_matricula.domicilio_profesional_calle %}
+                            {{ mi_matricula.domicilio_profesional_calle }} {{ mi_matricula.domicilio_profesional_numero }}
+                            {% if mi_matricula.domicilio_profesional_piso_depto %}, {{ mi_matricula.domicilio_profesional_piso_depto }}{% endif %}<br>
+                            {{ mi_matricula.domicilio_profesional_localidad }}, {{ mi_matricula.domicilio_profesional_provincia }} (CP {{ mi_matricula.domicilio_profesional_cp }})<br>
+                            {{ mi_matricula.domicilio_profesional_pais.name }}
+                            {% else %}
+                            <span class="text-slate-400">Sin domicilio profesional asentado.</span>
+                            {% endif %}
+                        </p>
+                    </div>
+
+                    {% else %}
+                    <!-- Caso: Usuario no matriculado aún -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center">
+                        <div class="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3 text-xl">
+                            📋
+                        </div>
+                        <h3 class="text-base font-bold text-slate-800">Aún no posee un registro matricular asociado</h3>
+                        <p class="text-xs text-slate-500 max-w-md mx-auto mt-1">
+                            Su cuenta está activa en el sistema pero no se encuentra vinculada a un número de matrícula en el Colegio de Geólogos de Catamarca.
+                        </p>
+                    </div>
+                    {% endif %}
                 </div>
                 {% endif %}
 
@@ -627,15 +723,336 @@
                             <h1 class="text-2xl font-bold text-slate-900">Administración de Matriculados</h1>
                             <p class="text-sm text-slate-500 mt-0.5">Padrón oficial de profesionales geólogos registrados.</p>
                         </div>
+
+                        {% if perms.directory.add_matriculado or user.is_superuser %}
+                        <a href="{% url 'directory:matriculado_create' %}"
+                            class="inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-sm transition">
+                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                            </svg>
+                            Nuevo Matriculado
+                        </a>
+                        {% endif %}
                     </div>
 
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                        <div class="p-4 bg-slate-50 rounded-lg border border-slate-200 text-sm text-slate-600">
-                            <p class="font-medium text-slate-800 mb-1">Módulo de Padrón Profesional</p>
-                            <p class="text-xs text-slate-500">
-                                Próximamente se integrarán aquí los formularios para el alta de geólogos, asignación de matrícula y especialidades.
-                            </p>
+                    <!-- Filtros y Búsqueda -->
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+                        <form method="get" class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+                            <input type="hidden" name="tab" value="admin_matriculados">
+
+                            <!-- Búsqueda por texto libre -->
+                            <div class="sm:col-span-6 relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </span>
+                                <input type="text" name="q_mat" value="{{ search_mat }}"
+                                    placeholder="Buscar por matrícula, nombre, DNI, email..."
+                                    class="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500">
+                            </div>
+
+                            <!-- Filtro Especialidad -->
+                            <div class="sm:col-span-4">
+                                <select name="especialidad"
+                                    class="w-full py-2 px-3 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 bg-white">
+                                    <option value="">Todas las especialidades</option>
+                                    {% for esp in especialidades_disponibles %}
+                                    <option value="{{ esp.id }}" {% if especialidad_filtro == esp.id|stringformat:"s" %}selected{% endif %}>
+                                        {{ esp.nombre }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="sm:col-span-2 flex space-x-2">
+                                <button type="submit"
+                                    class="w-full py-2 px-3 rounded-lg bg-slate-800 text-white text-xs font-semibold hover:bg-slate-900 transition">
+                                    Filtrar
+                                </button>
+                                {% if search_mat or especialidad_filtro %}
+                                <a href="?tab=admin_matriculados"
+                                    class="py-2 px-2.5 rounded-lg border border-slate-200 text-slate-500 text-xs hover:bg-slate-50 text-center"
+                                    title="Limpiar filtros">
+                                    ✕
+                                </a>
+                                {% endif %}
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Tabla de Matriculados -->
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm text-slate-600">
+                                <thead class="text-xs uppercase bg-slate-50 text-slate-400 border-b border-slate-200">
+                                    <tr>
+                                        <th class="px-5 py-3 font-semibold">Matrícula</th>
+                                        <th class="px-5 py-3 font-semibold">Profesional</th>
+                                        <th class="px-5 py-3 font-semibold">DNI / CUIL</th>
+                                        <th class="px-5 py-3 font-semibold">Títulos</th>
+                                        <th class="px-5 py-3 font-semibold">Estado</th>
+                                        <th class="px-5 py-3 font-semibold text-right">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    {% for mat in matriculados_list %}
+                                    <tr class="hover:bg-slate-50/70 transition">
+                                        <td class="px-5 py-4 font-bold text-emerald-700 whitespace-nowrap">
+                                            MP-{{ mat.numero_matricula }}
+                                            <span class="block text-[11px] font-normal text-slate-400">L: {{ mat.libro }} / F: {{ mat.folio }}</span>
+                                        </td>
+                                        <td class="px-5 py-4">
+                                            <span class="font-medium text-slate-900">{{ mat.usuario.get_full_name|default:mat.usuario.username }}</span>
+                                            <span class="block text-xs text-slate-400">{{ mat.usuario.email|default:"Sin email" }}</span>
+                                        </td>
+                                        <td class="px-5 py-4 whitespace-nowrap text-xs">
+                                            {{ mat.usuario.dni|default:"-" }}
+                                            {% if mat.usuario.cuil_cuit %}
+                                            <span class="block text-[11px] text-slate-400">{{ mat.usuario.cuil_cuit }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="px-5 py-4 text-xs">
+                                            {% for tit in mat.titulos.all %}
+                                            <span class="inline-block bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[11px] font-medium mb-1">
+                                                {{ tit.denominacion }}
+                                            </span>
+                                            {% empty %}
+                                            <span class="text-slate-400">Sin títulos cargados</span>
+                                            {% endfor %}
+                                        </td>
+                                        <td class="px-5 py-4 whitespace-nowrap">
+                                            {% with estado=mat.estado_actual %}
+                                                {% if estado.estado == 'ACTIVA' %}
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
+                                                    {{ estado.get_estado_display }}
+                                                </span>
+                                                {% elif estado.estado == 'SUSPENDIDA' %}
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800">
+                                                    {{ estado.get_estado_display }}
+                                                </span>
+                                                {% else %}
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-rose-100 text-rose-800">
+                                                    {{ estado.get_estado_display|default:"Sin Estado" }}
+                                                </span>
+                                                {% endif %}
+                                            {% endwith %}
+                                            {% if mat.jubilado %}
+                                            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-600 ml-1">
+                                                Jub.
+                                            </span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="px-5 py-4 text-right whitespace-nowrap text-xs space-x-2">
+                                            <a href="{% url 'directory:matriculado_detail' mat.pk %}"
+                                                class="inline-flex items-center text-emerald-700 hover:text-emerald-900 font-semibold bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">
+                                                Ver Ficha
+                                            </a>
+                                            {% if perms.directory.change_matriculado or user.is_superuser %}
+                                            <a href="{% url 'directory:matriculado_edit' mat.pk %}"
+                                                class="inline-flex items-center text-slate-600 hover:text-slate-900 font-medium bg-slate-100 px-2.5 py-1 rounded-md">
+                                                Editar
+                                            </a>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="6" class="px-5 py-8 text-center text-sm text-slate-400">
+                                            No se encontraron matriculados con los criterios de búsqueda seleccionados.
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
                         </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- TAB 4.1: ADMINISTRACIÓN DE ESPECIALIDADES (Catálogo Maestro) -->
+                {% if perms.directory.view_matriculado or perms.directory.add_matriculado or user.is_superuser %}
+                <div id="tab-admin_especialidades" class="tab-pane {% if current_tab != 'admin_especialidades' %}hidden{% endif %} space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <h1 class="text-2xl font-bold text-slate-900">Catálogo de Especialidades</h1>
+                            <p class="text-sm text-slate-500 mt-0.5">Especialidades geológicas registradas para asociar a los matriculados.</p>
+                        </div>
+                        {% if perms.directory.add_especialidad or user.is_superuser %}
+                        <button type="button" onclick="openCreateEspecialidadModal()"
+                            class="inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-sm transition">
+                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                            </svg>
+                            Nueva Especialidad
+                        </button>
+                        {% endif %}
+                    </div>
+
+                    <!-- Buscador -->
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+                        <form method="get" class="flex gap-3">
+                            <input type="hidden" name="tab" value="admin_especialidades">
+                            <div class="relative flex-1">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </span>
+                                <input type="text" name="q_esp" value="{{ search_esp }}"
+                                    placeholder="Buscar especialidad por nombre..."
+                                    class="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500">
+                            </div>
+                            <button type="submit" class="py-2 px-4 rounded-lg bg-slate-800 text-white text-xs font-semibold hover:bg-slate-900 transition">
+                                Buscar
+                            </button>
+                            {% if search_esp %}
+                            <a href="?tab=admin_especialidades" class="py-2 px-3 rounded-lg border border-slate-200 text-slate-500 text-xs hover:bg-slate-50 text-center">
+                                ✕
+                            </a>
+                            {% endif %}
+                        </form>
+                    </div>
+
+                    <!-- Tabla de Especialidades -->
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                        <table class="w-full text-left text-sm text-slate-600">
+                            <thead class="text-xs uppercase bg-slate-50 text-slate-400 border-b border-slate-200">
+                                <tr>
+                                    <th class="px-5 py-3.5">Nombre</th>
+                                    <th class="px-5 py-3.5">Descripción</th>
+                                    <th class="px-5 py-3.5 text-center">Matriculados</th>
+                                    <th class="px-5 py-3.5 text-right">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                {% for esp in especialidades_list %}
+                                <tr class="hover:bg-slate-50/70 transition">
+                                    <td class="px-5 py-4 font-semibold text-slate-900">
+                                        <span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">
+                                            {{ esp.nombre }}
+                                        </span>
+                                    </td>
+                                    <td class="px-5 py-4 text-xs text-slate-500 max-w-md">
+                                        {{ esp.descripcion|default:"-" }}
+                                    </td>
+                                    <td class="px-5 py-4 text-xs text-center font-semibold text-slate-700">
+                                        {{ esp.matriculados.count }}
+                                    </td>
+                                    <td class="px-5 py-4 text-right whitespace-nowrap text-xs">
+                                        {% if perms.directory.change_especialidad or user.is_superuser %}
+                                        <button type="button"
+                                            onclick="openEditEspecialidadModal('{{ esp.id }}', '{{ esp.nombre|escapejs }}', '{{ esp.descripcion|escapejs }}')"
+                                            class="inline-flex items-center text-emerald-700 hover:text-emerald-900 font-medium bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">
+                                            <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                            </svg>
+                                            Editar
+                                        </button>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="px-5 py-8 text-center text-sm text-slate-400">
+                                        No se encontraron especialidades registradas.
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- TAB 4.2: ADMINISTRACIÓN DE UNIVERSIDADES (Catálogo Maestro) -->
+                <div id="tab-admin_universidades" class="tab-pane {% if current_tab != 'admin_universidades' %}hidden{% endif %} space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <h1 class="text-2xl font-bold text-slate-900">Catálogo de Universidades</h1>
+                            <p class="text-sm text-slate-500 mt-0.5">Instituciones universitarias emisoras de títulos oficiales de los matriculados.</p>
+                        </div>
+                        {% if perms.directory.add_universidad or user.is_superuser %}
+                        <button type="button" onclick="openCreateUniversidadModal()"
+                            class="inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-sm transition">
+                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                            </svg>
+                            Nueva Universidad
+                        </button>
+                        {% endif %}
+                    </div>
+
+                    <!-- Buscador -->
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+                        <form method="get" class="flex gap-3">
+                            <input type="hidden" name="tab" value="admin_universidades">
+                            <div class="relative flex-1">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </span>
+                                <input type="text" name="q_univ" value="{{ search_univ }}"
+                                    placeholder="Buscar universidad por nombre o sigla..."
+                                    class="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500">
+                            </div>
+                            <button type="submit" class="py-2 px-4 rounded-lg bg-slate-800 text-white text-xs font-semibold hover:bg-slate-900 transition">
+                                Buscar
+                            </button>
+                            {% if search_univ %}
+                            <a href="?tab=admin_universidades" class="py-2 px-3 rounded-lg border border-slate-200 text-slate-500 text-xs hover:bg-slate-50 text-center">
+                                ✕
+                            </a>
+                            {% endif %}
+                        </form>
+                    </div>
+
+                    <!-- Tabla de Universidades -->
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                        <table class="w-full text-left text-sm text-slate-600">
+                            <thead class="text-xs uppercase bg-slate-50 text-slate-400 border-b border-slate-200">
+                                <tr>
+                                    <th class="px-5 py-3.5">Nombre Institucional</th>
+                                    <th class="px-5 py-3.5">Sigla</th>
+                                    <th class="px-5 py-3.5">País</th>
+                                    <th class="px-5 py-3.5 text-right">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                {% for uni in universidades_list %}
+                                <tr class="hover:bg-slate-50/70 transition">
+                                    <td class="px-5 py-4 font-semibold text-slate-900">
+                                        {{ uni.nombre }}
+                                    </td>
+                                    <td class="px-5 py-4 text-xs font-semibold text-emerald-800">
+                                        {{ uni.sigla|default:"-" }}
+                                    </td>
+                                    <td class="px-5 py-4 text-xs text-slate-600">
+                                        {{ uni.pais.name }}
+                                    </td>
+                                    <td class="px-5 py-4 text-right whitespace-nowrap text-xs">
+                                        {% if perms.directory.change_universidad or user.is_superuser %}
+                                        <button type="button"
+                                            onclick="openEditUniversidadModal('{{ uni.id }}', '{{ uni.nombre|escapejs }}', '{{ uni.sigla|escapejs }}', '{{ uni.pais.code }}')"
+                                            class="inline-flex items-center text-emerald-700 hover:text-emerald-900 font-medium bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">
+                                            <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                            </svg>
+                                            Editar
+                                        </button>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="px-5 py-8 text-center text-sm text-slate-400">
+                                        No se encontraron universidades registradas.
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
                 {% endif %}
@@ -981,5 +1398,147 @@
             });
         });
     });
+</script>
+
+<!-- MODAL: CREAR / EDITAR ESPECIALIDAD (Dashboard) -->
+<div id="modal-dashboard-especialidad" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm hidden">
+    <div class="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-md p-6 m-4">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div>
+                <h3 id="modal-esp-title" class="text-base font-bold text-slate-900">Especialidad</h3>
+                <p class="text-xs text-slate-500">Gestión del catálogo oficial de especialidades.</p>
+            </div>
+            <button type="button" onclick="closeEspecialidadModalDashboard()" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
+        </div>
+
+        <form id="form-dashboard-especialidad" method="post" action="{% url 'directory:especialidad_create' %}" class="space-y-4 pt-4">
+            {% csrf_token %}
+            <div>
+                <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Nombre <span class="text-red-500">*</span></label>
+                <input type="text" name="nombre" id="input-esp-nombre" required
+                    class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+                    placeholder="Ej: Minería, Hidrogeología...">
+            </div>
+            <div>
+                <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Descripción</label>
+                <textarea name="descripcion" id="input-esp-descripcion" rows="3"
+                    class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+                    placeholder="Breve descripción del área de especialización..."></textarea>
+            </div>
+            <div class="flex items-center justify-end space-x-2 pt-4 border-t border-slate-100">
+                <button type="button" onclick="closeEspecialidadModalDashboard()"
+                    class="px-4 py-2 rounded-lg border border-slate-300 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition">
+                    Cancelar
+                </button>
+                <button type="submit"
+                    class="px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-sm transition">
+                    Guardar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL: CREAR / EDITAR UNIVERSIDAD (Dashboard) -->
+<div id="modal-dashboard-universidad" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm hidden">
+    <div class="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-md p-6 m-4">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div>
+                <h3 id="modal-univ-title" class="text-base font-bold text-slate-900">Universidad</h3>
+                <p class="text-xs text-slate-500">Gestión del catálogo oficial de instituciones universitarias.</p>
+            </div>
+            <button type="button" onclick="closeUniversidadModalDashboard()" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
+        </div>
+
+        <form id="form-dashboard-universidad" method="post" action="{% url 'directory:universidad_create' %}" class="space-y-4 pt-4">
+            {% csrf_token %}
+            <div>
+                <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Nombre Completo <span class="text-red-500">*</span></label>
+                <input type="text" name="nombre" id="input-univ-nombre" required
+                    class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+                    placeholder="Ej: Universidad Nacional de Catamarca">
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Sigla</label>
+                    <input type="text" name="sigla" id="input-univ-sigla"
+                        class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+                        placeholder="Ej: UNCa">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">País</label>
+                    {{ universidad_form.pais }}
+                </div>
+            </div>
+            <div class="flex items-center justify-end space-x-2 pt-4 border-t border-slate-100">
+                <button type="button" onclick="closeUniversidadModalDashboard()"
+                    class="px-4 py-2 rounded-lg border border-slate-300 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition">
+                    Cancelar
+                </button>
+                <button type="submit"
+                    class="px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-sm transition">
+                    Guardar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openCreateEspecialidadModal() {
+    const modal = document.getElementById('modal-dashboard-especialidad');
+    const form = document.getElementById('form-dashboard-especialidad');
+    document.getElementById('modal-esp-title').innerText = 'Nueva Especialidad';
+    form.action = "{% url 'directory:especialidad_create' %}";
+    document.getElementById('input-esp-nombre').value = '';
+    document.getElementById('input-esp-descripcion').value = '';
+    modal.classList.remove('hidden');
+    document.getElementById('input-esp-nombre').focus();
+}
+
+function openEditEspecialidadModal(id, nombre, descripcion) {
+    const modal = document.getElementById('modal-dashboard-especialidad');
+    const form = document.getElementById('form-dashboard-especialidad');
+    document.getElementById('modal-esp-title').innerText = 'Editar Especialidad: ' + nombre;
+    form.action = '/directory/especialidades/' + id + '/edit/';
+    document.getElementById('input-esp-nombre').value = nombre;
+    document.getElementById('input-esp-descripcion').value = descripcion;
+    modal.classList.remove('hidden');
+    document.getElementById('input-esp-nombre').focus();
+}
+
+function closeEspecialidadModalDashboard() {
+    document.getElementById('modal-dashboard-especialidad').classList.add('hidden');
+}
+
+function openCreateUniversidadModal() {
+    const modal = document.getElementById('modal-dashboard-universidad');
+    const form = document.getElementById('form-dashboard-universidad');
+    document.getElementById('modal-univ-title').innerText = 'Nueva Universidad';
+    form.action = "{% url 'directory:universidad_create' %}";
+    document.getElementById('input-univ-nombre').value = '';
+    document.getElementById('input-univ-sigla').value = '';
+    modal.classList.remove('hidden');
+    document.getElementById('input-univ-nombre').focus();
+}
+
+function openEditUniversidadModal(id, nombre, sigla, paisCode) {
+    const modal = document.getElementById('modal-dashboard-universidad');
+    const form = document.getElementById('form-dashboard-universidad');
+    document.getElementById('modal-univ-title').innerText = 'Editar Universidad: ' + (sigla || nombre);
+    form.action = '/directory/universidades/' + id + '/edit/';
+    document.getElementById('input-univ-nombre').value = nombre;
+    document.getElementById('input-univ-sigla').value = sigla;
+    const selectPais = form.querySelector('select[name="pais"]');
+    if (selectPais && paisCode) {
+        selectPais.value = paisCode;
+    }
+    modal.classList.remove('hidden');
+    document.getElementById('input-univ-nombre').focus();
+}
+
+function closeUniversidadModalDashboard() {
+    document.getElementById('modal-dashboard-universidad').classList.add('hidden');
+}
 </script>
 {% endblock %}
