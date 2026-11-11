@@ -16,6 +16,7 @@ from django.views.generic import CreateView, TemplateView, UpdateView
 from .forms import (
     AdminUserCreateForm,
     AdminUserEditForm,
+    CustomAuthenticationForm,
     MembresiaComisionForm,
     UserProfileUpdateForm,
 )
@@ -38,6 +39,12 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 
         # Capacidad de gestión administrativa basada en permisos Django
         can_manage_users = user.has_perm("accounts.view_user") or user.has_perm("accounts.add_user")
+        can_manage_matriculados = (
+            user.has_perm("directory.view_matriculado")
+            or user.has_perm("directory.add_matriculado")
+            or user.has_perm("directory.change_matriculado")
+            or user.is_superuser
+        )
         can_manage_comision = (
             user.has_perm("accounts.view_membresiacomision")
             or user.has_perm("accounts.add_membresiacomision")
@@ -45,11 +52,78 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             or user.is_superuser
         )
 
+        # Consulta de datos matriculares propios si el usuario está matriculado
+        from apps.directory.models import Matriculado
+        mi_matricula = None
+        mis_titulos = []
+        mi_estado_actual = None
+        try:
+            mi_matricula = (
+                Matriculado.objects.select_related("usuario")
+                .prefetch_related("especialidades", "titulos__emitido_por", "estados")
+                .get(usuario=user)
+            )
+            mis_titulos = mi_matricula.titulos.all()
+            mi_estado_actual = mi_matricula.estado_actual
+        except Matriculado.DoesNotExist:
+            pass
+
         context.update({
             "current_tab": current_tab,
             "can_manage_users": can_manage_users,
+            "can_manage_matriculados": can_manage_matriculados,
             "can_manage_comision": can_manage_comision,
+            "mi_matricula": mi_matricula,
+            "mis_titulos": mis_titulos,
+            "mi_estado_actual": mi_estado_actual,
         })
+
+        if can_manage_matriculados:
+            from apps.directory.models import Matriculado, Especialidad, Universidad
+            from apps.directory.forms import EspecialidadForm, UniversidadForm
+            search_mat = self.request.GET.get("q_mat", "").strip()
+            especialidad_filtro = self.request.GET.get("especialidad", "")
+            
+            mat_qs = (
+                Matriculado.objects.select_related("usuario")
+                .prefetch_related("especialidades", "estados", "titulos")
+                .order_by("-fecha_matriculacion")
+            )
+            if search_mat:
+                from django.db.models import Q
+                mat_qs = mat_qs.filter(
+                    Q(numero_matricula__icontains=search_mat)
+                    | Q(usuario__first_name__icontains=search_mat)
+                    | Q(usuario__last_name__icontains=search_mat)
+                    | Q(usuario__dni__icontains=search_mat)
+                    | Q(usuario__email__icontains=search_mat)
+                )
+            if especialidad_filtro:
+                mat_qs = mat_qs.filter(especialidades__id=especialidad_filtro)
+
+            # Catálogos maestros para administración y corrección de tipeo
+            search_esp = self.request.GET.get("q_esp", "").strip()
+            esp_qs = Especialidad.objects.all().order_by("nombre")
+            if search_esp:
+                esp_qs = esp_qs.filter(nombre__icontains=search_esp)
+
+            search_univ = self.request.GET.get("q_univ", "").strip()
+            univ_qs = Universidad.objects.all().order_by("nombre")
+            if search_univ:
+                univ_qs = univ_qs.filter(
+                    Q(nombre__icontains=search_univ) | Q(sigla__icontains=search_univ)
+                )
+
+            context["matriculados_list"] = mat_qs
+            context["search_mat"] = search_mat
+            context["especialidad_filtro"] = especialidad_filtro
+            context["especialidades_disponibles"] = Especialidad.objects.all().order_by("nombre")
+            context["especialidades_list"] = esp_qs
+            context["search_esp"] = search_esp
+            context["universidades_list"] = univ_qs
+            context["search_univ"] = search_univ
+            context["especialidad_form"] = EspecialidadForm()
+            context["universidad_form"] = UniversidadForm()
 
         if can_manage_users:
             User = get_user_model()
@@ -220,11 +294,16 @@ class MembresiaComisionFinalizarView(LoginRequiredMixin, PermissionRequiredMixin
 
 class AccountLoginView(LoginView):
     template_name = "accounts/login.html"
+    authentication_form = CustomAuthenticationForm
     redirect_authenticated_user = True
 
     def form_invalid(self, form):
-        if form.non_field_errors():
-            messages.error(self.request, "Usuario o contraseña incorrectos.")
+        # Si el error es por matrícula inhabilitada, form.non_field_errors() ya tiene el mensaje explícito.
+        # Solo mostramos el genérico si no hay un error específico más descriptivo.
+        errors = form.non_field_errors()
+        if errors:
+            for error in errors:
+                messages.error(self.request, error)
         return super().form_invalid(form)
 
 

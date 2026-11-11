@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
 from django_countries.widgets import CountrySelectWidget
@@ -37,6 +38,25 @@ PROVINCIAS_ARGENTINAS = [
 INPUT_CSS = "w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
 SELECT_CSS = "w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600 bg-white"
 CHECKBOX_CSS = "h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+
+
+class CustomAuthenticationForm(AuthenticationForm):
+    """
+    Formulario de autenticación que valida las credenciales y además hace cumplir
+    la regla de negocio de Matrícula (docs/11 - Modelo de datos.md):
+    Un matriculado con estado BAJA o con suspensión vigente no puede iniciar sesión.
+    """
+    def confirm_login_allowed(self, user):
+        super().confirm_login_allowed(user)
+        # Verificamos si el usuario tiene matrícula asociada
+        if hasattr(user, "matricula"):
+            matricula = user.matricula
+            puede, motivo = matricula.puede_iniciar_sesion()
+            if not puede:
+                raise ValidationError(
+                    motivo,
+                    code="matricula_inhabilitada",
+                )
 
 
 class AdminUserCreateForm(forms.ModelForm):
