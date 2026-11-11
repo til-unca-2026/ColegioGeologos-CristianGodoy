@@ -72,7 +72,7 @@
                     Mantenete informado sobre las últimas novedades normativas y comunicados.
                 </p>
             </div>
-            <a href="{% url 'site_under_construction' %}"
+            <a href="{% url 'content:novedades_list' %}"
                 class="inline-flex items-center text-sm font-semibold text-emerald-700 transition group-hover:translate-x-1 hover:text-emerald-800">
                 Ver noticias <span class="ml-1" aria-hidden="true">→</span>
             </a>
@@ -93,7 +93,7 @@
                     Capacitaciones, charlas técnicas, jornadas de campo y actividades académicas.
                 </p>
             </div>
-            <a href="{% url 'site_under_construction' %}"
+            <a href="{% url 'content:novedades_list' %}?tipo=EVENTO"
                 class="inline-flex items-center text-sm font-semibold text-emerald-700 transition group-hover:translate-x-1 hover:text-emerald-800">
                 Ver eventos <span class="ml-1" aria-hidden="true">→</span>
             </a>
@@ -157,27 +157,103 @@
     </div>
 
     <div class="mb-12 grid grid-cols-1 gap-8 lg:grid-cols-2">
+        <!-- Sección Novedades y Noticias -->
         <section id="seccion-novedades" aria-labelledby="novedades-title">
             <div class="mb-4 flex items-center justify-between">
                 <h2 id="novedades-title" class="flex items-center gap-2 text-xl font-bold text-slate-900">
                     <span class="inline-block h-6 w-2.5 rounded-sm bg-emerald-700" aria-hidden="true"></span>
                     Novedades y Noticias
                 </h2>
+                <a href="{% url 'content:novedades_list' %}"
+                    class="flex items-center gap-1 text-xs font-semibold text-emerald-700 hover:text-emerald-900 hover:underline">
+                    Ver todas <span>→</span>
+                </a>
             </div>
-            <div class="rounded-xl border border-slate-200 bg-white p-6 text-sm text-slate-600 shadow-sm">
-                Próximamente vas a encontrar aquí las novedades y comunicados del Colegio.
+
+            <div class="space-y-4">
+                {% for n in home_noticias %}
+                <div class="group flex flex-col justify-between rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-md">
+                    <div>
+                        <div class="mb-2 flex items-center space-x-2 text-xs font-semibold text-emerald-700">
+                            <span class="rounded bg-emerald-50 px-2 py-0.5 uppercase tracking-wider">{{ n.get_tipo_display }}</span>
+                            <span>•</span>
+                            <span class="font-normal text-slate-400">{{ n.fecha_publicacion|date:"d/m/Y" }}</span>
+                            {% if n.destacado %}
+                            <span class="rounded-full bg-amber-100 px-2 py-0.2 text-[10px] font-bold text-amber-800">★ Destacado</span>
+                            {% endif %}
+                        </div>
+                        <a href="{% url 'content:novedad_detail' n.slug %}">
+                            <h3 class="mb-2 text-base font-bold text-slate-900 transition group-hover:text-emerald-800 line-clamp-2">
+                                {{ n.titulo }}
+                            </h3>
+                        </a>
+                        <p class="mb-4 text-sm leading-relaxed text-slate-600 line-clamp-2">
+                            {{ n.resumen }}
+                        </p>
+                    </div>
+                    <div class="flex items-center justify-between border-t border-slate-100 pt-3">
+                        <span class="text-xs text-slate-400">Por {{ n.creado_por.get_full_name|default:n.creado_por.username }}</span>
+                        <a href="{% url 'content:novedad_detail' n.slug %}"
+                            class="inline-flex items-center text-xs font-bold text-emerald-700 transition hover:text-emerald-800">
+                            Leer completa <span class="ml-1 font-normal">→</span>
+                        </a>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="rounded-xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-500 shadow-sm">
+                    <p>No hay noticias publicadas recientemente.</p>
+                </div>
+                {% endfor %}
             </div>
         </section>
 
+        <!-- Sección Próximos Eventos y Capacitaciones -->
         <section id="seccion-eventos" aria-labelledby="eventos-title">
             <div class="mb-4 flex items-center justify-between">
                 <h2 id="eventos-title" class="flex items-center gap-2 text-xl font-bold text-slate-900">
                     <span class="inline-block h-6 w-2.5 rounded-sm bg-emerald-700" aria-hidden="true"></span>
                     Próximos Eventos y Capacitaciones
                 </h2>
+                <a href="{% url 'content:novedades_list' %}?tipo=EVENTO"
+                    class="flex items-center gap-1 text-xs font-semibold text-emerald-700 hover:text-emerald-900 hover:underline">
+                    Ver todos <span>→</span>
+                </a>
             </div>
-            <div class="rounded-xl border border-slate-200 bg-white p-6 text-sm text-slate-600 shadow-sm">
-                Próximamente vas a encontrar aquí las actividades y capacitaciones del Colegio.
+
+            <div class="space-y-4">
+                {% for e in home_eventos %}
+                <div class="group flex items-start space-x-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-md">
+                    <div class="min-w-[55px] shrink-0 rounded-lg border border-emerald-100 bg-emerald-50 p-2.5 text-center text-emerald-800">
+                        <span class="block text-[10px] font-bold uppercase">{{ e.detalle_evento.inicio|date:"M"|default:e.fecha_publicacion|date:"M" }}</span>
+                        <span class="block text-lg font-extrabold">{{ e.detalle_evento.inicio|date:"d"|default:e.fecha_publicacion|date:"d" }}</span>
+                    </div>
+                    <div class="flex-1">
+                        <a href="{% url 'content:novedad_detail' e.slug %}">
+                            <h3 class="mb-1 text-base font-bold text-slate-900 transition group-hover:text-emerald-800 line-clamp-1">
+                                {{ e.titulo }}
+                            </h3>
+                        </a>
+                        <p class="mb-2 text-xs text-amber-800 font-medium">
+                            {% if e.detalle_evento %}
+                            {{ e.detalle_evento.inicio|date:"d/m/Y H:i" }} hs • {{ e.detalle_evento.lugar }} ({{ e.detalle_evento.get_modalidad_display }})
+                            {% else %}
+                            {{ e.fecha_publicacion|date:"d/m/Y H:i" }} hs
+                            {% endif %}
+                        </p>
+                        <p class="mb-3 text-sm leading-relaxed text-slate-600 line-clamp-2">
+                            {{ e.resumen }}
+                        </p>
+                        <a href="{% url 'content:novedad_detail' e.slug %}"
+                            class="inline-flex items-center text-xs font-bold text-emerald-700 transition hover:text-emerald-800">
+                            Ver detalle e inscripción <span class="ml-1">→</span>
+                        </a>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="rounded-xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-500 shadow-sm">
+                    <p>No hay eventos o capacitaciones programadas en este momento.</p>
+                </div>
+                {% endfor %}
             </div>
         </section>
     </div>

@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block title %}Novedades, Noticias y Eventos - Colegio de Geólogos de Catamarca{% endblock %}
+
+{% block content %}
+<div class="bg-slate-50 min-h-screen py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <!-- Encabezado con breadcrumbs y filtros rápidos -->
+        <div class="mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+                <div class="flex items-center space-x-2 text-xs font-medium text-slate-500 mb-1">
+                    <a href="{% url 'home' %}" class="hover:text-emerald-700">Inicio</a>
+                    <span>/</span>
+                    <span class="text-emerald-800 font-semibold">Novedades y Noticias</span>
+                </div>
+                <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">Novedades, Noticias y Eventos</h1>
+                <p class="text-slate-600 text-sm sm:text-base mt-1">
+                    Manténgase al día con las actividades, comunicados y capacitaciones del Colegio.
+                </p>
+            </div>
+
+            <!-- Selector de filtros por tipo -->
+            <div class="flex items-center gap-1.5 bg-white p-1.5 rounded-xl border border-slate-200 shadow-sm overflow-x-auto">
+                <a href="{% url 'content:novedades_list' %}{% if q %}?q={{ q }}{% endif %}"
+                    class="px-3 py-1.5 rounded-lg text-xs font-semibold transition {% if not tipo_actual %}bg-emerald-800 text-white shadow-sm{% else %}text-slate-600 hover:text-slate-900 hover:bg-slate-100{% endif %}">
+                    Todas
+                </a>
+                {% for val, label in tipos_disponibles %}
+                <a href="{% url 'content:novedades_list' %}?tipo={{ val }}{% if q %}&q={{ q }}{% endif %}"
+                    class="px-3 py-1.5 rounded-lg text-xs font-semibold transition {% if tipo_actual == val %}bg-emerald-800 text-white shadow-sm{% else %}text-slate-600 hover:text-slate-900 hover:bg-slate-100{% endif %}">
+                    {{ label }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Barra de búsqueda de novedades -->
+        <div class="bg-white rounded-xl p-3 sm:p-4 shadow-sm border border-slate-200 mb-6 flex flex-col sm:flex-row gap-3">
+            <form method="get" class="relative flex-1">
+                {% if tipo_actual %}
+                <input type="hidden" name="tipo" value="{{ tipo_actual }}">
+                {% endif %}
+                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </span>
+                <input type="text" name="q" value="{{ q }}"
+                    placeholder="Buscar por título, temática o palabras clave..."
+                    class="w-full pl-10 pr-24 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-600 text-sm">
+                <button type="submit" class="absolute right-1.5 top-1.5 bottom-1.5 px-3 bg-slate-800 hover:bg-slate-900 text-white rounded-md text-xs font-medium transition">
+                    Buscar
+                </button>
+            </form>
+
+            <div class="flex items-center gap-2 text-xs text-slate-500 shrink-0 self-center">
+                <span class="font-semibold text-emerald-800 bg-emerald-50 px-2.5 py-1.5 rounded-lg border border-emerald-200">
+                    Mostrando {{ total_publicaciones }} publicación{{ total_publicaciones|pluralize:"es" }}
+                </span>
+                {% if q or tipo_actual %}
+                <a href="{% url 'content:novedades_list' %}" class="text-xs text-slate-400 hover:text-slate-600 underline">
+                    Limpiar filtros
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Grid de Tarjetas de Novedades en 2 Columnas -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+            {% for n in novedades %}
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/90 overflow-hidden hover:shadow-xl hover:border-emerald-300 transition-all duration-300 flex flex-col justify-between group">
+                <div>
+                    <!-- Imagen y badges -->
+                    <a href="{% url 'content:novedad_detail' n.slug %}" class="block relative h-48 sm:h-52 w-full overflow-hidden bg-slate-100">
+                        {% if n.imagen_portada %}
+                        <img src="{{ n.imagen_portada.imagen.url }}" alt="{{ n.imagen_portada.texto_alt|default:n.titulo }}"
+                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        {% else %}
+                        <div class="w-full h-full flex items-center justify-center bg-slate-100 text-slate-300">
+                            <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                            </svg>
+                        </div>
+                        {% endif %}
+
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+
+                        <div class="absolute top-3 left-3 flex items-center gap-1.5">
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider border shadow-sm backdrop-blur-sm
+                                {% if n.tipo == 'EVENTO' %}bg-amber-100/90 text-amber-900 border-amber-300
+                                {% elif n.tipo == 'NOVEDAD' %}bg-blue-100/90 text-blue-900 border-blue-300
+                                {% elif n.tipo == 'CAPACITACION' %}bg-purple-100/90 text-purple-900 border-purple-300
+                                {% else %}bg-emerald-100/90 text-emerald-900 border-emerald-300{% endif %}">
+                                {{ n.get_tipo_display }}
+                            </span>
+                            {% if n.destacado %}
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-white shadow-sm">
+                                ★ Destacado
+                            </span>
+                            {% endif %}
+                        </div>
+                    </a>
+
+                    <!-- Cuerpo de la tarjeta -->
+                    <div class="p-5 sm:p-6">
+                        <div class="flex items-center space-x-2 text-xs text-slate-500 mb-2">
+                            <span class="font-semibold text-emerald-800 uppercase tracking-wider text-[11px]">{{ n.get_tipo_display }}</span>
+                            <span>•</span>
+                            <span>{% if n.fecha_publicacion %}{{ n.fecha_publicacion|date:"d/m/Y H:i" }}{% else %}{{ n.fecha_creacion|date:"d/m/Y H:i" }}{% endif %} hs</span>
+                        </div>
+                        <a href="{% url 'content:novedad_detail' n.slug %}">
+                            <h2 class="text-lg sm:text-xl font-bold text-slate-900 group-hover:text-emerald-800 transition line-clamp-2 mb-2 leading-snug">
+                                {{ n.titulo }}
+                            </h2>
+                        </a>
+                        <p class="text-sm text-slate-600 leading-relaxed mb-4 line-clamp-3">
+                            {{ n.resumen }}
+                        </p>
+
+                        <!-- Indicador de Evento si corresponde -->
+                        {% if n.detalle_evento %}
+                        <div class="flex items-center text-xs text-amber-800 bg-amber-50 px-3 py-2 rounded-lg border border-amber-200 mb-3 space-x-2">
+                            <svg class="w-4 h-4 shrink-0 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span><strong>{{ n.detalle_evento.inicio|date:"d/m/Y H:i" }} hs</strong> | {{ n.detalle_evento.lugar }} ({{ n.detalle_evento.get_modalidad_display }})</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Footer con autor y botón de leer completo -->
+                <div class="px-5 sm:px-6 pb-5 pt-0 mt-auto flex items-center justify-between border-t border-slate-100 pt-3">
+                    <span class="text-xs text-slate-400 font-medium">
+                        Por {{ n.creado_por.get_full_name|default:n.creado_por.username }}
+                    </span>
+                    <a href="{% url 'content:novedad_detail' n.slug %}"
+                        class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-emerald-50 text-emerald-800 hover:bg-emerald-700 hover:text-white font-semibold text-xs transition duration-200 shadow-sm border border-emerald-200 group-hover:border-emerald-700">
+                        Leer {{ n.get_tipo_display|lower }} completa <span class="ml-1.5 transition-transform group-hover:translate-x-1">→</span>
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-span-1 md:col-span-2 bg-white rounded-2xl p-10 text-center border border-slate-200">
+                <svg class="w-12 h-12 mx-auto text-slate-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
+                </svg>
+                <h3 class="text-base font-bold text-slate-800 mb-1">No se encontraron publicaciones</h3>
+                <p class="text-xs text-slate-500 max-w-sm mx-auto mb-4">
+                    No hay novedades activas que coincidan con los criterios de búsqueda o el filtro seleccionado.
+                </p>
+                <a href="{% url 'content:novedades_list' %}" class="inline-flex items-center px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-semibold">
+                    Restablecer filtros
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Paginación si corresponde -->
+        {% if is_paginated %}
+        <div class="flex items-center justify-center space-x-2 pb-8">
+            {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}{% if tipo_actual %}&tipo={{ tipo_actual }}{% endif %}{% if q %}&q={{ q }}{% endif %}"
+                class="px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50">
+                Anterior
+            </a>
+            {% endif %}
+
+            <span class="px-3 py-1.5 text-xs text-slate-500">
+                Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+            </span>
+
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if tipo_actual %}&tipo={{ tipo_actual }}{% endif %}{% if q %}&q={{ q }}{% endif %}"
+                class="px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50">
+                Siguiente
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}
+

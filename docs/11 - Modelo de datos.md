@@ -232,8 +232,8 @@ Publicación del sitio: noticias, novedades, eventos, capacitaciones, etc. Los c
 | slug | String, único | Versión del título apta para direcciones web: minúsculas, sin acentos ni espacios, con guiones (por ejemplo jornada-de-geologia-minera-2026). Se genera a partir del título. |
 | resumen | String | Texto breve que se muestra en listados y tarjetas. |
 | cuerpo | Text | Texto completo. Se escribe con un editor rico (negrita, títulos, listas, enlaces) y se guarda con formato, por lo que conviene limpiar el HTML al guardar. |
-| estado\_publicacion | Choice | Situación del contenido: BORRADOR (en preparación), EN\_REVISION (esperando aprobación; disponible pero sin uso obligatorio por ahora), PUBLICADO, ARCHIVADO. |
-| fecha\_publicacion | DateTime, opcional | Desde cuándo es visible. Vacía: el contenido está creado pero nunca se publicó. Fecha futura: queda programado. Es visible cuando el estado es PUBLICADO y esa fecha ya llegó. |
+| estado\_publicacion | Choice | Situación del contenido: BORRADOR (en preparación / sin fecha), PROGRAMADO (con fecha futura), PUBLICADO (con fecha actual o pasada), ARCHIVADO (dado de baja / pausado). El estado se calcula automáticamente a partir de la fecha de publicación, o se puede forzar a ARCHIVADO. |
+| fecha\_publicacion | DateTime, opcional | Fecha y hora en que se publica o programa el contenido. Vacía por defecto: contenido en borrador. Con fecha futura: queda programado. Con fecha actual o pasada: queda publicado inmediatamente. |
 | visibilidad | Choice | Quién puede verlo: PUBLICO, MATRICULADOS, INTERNO (ver Reglas generales). |
 | destacado | Boolean | Si es verdadero, se resalta en un lugar destacado del sitio. Por defecto falso. |
 | fecha\_creacion | DateTime, automático | Cuándo se creó el contenido. |
@@ -570,5 +570,5 @@ El login se bloquea durante la suspension vigente y con la baja"
 note for ImagenContenido "Solo una imagen por contenido puede tener es_portada = True"
 note for DetalleEvento "Solo existe si el tipo de contenido lo amerita,
 ej: EVENTO, CAPACITACION"
-note for Contenido "fecha_publicacion vacia: nunca publicado. Fecha futura: programado"
+note for Contenido "fecha_publicacion vacia: BORRADOR. Fecha futura: PROGRAMADO. Fecha presente/pasada: PUBLICADO."
 ```
