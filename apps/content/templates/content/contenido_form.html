@@ -1,0 +1,461 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if is_create %}Crear Contenido Institucional{% else %}Editar Contenido{% endif %} - Colegio de Geólogos de Catamarca
+{% endblock %}
+
+{% block extra_head %}
+<!-- Quill Rich Text Editor (CDN) -->
+<link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+<style>
+    .ql-toolbar.ql-snow {
+        border-top-left-radius: 0.5rem;
+        border-top-right-radius: 0.5rem;
+        border-color: #cbd5e1;
+        background-color: #f8fafc;
+    }
+    .ql-container.ql-snow {
+        border-bottom-left-radius: 0.5rem;
+        border-bottom-right-radius: 0.5rem;
+        border-color: #cbd5e1;
+        font-family: inherit;
+        font-size: 0.875rem;
+        min-height: 220px;
+        background-color: #ffffff;
+    }
+    .ql-editor {
+        min-height: 220px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="bg-slate-50 min-h-screen py-8">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <!-- Navegación de migas de pan -->
+        <nav class="flex items-center text-xs text-slate-500 mb-6 space-x-2">
+            <a href="{% url 'accounts:dashboard' %}?tab=contenidos" class="hover:text-emerald-700 font-medium">← Volver al Dashboard (Contenidos)</a>
+        </nav>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <!-- Encabezado del Formulario -->
+            <div class="px-6 py-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/50">
+                <div>
+                    <h1 class="text-xl font-bold text-slate-900">
+                        {% if is_create %}Crear nuevo contenido institucional{% else %}Editar contenido{% endif %}
+                    </h1>
+                    <p class="text-xs text-slate-500 mt-1">
+                        Completá la información del comunicado, evento o noticia.
+                    </p>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="text-xs px-2.5 py-1 rounded-full font-semibold bg-emerald-100 text-emerald-800">
+                        Prensa & Difusión
+                    </span>
+                </div>
+            </div>
+
+            <!-- Formulario Principal -->
+            <form method="post" enctype="multipart/form-data" id="contenido-form" class="p-6 sm:p-8 space-y-6">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                <div class="rounded-lg bg-red-50 p-4 border border-red-200 text-xs text-red-700">
+                    {{ form.non_field_errors }}
+                </div>
+                {% endif %}
+                {% if evento_form.non_field_errors %}
+                <div class="rounded-lg bg-red-50 p-4 border border-red-200 text-xs text-red-700">
+                    {{ evento_form.non_field_errors }}
+                </div>
+                {% endif %}
+
+                <!-- SECCIÓN 1: DATOS PRINCIPALES -->
+                <div class="space-y-4">
+                    <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wider pb-2 border-b border-slate-100">
+                        1. Información de la Publicación
+                    </h2>
+
+                    <!-- Tipo y Visibilidad -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="{{ form.tipo.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
+                                Tipo de contenido *
+                            </label>
+                            {{ form.tipo }}
+                            {% if form.tipo.errors %}
+                            <p class="text-xs text-red-600 mt-1">{{ form.tipo.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label for="{{ form.visibilidad.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
+                                Visibilidad *
+                            </label>
+                            {{ form.visibilidad }}
+                            {% if form.visibilidad.errors %}
+                            <p class="text-xs text-red-600 mt-1">{{ form.visibilidad.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Título -->
+                    <div>
+                        <label for="{{ form.titulo.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
+                            Título *
+                        </label>
+                        {{ form.titulo }}
+                        {% if form.titulo.errors %}
+                        <p class="text-xs text-red-600 mt-1">{{ form.titulo.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Resumen -->
+                    <div>
+                        <label for="{{ form.resumen.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
+                            Resumen / Bajada *
+                        </label>
+                        {{ form.resumen }}
+                        <p class="text-[11px] text-slate-400 mt-1">{{ form.resumen.help_text }}</p>
+                        {% if form.resumen.errors %}
+                        <p class="text-xs text-red-600 mt-1">{{ form.resumen.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Cuerpo con Editor Rico (Quill) -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">
+                            Cuerpo del contenido *
+                        </label>
+                        <!-- Campo oculto donde se sincroniza el HTML de Quill -->
+                        {{ form.cuerpo }}
+                        <div id="quill-editor"></div>
+                        <p class="text-[11px] text-slate-400 mt-1">Podés aplicar negrita, cursiva, encabezados, listas con viñetas y enlaces.</p>
+                        {% if form.cuerpo.errors %}
+                        <p class="text-xs text-red-600 mt-1">{{ form.cuerpo.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Fecha de publicación y Estado dinámico -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start pt-2">
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <label for="{{ form.fecha_publicacion.id_for_label }}" class="block text-xs font-semibold text-slate-700">
+                                    Fecha y hora de publicación
+                                </label>
+                                <button type="button" id="btn-publicar-ahora" class="text-[11px] text-emerald-700 hover:text-emerald-900 font-semibold underline">
+                                    Publicar ahora
+                                </button>
+                            </div>
+                            {{ form.fecha_publicacion }}
+
+                            <!-- Indicador en tiempo real del estado calculado -->
+                            <div class="mt-2 p-2.5 rounded-lg border text-xs" id="indicador-estado-box">
+                                <span class="font-medium text-slate-500">Estado previsto:</span>
+                                <span id="indicador-estado-badge" class="ml-1.5 px-2 py-0.5 rounded-full font-semibold text-[11px]"></span>
+                                <p id="indicador-estado-desc" class="text-[11px] text-slate-500 mt-1"></p>
+                            </div>
+
+                            {% if form.fecha_publicacion.errors %}
+                            <p class="text-xs text-red-600 mt-1">{{ form.fecha_publicacion.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="sm:pt-6">
+                            <label class="inline-flex items-center space-x-2 cursor-pointer">
+                                {{ form.destacado }}
+                                <span class="text-xs font-semibold text-slate-700">Marcar como contenido destacado</span>
+                            </label>
+                            <p class="text-[11px] text-slate-400 mt-0.5 ml-6">{{ form.destacado.help_text }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN 2: IMAGEN DE PORTADA -->
+                <div class="space-y-4 pt-4 border-t border-slate-100">
+                    <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wider pb-2 border-b border-slate-100">
+                        2. Imagen Principal (Portada)
+                    </h2>
+
+                    {% if portada_actual %}
+                    <div class="flex items-center space-x-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
+                        <img src="{{ portada_actual.imagen.url }}" alt="{{ portada_actual.texto_alt }}" class="w-16 h-16 object-cover rounded-md border">
+                        <div class="text-xs text-slate-600">
+                            <p class="font-semibold text-slate-800">Portada actual</p>
+                            <p class="text-slate-500">{{ portada_actual.texto_alt|default:"Sin texto alternativo" }}</p>
+                            <p class="text-[11px] text-slate-400 mt-0.5">Subí un nuevo archivo solo si querés reemplazarla.</p>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">
+                            Seleccionar archivo de imagen
+                        </label>
+                        {{ form.imagen_portada }}
+                        <p class="text-[11px] text-slate-400 mt-1">{{ form.imagen_portada.help_text }}</p>
+                        {% if form.imagen_portada.errors %}
+                        <p class="text-xs text-red-600 mt-1">{{ form.imagen_portada.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="{{ form.texto_alt_portada.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
+                                Texto alternativo (alt)
+                            </label>
+                            {{ form.texto_alt_portada }}
+                            {% if form.texto_alt_portada.errors %}
+                            <p class="text-xs text-red-600 mt-1">{{ form.texto_alt_portada.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <label for="{{ form.epigrafe_portada.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
+                                Epígrafe (Pie de foto)
+                            </label>
+                            {{ form.epigrafe_portada }}
+                            {% if form.epigrafe_portada.errors %}
+                            <p class="text-xs text-red-600 mt-1">{{ form.epigrafe_portada.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Galería de imágenes adicionales -->
+                    <div class="pt-3 border-t border-slate-100">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">
+                            Imágenes adicionales para la galería (Opcional)
+                        </label>
+                        {{ form.imagenes_galeria }}
+                        <p class="text-[11px] text-slate-400 mt-1">{{ form.imagenes_galeria.help_text }}</p>
+                        {% if form.imagenes_galeria.errors %}
+                        <p class="text-xs text-red-600 mt-1">{{ form.imagenes_galeria.errors.0 }}</p>
+                        {% endif %}
+
+                        {% if galeria_actual %}
+                        <div class="mt-4">
+                            <p class="text-xs font-semibold text-slate-700 mb-2">Fotos actuales en la galería ({{ galeria_actual.count }}):</p>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                {% for img in galeria_actual %}
+                                <div class="relative group rounded-lg overflow-hidden border border-slate-200 bg-slate-50">
+                                    <img src="{{ img.imagen.url }}" alt="{{ img.texto_alt }}" class="w-full h-24 object-cover">
+                                    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-2">
+                                        <button type="submit" formaction="{% url 'content:imagen_delete' img.id %}" formmethod="post"
+                                            onclick="return confirm('¿Eliminar esta foto de la galería?');"
+                                            class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white text-[11px] font-semibold rounded shadow">
+                                            Eliminar
+                                        </button>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- SECCIÓN 3: DETALLE DE EVENTO (CONDICIONAL) -->
+                <div id="seccion-evento" class="space-y-4 pt-4 border-t border-slate-100 {% if form.tipo.value != 'EVENTO' and form.tipo.value != 'CAPACITACION' %}hidden{% endif %}">
+                    <div class="flex items-center justify-between pb-2 border-b border-amber-200">
+                        <h2 class="text-sm font-bold text-amber-900 uppercase tracking-wider flex items-center">
+                            <span class="w-2 h-2 rounded-full bg-amber-500 mr-2"></span>
+                            3. Datos Específicos del Evento o Capacitación
+                        </h2>
+                        <span class="text-[11px] text-amber-700 font-medium">Requerido para eventos</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="{{ evento_form.inicio.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
+                                Fecha y hora de inicio *
+                            </label>
+                            {{ evento_form.inicio }}
+                            {% if evento_form.inicio.errors %}
+                            <p class="text-xs text-red-600 mt-1">{{ evento_form.inicio.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <label for="{{ evento_form.fin.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
+                                Fecha y hora de finalización (opcional)
+                            </label>
+                            {{ evento_form.fin }}
+                            {% if evento_form.fin.errors %}
+                            <p class="text-xs text-red-600 mt-1">{{ evento_form.fin.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="{{ evento_form.lugar.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
+                                Lugar o plataforma *
+                            </label>
+                            {{ evento_form.lugar }}
+                            {% if evento_form.lugar.errors %}
+                            <p class="text-xs text-red-600 mt-1">{{ evento_form.lugar.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <label for="{{ evento_form.modalidad.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
+                                Modalidad *
+                            </label>
+                            {{ evento_form.modalidad }}
+                            {% if evento_form.modalidad.errors %}
+                            <p class="text-xs text-red-600 mt-1">{{ evento_form.modalidad.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="{{ evento_form.link_inscripcion.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
+                                Enlace de inscripción (opcional)
+                            </label>
+                            {{ evento_form.link_inscripcion }}
+                            {% if evento_form.link_inscripcion.errors %}
+                            <p class="text-xs text-red-600 mt-1">{{ evento_form.link_inscripcion.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <label for="{{ evento_form.cupo.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
+                                Cupo de participantes (opcional)
+                            </label>
+                            {{ evento_form.cupo }}
+                            {% if evento_form.cupo.errors %}
+                            <p class="text-xs text-red-600 mt-1">{{ evento_form.cupo.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BOTONES DE ACCIÓN -->
+                <div class="flex items-center justify-end space-x-3 pt-6 border-t border-slate-100">
+                    <a href="{% url 'accounts:dashboard' %}?tab=contenidos"
+                        class="px-5 py-2.5 rounded-lg border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition">
+                        Cancelar
+                    </a>
+                    <button type="submit"
+                        class="inline-flex items-center px-6 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-sm transition">
+                        {% if is_create %}Guardar contenido{% else %}Guardar cambios{% endif %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Quill Rich Text Editor Script -->
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // 1. Inicializar Quill
+        const hiddenInput = document.getElementById('id_cuerpo');
+        const quill = new Quill('#quill-editor', {
+            theme: 'snow',
+            placeholder: 'Redactá el comunicado institucional, temario del evento o noticia...',
+            modules: {
+                toolbar: [
+                    [{ 'header': [1, 2, 3, false] }],
+                    ['bold', 'italic', 'underline', 'strike'],
+                    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                    ['blockquote', 'link'],
+                    ['clean']
+                ]
+            }
+        });
+
+        // Si ya hay contenido previo (edición), cargarlo en Quill
+        if (hiddenInput && hiddenInput.value) {
+            quill.root.innerHTML = hiddenInput.value;
+        }
+
+        // Al enviar el formulario, sincronizar Quill -> input hidden
+        const form = document.getElementById('contenido-form');
+        if (form) {
+            form.addEventListener('submit', function () {
+                if (hiddenInput && quill) {
+                    const html = quill.root.innerHTML;
+                    if (quill.getText().trim().length === 0 && !html.includes('<img')) {
+                        hiddenInput.value = '';
+                    } else {
+                        hiddenInput.value = html;
+                    }
+                }
+            });
+        }
+
+        // 2. Control de visibilidad y campos de sección Evento
+        const tipoSelect = document.getElementById('id_tipo');
+        const seccionEvento = document.getElementById('seccion-evento');
+        const eventoInputs = seccionEvento ? seccionEvento.querySelectorAll('input, select') : [];
+
+        function toggleEvento() {
+            const val = tipoSelect ? tipoSelect.value : '';
+            const esEvento = (val === 'EVENTO' || val === 'CAPACITACION');
+            if (esEvento) {
+                seccionEvento.classList.remove('hidden');
+                eventoInputs.forEach(el => el.disabled = false);
+            } else {
+                seccionEvento.classList.add('hidden');
+                // Deshabilitar campos para que el navegador no los valide ni envíe
+                eventoInputs.forEach(el => el.disabled = true);
+            }
+        }
+
+        if (tipoSelect) {
+            tipoSelect.addEventListener('change', toggleEvento);
+            toggleEvento();
+        }
+
+        // 3. Indicador dinámico de estado de publicación según la fecha
+        const fechaInput = document.getElementById('id_fecha_publicacion');
+        const btnPublicarAhora = document.getElementById('btn-publicar-ahora');
+        const box = document.getElementById('indicador-estado-box');
+        const badge = document.getElementById('indicador-estado-badge');
+        const desc = document.getElementById('indicador-estado-desc');
+
+        function actualizarIndicadorEstado() {
+            const val = fechaInput.value;
+            if (!val) {
+                // Borrador / Pausa
+                box.className = 'mt-2 p-2.5 rounded-lg border text-xs bg-slate-50 border-slate-200';
+                badge.className = 'ml-1.5 px-2 py-0.5 rounded-full font-semibold text-[11px] bg-slate-200 text-slate-700';
+                badge.textContent = 'Borrador / Pausa';
+                desc.textContent = 'La publicación no será visible públicamente. Permanecerá guardada para editar.';
+            } else {
+                const fechaSeleccionada = new Date(val);
+                const ahora = new Date();
+                if (fechaSeleccionada > ahora) {
+                    // Programada
+                    box.className = 'mt-2 p-2.5 rounded-lg border text-xs bg-amber-50 border-amber-200';
+                    badge.className = 'ml-1.5 px-2 py-0.5 rounded-full font-semibold text-[11px] bg-amber-100 text-amber-800';
+                    badge.textContent = 'Programado';
+                    desc.textContent = 'La publicación se activará automáticamente cuando llegue la fecha y hora indicada.';
+                } else {
+                    // Publicada
+                    box.className = 'mt-2 p-2.5 rounded-lg border text-xs bg-emerald-50 border-emerald-200';
+                    badge.className = 'ml-1.5 px-2 py-0.5 rounded-full font-semibold text-[11px] bg-emerald-100 text-emerald-800';
+                    badge.textContent = 'Publicación instantánea';
+                    desc.textContent = 'La publicación será visible de inmediato según su visibilidad.';
+                }
+            }
+        }
+
+        if (fechaInput) {
+            fechaInput.addEventListener('input', actualizarIndicadorEstado);
+            fechaInput.addEventListener('change', actualizarIndicadorEstado);
+            actualizarIndicadorEstado();
+        }
+
+        if (btnPublicarAhora) {
+            btnPublicarAhora.addEventListener('click', function () {
+                const now = new Date();
+                const offset = now.getTimezoneOffset() * 60000;
+                const localISOTime = (new Date(now.getTime() - offset)).toISOString().slice(0, 16);
+                fechaInput.value = localISOTime;
+                actualizarIndicadorEstado();
+            });
+        }
+    });
+</script>
+{% endblock %}

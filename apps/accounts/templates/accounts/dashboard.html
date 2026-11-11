@@ -87,7 +87,7 @@
                         {% endif %}
 
                         <!-- SECCIÓN PRENSA & DIFUSIÓN -->
-                        {% if perms.content.add_article or perms.content.change_article or user.is_superuser %}
+                        {% if can_manage_content %}
                         <div class="pt-3">
                             <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">Prensa & Difusión</span>
                         </div>
@@ -694,35 +694,194 @@
                 {% endif %}
 
                 <!-- TAB 3: GESTIÓN DE CONTENIDOS (Controlada por permisos de contenido) -->
-                {% if perms.content.add_article or perms.content.change_article or user.is_superuser %}
+                {% if can_manage_content %}
                 <div id="tab-contenidos" class="tab-pane {% if current_tab != 'contenidos' %}hidden{% endif %} space-y-4">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div>
                             <h1 class="text-2xl font-bold text-slate-900">Gestión de Contenidos</h1>
                             <p class="text-sm text-slate-500 mt-0.5">Creación y publicación de noticias, novedades y eventos institucionales.</p>
                         </div>
-                        <button type="button" onclick="alert('La funcionalidad completa de creación de contenidos se activará cuando los modelos de novedades estén listos.')"
-                            class="inline-flex items-center px-4 py-2 bg-[#143d32] hover:bg-[#0d2821] text-white text-sm font-semibold rounded-lg shadow-sm transition">
+                        <a href="{% url 'content:contenido_create' %}"
+                            class="inline-flex items-center px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-sm transition">
                             <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                             </svg>
-                            + Crear contenido
-                        </button>
+                            Crear contenido
+                        </a>
                     </div>
 
-                    <!-- Tarjeta / Tabla de contenidos -->
+                    <!-- Pestañas y Filtros de Búsqueda -->
                     <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                        <div class="p-6 text-center text-slate-500">
-                            <div class="mx-auto w-12 h-12 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center mb-3">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-                                </svg>
+                        <div class="p-4 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-3 bg-slate-50/50">
+                            <!-- Filtros rápidos por Tipo -->
+                            <div class="flex flex-wrap items-center gap-1.5 text-xs font-medium">
+                                <a href="?tab=contenidos"
+                                    class="px-3 py-1.5 rounded-lg transition {% if not tipo_filtro %}bg-emerald-600 text-white font-semibold shadow-sm{% else %}bg-white text-slate-600 hover:bg-slate-100 border border-slate-200{% endif %}">
+                                    Todas
+                                </a>
+                                {% for val, label in tipos_contenido %}
+                                <a href="?tab=contenidos&tipo_cont={{ val }}{% if q_cont %}&q_cont={{ q_cont }}{% endif %}"
+                                    class="px-3 py-1.5 rounded-lg transition {% if tipo_filtro == val %}bg-emerald-600 text-white font-semibold shadow-sm{% else %}bg-white text-slate-600 hover:bg-slate-100 border border-slate-200{% endif %}">
+                                    {{ label }}
+                                </a>
+                                {% endfor %}
                             </div>
-                            <h4 class="font-semibold text-slate-900">Módulo de Contenidos Institucionales</h4>
-                            <p class="text-xs text-slate-500 max-w-md mx-auto mt-1">
-                                Podrás redactar y clasificar publicaciones (Novedades, Noticias, Eventos) para la portada institucional.
-                            </p>
+
+                            <!-- Buscador -->
+                            <form method="get" class="flex items-center space-x-2">
+                                <input type="hidden" name="tab" value="contenidos">
+                                {% if tipo_filtro %}<input type="hidden" name="tipo_cont" value="{{ tipo_filtro }}">{% endif %}
+                                <div class="relative flex items-center">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                        </svg>
+                                    </span>
+                                    <input type="text" name="q_cont" value="{{ q_cont }}" placeholder="Buscar por título..."
+                                        class="w-48 sm:w-64 pl-9 pr-3 py-1.5 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-1 focus:ring-emerald-600 bg-white leading-normal">
+                                </div>
+                                <button type="submit" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white text-xs font-medium rounded-lg transition">
+                                    Buscar
+                                </button>
+                                {% if q_cont %}
+                                <a href="?tab=contenidos{% if tipo_filtro %}&tipo_cont={{ tipo_filtro }}{% endif %}" class="text-xs text-slate-400 hover:text-slate-600">
+                                    Limpiar
+                                </a>
+                                {% endif %}
+                            </form>
+                        </div>
+
+                        <!-- Tabla de Contenidos -->
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-slate-50 text-slate-500 text-xs uppercase font-semibold border-b border-slate-200">
+                                    <tr>
+                                        <th class="px-5 py-3.5">Título / Resumen</th>
+                                        <th class="px-3 py-3.5">Tipo</th>
+                                        <th class="px-3 py-3.5">Fecha</th>
+                                        <th class="px-3 py-3.5">Visibilidad</th>
+                                        <th class="px-3 py-3.5">Estado</th>
+                                        <th class="px-5 py-3.5 text-right">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    {% for cont in contenidos_list %}
+                                    <tr class="hover:bg-slate-50/70 transition">
+                                        <td class="px-5 py-3.5">
+                                            <div class="flex items-center space-x-3">
+                                                {% if cont.imagen_portada %}
+                                                <img src="{{ cont.imagen_portada.imagen.url }}" alt="{{ cont.titulo }}" class="w-10 h-10 object-cover rounded-lg border border-slate-200 shrink-0">
+                                                {% else %}
+                                                <div class="w-10 h-10 rounded-lg bg-slate-100 text-slate-400 flex items-center justify-center shrink-0">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                    </svg>
+                                                </div>
+                                                {% endif %}
+                                                <div>
+                                                    <div class="flex items-center space-x-2">
+                                                        <p class="font-semibold text-slate-900 text-xs sm:text-sm line-clamp-1">{{ cont.titulo }}</p>
+                                                        {% if cont.destacado %}
+                                                        <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800">★ Destacado</span>
+                                                        {% endif %}
+                                                    </div>
+                                                    <p class="text-xs text-slate-500 line-clamp-1 mt-0.5">{{ cont.resumen }}</p>
+                                                    <span class="text-[10px] text-slate-400">Por {{ cont.creado_por.get_full_name|default:cont.creado_por.username }}</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-3 py-3.5 whitespace-nowrap">
+                                            <span class="px-2 py-0.5 rounded text-xs font-semibold
+                                                {% if cont.tipo == 'NOTICIA' %}bg-emerald-100 text-emerald-800
+                                                {% elif cont.tipo == 'NOVEDAD' %}bg-blue-100 text-blue-800
+                                                {% elif cont.tipo == 'EVENTO' %}bg-amber-100 text-amber-800
+                                                {% elif cont.tipo == 'CAPACITACION' %}bg-purple-100 text-purple-800
+                                                {% else %}bg-slate-100 text-slate-700{% endif %}">
+                                                {{ cont.get_tipo_display }}
+                                            </span>
+                                        </td>
+                                        <td class="px-3 py-3.5 whitespace-nowrap text-xs text-slate-600">
+                                            {% if cont.fecha_publicacion %}
+                                            <span class="font-medium text-slate-800">{{ cont.fecha_publicacion|date:"d/m/Y H:i" }}</span>
+                                            {% else %}
+                                            <span class="text-slate-400 italic">Sin fecha (Borrador)</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="px-3 py-3.5 whitespace-nowrap text-xs text-slate-600">
+                                            <span class="text-[11px] font-medium text-slate-600">{{ cont.get_visibilidad_display }}</span>
+                                        </td>
+                                        <td class="px-3 py-3.5 whitespace-nowrap">
+                                            {% if cont.estado_publicacion == 'PUBLICADO' %}
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-100 text-emerald-800">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 mr-1.5"></span>
+                                                Publicado
+                                            </span>
+                                            {% elif cont.estado_publicacion == 'PROGRAMADO' %}
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-amber-100 text-amber-800">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5"></span>
+                                                Programado
+                                            </span>
+                                            {% elif cont.estado_publicacion == 'BORRADOR' %}
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 text-slate-600">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-slate-400 mr-1.5"></span>
+                                                Borrador
+                                            </span>
+                                            {% else %}
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 text-slate-500">
+                                                Archivado
+                                            </span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="px-5 py-3.5 whitespace-nowrap text-right">
+                                            <div class="flex items-center justify-end space-x-2">
+                                                <!-- Toggle de estado rápido -->
+                                                <form method="post" action="{% url 'content:contenido_toggle_estado' cont.id %}" class="inline">
+                                                    {% csrf_token %}
+                                                    <button type="submit" title="{% if cont.estado_publicacion == 'PUBLICADO' %}Pasar a Borrador{% else %}Publicar{% endif %}"
+                                                        class="p-1 rounded text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 transition">
+                                                        {% if cont.estado_publicacion == 'PUBLICADO' %}
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+                                                        </svg>
+                                                        {% else %}
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                        </svg>
+                                                        {% endif %}
+                                                    </button>
+                                                </form>
+
+                                                <!-- Editar -->
+                                                <a href="{% url 'content:contenido_edit' cont.id %}" title="Editar contenido"
+                                                    class="p-1 rounded text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 transition">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                                    </svg>
+                                                </a>
+
+                                                <!-- Eliminar -->
+                                                <form method="post" action="{% url 'content:contenido_delete' cont.id %}" class="inline" onsubmit="return confirm('¿Confirmás eliminar el contenido «{{ cont.titulo|escapejs }}»?');">
+                                                    {% csrf_token %}
+                                                    <button type="submit" title="Eliminar"
+                                                        class="p-1 rounded text-slate-400 hover:text-red-700 hover:bg-red-50 transition">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                        </svg>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="6" class="px-6 py-12 text-center text-slate-400 text-xs">
+                                            No se encontraron contenidos cargados con los filtros aplicados.
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>

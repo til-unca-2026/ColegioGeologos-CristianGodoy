@@ -52,6 +52,12 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             or user.has_perm("accounts.change_membresiacomision")
             or user.is_superuser
         )
+        can_manage_content = (
+            user.is_superuser
+            or user.groups.filter(name__in=["administradores", "colaboradores"]).exists()
+            or user.has_perm("content.add_contenido")
+            or user.has_perm("content.change_contenido")
+        )
 
         # Consulta de datos matriculares propios si el usuario está matriculado
         from apps.directory.models import Matriculado
@@ -74,6 +80,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             "can_manage_users": can_manage_users,
             "can_manage_matriculados": can_manage_matriculados,
             "can_manage_comision": can_manage_comision,
+            "can_manage_content": can_manage_content,
             "mi_matricula": mi_matricula,
             "mis_titulos": mis_titulos,
             "mi_estado_actual": mi_estado_actual,
@@ -146,6 +153,24 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             context["comision_filtro"] = comision_filtro
             context["estado_filtro"] = estado_filtro
             context["comisiones_disponibles"] = MembresiaComision.Comision.choices
+
+        if can_manage_content:
+            from apps.content.models import Contenido
+            tipo_filtro = self.request.GET.get("tipo_cont", "")
+            q_cont = self.request.GET.get("q_cont", "").strip()
+
+            cont_qs = Contenido.objects.select_related("creado_por").prefetch_related("imagenes").order_by("-fecha_creacion")
+            if tipo_filtro:
+                cont_qs = cont_qs.filter(tipo=tipo_filtro)
+            if q_cont:
+                cont_qs = cont_qs.filter(
+                    Q(titulo__icontains=q_cont) | Q(resumen__icontains=q_cont)
+                )
+
+            context["contenidos_list"] = cont_qs
+            context["tipo_filtro"] = tipo_filtro
+            context["q_cont"] = q_cont
+            context["tipos_contenido"] = Contenido.Tipo.choices
 
         return context
 

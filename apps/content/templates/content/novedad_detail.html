@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+
+{% block title %}{{ novedad.titulo }} - Colegio de Geólogos de Catamarca{% endblock %}
+
+{% block content %}
+<div class="bg-slate-50 min-h-screen py-8">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <!-- Botón Volver y Acciones -->
+        <div class="mb-6 flex items-center justify-between">
+            <a href="{% url 'content:novedades_list' %}"
+                class="inline-flex items-center text-sm font-semibold text-emerald-700 hover:text-emerald-800 transition group">
+                <svg class="w-4 h-4 mr-1.5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Volver a Novedades y Noticias
+            </a>
+            <div class="flex items-center space-x-2">
+                <button onclick="window.print()"
+                    class="hidden sm:inline-flex items-center text-xs font-medium text-slate-500 hover:text-slate-800 gap-1 bg-white px-2.5 py-1.5 rounded-lg border border-slate-200 shadow-sm">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                    </svg>
+                    Imprimir / Guardar
+                </button>
+                {% if user.is_authenticated and user.is_superuser or perms.content.change_contenido %}
+                <a href="{% url 'content:contenido_edit' novedad.id %}"
+                    class="inline-flex items-center text-xs font-medium text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-2.5 py-1.5 rounded-lg border border-emerald-200 transition">
+                    Editar publicación
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Artículo Completo -->
+        <article class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-8">
+            <!-- Imagen de Cabecera -->
+            {% if portada %}
+            <div class="h-64 sm:h-80 md:h-96 w-full relative overflow-hidden bg-slate-900">
+                <img src="{{ portada.imagen.url }}" alt="{{ portada.texto_alt|default:novedad.titulo }}" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
+                <div class="absolute bottom-4 left-4 right-4 flex items-center gap-2">
+                    <span class="px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase bg-emerald-700 text-white shadow">
+                        {{ novedad.get_tipo_display }}
+                    </span>
+                    {% if novedad.destacado %}
+                    <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500 text-white shadow">
+                        ★ Destacado
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+            {% if portada.epigrafe %}
+            <p class="px-6 sm:px-10 py-2 text-xs text-slate-400 bg-slate-50 border-b border-slate-100 italic">
+                Foto: {{ portada.epigrafe }}
+            </p>
+            {% endif %}
+            {% endif %}
+
+            <!-- Contenido del Artículo -->
+            <div class="p-6 sm:p-10">
+                <!-- Metadatos de publicación -->
+                <div class="flex flex-wrap items-center justify-between gap-3 text-xs text-slate-500 pb-4 border-b border-slate-100 mb-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs">
+                            {{ novedad.creado_por.first_name|first|default:"C" }}{{ novedad.creado_por.last_name|first|default:"G" }}
+                        </div>
+                        <div>
+                            <p class="font-semibold text-slate-900">Por {{ novedad.creado_por.get_full_name|default:novedad.creado_por.username }}</p>
+                            <p class="text-[11px] text-slate-400">Colegio de Geólogos de Catamarca</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2 text-xs text-slate-500 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200">
+                        <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span>Publicado el <strong>{% if novedad.fecha_publicacion %}{{ novedad.fecha_publicacion|date:"d/m/Y H:i" }}{% else %}{{ novedad.fecha_creacion|date:"d/m/Y H:i" }}{% endif %} hs</strong></span>
+                    </div>
+                </div>
+
+                <!-- Título Principal -->
+                <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 leading-tight mb-6">
+                    {{ novedad.titulo }}
+                </h1>
+
+                <!-- Bajada / Resumen Destacado -->
+                <div class="text-base sm:text-lg text-slate-700 font-medium leading-relaxed bg-emerald-50/60 p-4 sm:p-5 rounded-xl border-l-4 border-emerald-600 mb-8">
+                    {{ novedad.resumen }}
+                </div>
+
+                <!-- Detalle de Evento si corresponde -->
+                {% if novedad.detalle_evento %}
+                <div class="mb-8 p-5 bg-amber-50/80 rounded-xl border border-amber-200">
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-amber-900 mb-3 flex items-center">
+                        <svg class="w-4 h-4 mr-1.5 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        Datos de la actividad
+                    </h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-700">
+                        <div>
+                            <span class="font-semibold text-slate-900">Fecha y hora:</span>
+                            {{ novedad.detalle_evento.inicio|date:"d/m/Y H:i" }} hs
+                            {% if novedad.detalle_evento.fin %} a {{ novedad.detalle_evento.fin|date:"H:i" }} hs{% endif %}
+                        </div>
+                        <div>
+                            <span class="font-semibold text-slate-900">Modalidad:</span>
+                            {{ novedad.detalle_evento.get_modalidad_display }}
+                        </div>
+                        <div>
+                            <span class="font-semibold text-slate-900">Lugar:</span>
+                            {{ novedad.detalle_evento.lugar }}
+                        </div>
+                        {% if novedad.detalle_evento.cupo %}
+                        <div>
+                            <span class="font-semibold text-slate-900">Cupo:</span>
+                            {{ novedad.detalle_evento.cupo }} asistentes
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% if novedad.detalle_evento.link_inscripcion %}
+                    <div class="mt-4 pt-3 border-t border-amber-200/60">
+                        <a href="{{ novedad.detalle_evento.link_inscripcion }}" target="_blank" rel="noopener noreferrer"
+                            class="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-lg transition shadow-sm">
+                            Completar formulario de inscripción →
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <!-- Cuerpo Extenso de la Nota (con formato de Quill / HTML) -->
+                <div class="prose max-w-none text-slate-700 text-sm sm:text-base leading-relaxed space-y-4">
+                    {{ novedad.cuerpo|safe }}
+                </div>
+
+                <!-- Galería de imágenes adicionales si las hay -->
+                {% if otras_imagenes %}
+                <div class="mt-8 pt-6 border-t border-slate-100">
+                    <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4">Galería de imágenes</h2>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                        {% for img in otras_imagenes %}
+                        <div class="group relative rounded-xl overflow-hidden border border-slate-200 bg-slate-100">
+                            <img src="{{ img.imagen.url }}" alt="{{ img.texto_alt }}" class="w-full h-36 object-cover group-hover:scale-105 transition-transform duration-300">
+                            {% if img.epigrafe %}
+                            <p class="p-2 text-[11px] text-slate-500 bg-white border-t border-slate-100">{{ img.epigrafe }}</p>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Pie de la nota: Etiquetas y Compartir -->
+                <div class="mt-10 pt-6 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex items-center space-x-2 text-xs text-slate-500">
+                        <span class="font-semibold">Categoría:</span>
+                        <span class="px-2.5 py-1 bg-slate-100 rounded-md text-slate-700 font-medium">#{{ novedad.get_tipo_display }}</span>
+                        <span class="px-2.5 py-1 bg-slate-100 rounded-md text-slate-700 font-medium">#Institucional</span>
+                    </div>
+                    <button onclick="navigator.clipboard.writeText(window.location.href); alert('Enlace de la publicación copiado al portapapeles.');"
+                        class="px-3.5 py-1.5 rounded-lg border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                        </svg>
+                        Compartir enlace
+                    </button>
+                </div>
+            </div>
+        </article>
+
+        <!-- Artículos Relacionados -->
+        {% if relacionadas %}
+        <div class="mt-12 mb-8">
+            <h2 class="text-xl font-bold text-slate-900 mb-6">Otras publicaciones recientes</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                {% for r in relacionadas %}
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition">
+                    <a href="{% url 'content:novedad_detail' r.slug %}" class="block h-32 bg-slate-100 overflow-hidden">
+                        {% if r.imagen_portada %}
+                        <img src="{{ r.imagen_portada.imagen.url }}" alt="{{ r.titulo }}" class="w-full h-full object-cover">
+                        {% endif %}
+                    </a>
+                    <div class="p-4">
+                        <span class="text-[10px] font-bold uppercase text-emerald-700">{{ r.get_tipo_display }}</span>
+                        <a href="{% url 'content:novedad_detail' r.slug %}">
+                            <h3 class="font-bold text-slate-900 text-xs sm:text-sm line-clamp-2 mt-1 hover:text-emerald-800 transition">{{ r.titulo }}</h3>
+                        </a>
+                        <p class="text-[11px] text-slate-400 mt-2">{{ r.fecha_publicacion|date:"d/m/Y" }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}
+

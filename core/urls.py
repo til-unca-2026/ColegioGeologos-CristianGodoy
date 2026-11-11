@@ -18,13 +18,14 @@ from django.contrib import admin
 from django.urls import include, path
 from django.views.generic import TemplateView
 
-from .views import site_under_construction
+from .views import HomeView, site_under_construction
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('apps.accounts.urls')),
     path('directory/', include('apps.directory.urls')),
-    path('', TemplateView.as_view(template_name='home.html'), name='home'),
+    path('content/', include('apps.content.urls')),
+    path('', HomeView.as_view(), name='home'),
     path('site-under-construction/', site_under_construction, name='site_under_construction'),
 ]
 
