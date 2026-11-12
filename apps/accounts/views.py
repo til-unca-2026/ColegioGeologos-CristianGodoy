@@ -54,9 +54,15 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         )
         can_manage_content = (
             user.is_superuser
-            or user.groups.filter(name__in=["administradores", "colaboradores"]).exists()
+            or user.groups.filter(name__in=["administradores", "colaboradores", "Administradores", "Colaboradores"]).exists()
             or user.has_perm("content.add_contenido")
             or user.has_perm("content.change_contenido")
+        )
+        can_manage_documents = (
+            user.is_superuser
+            or user.groups.filter(name__in=["administradores", "Administradores"]).exists()
+            or user.has_perm("documents.add_documento")
+            or user.has_perm("documents.change_documento")
         )
 
         # Consulta de datos matriculares propios si el usuario está matriculado
@@ -81,6 +87,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             "can_manage_matriculados": can_manage_matriculados,
             "can_manage_comision": can_manage_comision,
             "can_manage_content": can_manage_content,
+            "can_manage_documents": can_manage_documents,
             "mi_matricula": mi_matricula,
             "mis_titulos": mis_titulos,
             "mi_estado_actual": mi_estado_actual,
@@ -171,6 +178,32 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             context["tipo_filtro"] = tipo_filtro
             context["q_cont"] = q_cont
             context["tipos_contenido"] = Contenido.Tipo.choices
+
+        if can_manage_documents:
+            from apps.documents.models import Documento
+            cat_filtro = self.request.GET.get("cat_doc", "")
+            q_doc = self.request.GET.get("q_doc", "").strip()
+            vigente_filtro = self.request.GET.get("vigente_doc", "")
+
+            doc_qs = Documento.objects.select_related("creado_por").order_by("-fecha_documento", "-fecha_creacion")
+            if cat_filtro:
+                doc_qs = doc_qs.filter(categoria=cat_filtro)
+            if vigente_filtro == "si":
+                doc_qs = doc_qs.filter(vigente=True)
+            elif vigente_filtro == "no":
+                doc_qs = doc_qs.filter(vigente=False)
+            if q_doc:
+                doc_qs = doc_qs.filter(
+                    Q(titulo__icontains=q_doc)
+                    | Q(numero__icontains=q_doc)
+                    | Q(descripcion__icontains=q_doc)
+                )
+
+            context["documentos_list"] = doc_qs
+            context["cat_filtro"] = cat_filtro
+            context["q_doc"] = q_doc
+            context["vigente_filtro"] = vigente_filtro
+            context["categorias_documento"] = Documento.Categoria.choices
 
         return context
 

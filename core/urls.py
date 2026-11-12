@@ -25,6 +25,7 @@ urlpatterns = [
     path('accounts/', include('apps.accounts.urls')),
     path('directory/', include('apps.directory.urls')),
     path('content/', include('apps.content.urls')),
+    path('documents/', include('apps.documents.urls')),
     path('', HomeView.as_view(), name='home'),
     path('site-under-construction/', site_under_construction, name='site_under_construction'),
 ]

@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.utils import timezone
 from django.views.generic import TemplateView
 from apps.content.models import Contenido
+from apps.documents.models import Documento
 
 
 class HomeView(TemplateView):
@@ -41,8 +42,20 @@ class HomeView(TemplateView):
             .order_by("detalle_evento__inicio", "-fecha_publicacion")[:2]
         )
 
+        # 3. Documentos Oficiales vigentes y accesibles
+        doc_qs = Documento.objects.filter(vigente=True)
+        if not user.is_authenticated:
+            doc_qs = doc_qs.filter(visibilidad=Documento.Visibilidad.PUBLICO)
+        else:
+            es_staff = user.is_superuser or user.groups.filter(name__in=["administradores", "colaboradores", "Administradores", "Colaboradores"]).exists()
+            if not es_staff:
+                doc_qs = doc_qs.filter(visibilidad__in=[Documento.Visibilidad.PUBLICO, Documento.Visibilidad.MATRICULADOS])
+
+        documentos_recientes = doc_qs.order_by("-fecha_documento", "-fecha_creacion")[:3]
+
         context["home_noticias"] = noticias_qs
         context["home_eventos"] = eventos_qs
+        context["home_documentos"] = documentos_recientes
         return context
 
 
