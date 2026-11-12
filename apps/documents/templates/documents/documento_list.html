@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+
+{% block title %}Documentos Oficiales e Institucionales - Colegio de Geólogos de Catamarca{% endblock %}
+
+{% block content %}
+<div class="bg-slate-50 min-h-screen py-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+
+        <!-- Encabezado de la Sección -->
+        <div class="text-center max-w-3xl mx-auto space-y-3">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 tracking-wide uppercase">
+                Marco Legal y Normativo
+            </span>
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+                Documentos Institucionales
+            </h1>
+            <p class="text-slate-600 text-sm sm:text-base leading-relaxed">
+                Consultá y descargá leyes, estatutos, reglamentos, resoluciones y normativas oficiales que rigen el funcionamiento del Colegio de Geólogos de Catamarca y el ejercicio profesional.
+            </p>
+        </div>
+
+        <!-- Barra de Búsqueda y Filtros -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
+            
+            <!-- Filtro de Categorías (Pills) -->
+            <div class="flex flex-wrap items-center gap-2 border-b border-slate-100 pb-4">
+                <a href="?{% if q %}q={{ q }}&{% endif %}{% if vigencia_actual != 'vigentes' %}vigencia={{ vigencia_actual }}{% endif %}"
+                    class="px-4 py-2 rounded-xl text-xs font-semibold transition {% if not categoria_actual %}bg-emerald-700 text-white shadow-sm{% else %}bg-slate-100 text-slate-600 hover:bg-slate-200{% endif %}">
+                    Todas las categorías
+                </a>
+                {% for val, label in categorias_disponibles %}
+                <a href="?categoria={{ val }}{% if q %}&q={{ q }}{% endif %}{% if vigencia_actual != 'vigentes' %}&vigencia={{ vigencia_actual }}{% endif %}"
+                    class="px-4 py-2 rounded-xl text-xs font-semibold transition {% if categoria_actual == val %}bg-emerald-700 text-white shadow-sm{% else %}bg-slate-100 text-slate-600 hover:bg-slate-200{% endif %}">
+                    {{ label }}s
+                </a>
+                {% endfor %}
+            </div>
+
+            <!-- Buscador y Filtro de Vigencia -->
+            <form method="get" class="flex flex-col sm:flex-row items-center gap-3">
+                {% if categoria_actual %}
+                <input type="hidden" name="categoria" value="{{ categoria_actual }}">
+                {% endif %}
+
+                <!-- Input Buscador -->
+                <div class="relative flex-1 w-full">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </span>
+                    <input type="text" name="q" value="{{ q }}" placeholder="Buscar por número, título o descripción..."
+                        class="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white placeholder-slate-400">
+                </div>
+
+                <!-- Selector de Vigencia -->
+                <div class="w-full sm:w-auto">
+                    <select name="vigencia" onchange="this.form.submit()"
+                        class="w-full sm:w-auto py-2.5 px-4 text-sm rounded-xl border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-700">
+                        <option value="vigentes" {% if vigencia_actual == 'vigentes' %}selected{% endif %}>Solo vigentes</option>
+                        <option value="todos" {% if vigencia_actual == 'todos' %}selected{% endif %}>Todos (vigentes e históricos)</option>
+                        <option value="no_vigentes" {% if vigencia_actual == 'no_vigentes' %}selected{% endif %}>Históricos / Derogados</option>
+                    </select>
+                </div>
+
+                <!-- Botón Buscar -->
+                <button type="submit"
+                    class="w-full sm:w-auto px-5 py-2.5 bg-slate-800 hover:bg-slate-900 text-white text-sm font-semibold rounded-xl shadow-sm transition">
+                    Buscar
+                </button>
+
+                {% if q or categoria_actual or vigencia_actual != 'vigentes' %}
+                <a href="{% url 'documents:documento_list' %}"
+                    class="w-full sm:w-auto text-center px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-sm font-medium transition">
+                    Limpiar
+                </a>
+                {% endif %}
+            </form>
+        </div>
+
+        <!-- Indicador de Resultados -->
+        <div class="flex items-center justify-between text-xs text-slate-500 px-1">
+            <span>Se encontraron <strong>{{ total_documentos }}</strong> documento{{ total_documentos|pluralize }}</span>
+            {% if not user.is_authenticated %}
+            <span class="text-slate-400">
+                ¿Sos matriculado? <a href="{% url 'accounts:login' %}" class="text-emerald-700 font-semibold hover:underline">Iniciá sesión</a> para ver normativas exclusivas.
+            </span>
+            {% endif %}
+        </div>
+
+        <!-- Grilla de Documentos -->
+        {% if documentos %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for doc in documentos %}
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-xs hover:shadow-md transition-all flex flex-col justify-between overflow-hidden group">
+                
+                <div class="p-6 space-y-4">
+                    <!-- Badges superiores -->
+                    <div class="flex items-start justify-between gap-2">
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                            {{ doc.numero }}
+                        </span>
+                        
+                        <div class="flex items-center gap-1.5">
+                            <span class="px-2 py-0.5 rounded text-[11px] font-semibold
+                                {% if doc.categoria == 'ESTATUTO' %}bg-purple-100 text-purple-800
+                                {% elif doc.categoria == 'REGLAMENTO' %}bg-blue-100 text-blue-800
+                                {% elif doc.categoria == 'NORMATIVA' %}bg-emerald-100 text-emerald-800
+                                {% else %}bg-slate-100 text-slate-700{% endif %}">
+                                {{ doc.get_categoria_display }}
+                            </span>
+                            {% if not doc.vigente %}
+                            <span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-rose-100 text-rose-800">
+                                No vigente
+                            </span>
+                            {% endif %}
+                            {% if doc.visibilidad == 'MATRICULADOS' %}
+                            <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800" title="Exclusivo matriculados">
+                                🔒 Matriculados
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Título -->
+                    <h2 class="text-base font-bold text-slate-900 group-hover:text-emerald-700 transition leading-snug">
+                        {{ doc.titulo }}
+                    </h2>
+
+                    <!-- Descripción -->
+                    <p class="text-xs text-slate-600 line-clamp-3 leading-relaxed">
+                        {{ doc.descripcion }}
+                    </p>
+
+                    <!-- Metadatos de Fecha -->
+                    {% if doc.fecha_documento %}
+                    <div class="flex items-center text-xs text-slate-400 space-x-1.5 pt-2 border-t border-slate-100">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span>Fecha de emisión: <strong class="text-slate-600">{{ doc.fecha_documento|date:"d/m/Y" }}</strong></span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Footer de la tarjeta con acción de descarga/visualización -->
+                <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+                    <span class="text-xs font-medium text-slate-500 flex items-center">
+                        <svg class="w-4 h-4 mr-1 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"/>
+                        </svg>
+                        Documento PDF
+                    </span>
+
+                    {% if doc.archivo_almacenado %}
+                    <a href="{{ doc.archivo_almacenado.url }}" target="_blank" rel="noopener noreferrer"
+                        class="inline-flex items-center px-3.5 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold shadow-xs transition">
+                        <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Ver / Descargar
+                    </a>
+                    {% else %}
+                    <span class="text-xs text-slate-400 italic">No adjunto</span>
+                    {% endif %}
+                </div>
+
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Paginación -->
+        {% if is_paginated %}
+        <div class="flex items-center justify-center space-x-2 pt-6">
+            {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}{% if categoria_actual %}&categoria={{ categoria_actual }}{% endif %}{% if q %}&q={{ q }}{% endif %}{% if vigencia_actual != 'vigentes' %}&vigencia={{ vigencia_actual }}{% endif %}"
+                class="px-4 py-2 text-xs font-semibold rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 transition">
+                ← Anterior
+            </a>
+            {% endif %}
+
+            <span class="text-xs text-slate-500 font-medium px-2">
+                Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+            </span>
+
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if categoria_actual %}&categoria={{ categoria_actual }}{% endif %}{% if q %}&q={{ q }}{% endif %}{% if vigencia_actual != 'vigentes' %}&vigencia={{ vigencia_actual }}{% endif %}"
+                class="px-4 py-2 text-xs font-semibold rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 transition">
+                Siguiente →
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% else %}
+        <!-- Estado Vacío -->
+        <div class="bg-white rounded-2xl border border-dashed border-slate-300 p-12 text-center max-w-lg mx-auto space-y-3">
+            <div class="w-12 h-12 mx-auto rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-xl">
+                📄
+            </div>
+            <h3 class="text-base font-bold text-slate-800">No se encontraron documentos</h3>
+            <p class="text-xs text-slate-500 max-w-sm mx-auto">
+                No hay documentos que coincidan con los criterios de búsqueda o filtros seleccionados.
+            </p>
+            {% if q or categoria_actual or vigencia_actual != 'vigentes' %}
+            <div class="pt-2">
+                <a href="{% url 'documents:documento_list' %}"
+                    class="inline-flex items-center text-xs font-semibold text-emerald-700 hover:underline">
+                    Restablecer todos los filtros
+                </a>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}
+
