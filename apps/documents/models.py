@@ -9,6 +9,9 @@ class Documento(models.Model):
         ESTATUTO = "ESTATUTO", "Estatuto"
         REGLAMENTO = "REGLAMENTO", "Reglamento"
         NORMATIVA = "NORMATIVA", "Normativa"
+        MODELO_NOTA = "MODELO_NOTA", "Modelo de Nota / Trámite"
+        ARANCEL = "ARANCEL", "Arancel / Honorarios"
+        CONVENIO = "CONVENIO", "Convenio Institucional"
         OTRO = "OTRO", "Otro"
 
     class Visibilidad(models.TextChoices):
@@ -22,8 +25,10 @@ class Documento(models.Model):
         help_text="Nombre del documento institucional.",
     )
     descripcion = models.TextField(
+        blank=True,
+        default="",
         verbose_name="Descripción",
-        help_text="Explicación breve de qué contiene y para qué sirve.",
+        help_text="Explicación breve de qué contiene y para qué sirve (opcional).",
     )
     categoria = models.CharField(
         max_length=20,
@@ -33,8 +38,10 @@ class Documento(models.Model):
     )
     numero = models.CharField(
         max_length=100,
+        blank=True,
+        default="",
         verbose_name="Número o identificación oficial",
-        help_text="Número oficial del documento, por ejemplo «Resolución 12/2024».",
+        help_text="Número oficial del documento, por ejemplo «Resolución 12/2024» (opcional si no aplica).",
     )
     fecha_documento = models.DateField(
         null=True,
@@ -93,5 +100,7 @@ class Documento(models.Model):
         ordering = ["-fecha_documento", "-fecha_creacion"]
 
     def __str__(self):
-        return f"{self.numero} - {self.titulo}"
+        if self.numero:
+            return f"{self.numero} - {self.titulo}"
+        return self.titulo
 

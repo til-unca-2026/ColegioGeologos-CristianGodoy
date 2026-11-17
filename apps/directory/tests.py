@@ -171,6 +171,31 @@ class DirectoryPublicViewsTests(TestCase):
         )
         self.esp_geo = Especialidad.objects.create(nombre="Geotecnia")
         self.mat2.especialidades.add(self.esp_geo)
+        HistorialEstadoMatricula.objects.create(
+            matriculado=self.mat2,
+            estado=HistorialEstadoMatricula.Estado.ACTIVA,
+            fecha_desde=date(2022, 1, 1),
+        )
+
+        # Usuario 3: Inactivo (SUSPENDIDA o BAJA) - no debe figurar en directorio público
+        self.user3 = User.objects.create_user(
+            username="geologo3",
+            first_name="Roberto",
+            last_name="Inactivo",
+            email="roberto@ejemplo.com",
+        )
+        self.mat3 = Matriculado.objects.create(
+            usuario=self.user3,
+            numero_matricula="MP-003",
+            libro="1",
+            folio="3",
+            fecha_matriculacion=date(2023, 1, 1),
+        )
+        HistorialEstadoMatricula.objects.create(
+            matriculado=self.mat3,
+            estado=HistorialEstadoMatricula.Estado.SUSPENDIDA,
+            fecha_desde=date(2023, 1, 1),
+        )
 
     def test_directorio_publico_listado_y_busqueda(self):
         url = reverse("directory:public_list")
@@ -178,6 +203,10 @@ class DirectoryPublicViewsTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Carlos García")
         self.assertContains(response, "Lucía Fernández")
+        # Regla de fe pública (RF-07): Roberto (Suspendido) debe figurar en el directorio con su estado real
+        self.assertContains(response, "Roberto Inactivo")
+        self.assertContains(response, "MP-003")
+        self.assertContains(response, "Matrícula Suspendida")
 
         # Búsqueda por texto (nombre)
         res_busqueda = self.client.get(url, {"q": "Carlos"})

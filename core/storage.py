@@ -1,11 +1,15 @@
 # core/storage.py
 import mimetypes
+import os
+import re
+import unicodedata
 from threading import Lock
 from django.core.files.storage import Storage
 from django.core.files.base import ContentFile
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.deconstruct import deconstructible
+from django.utils.text import get_valid_filename
 from supabase import Client, create_client
 
 
@@ -43,6 +47,33 @@ class SupabaseStorage(Storage):
     @property
     def client(self):
         return get_supabase_client()
+
+    def get_valid_name(self, name):
+        """
+        Normaliza el nombre del archivo para que sea compatible con Supabase Storage (S3 / REST key).
+        Elimina tildes, caracteres especiales, espacios y asegura compatibilidad ASCII.
+        """
+        name = str(name).replace('\\', '/')
+        dirname, filename = os.path.split(name)
+        
+        # Separar nombre base y extensión
+        base, ext = os.path.splitext(filename)
+        # Normalizar caracteres con acentos/tildes a ASCII (ej: í -> i, ñ -> n)
+        normalized_base = unicodedata.normalize('NFKD', base).encode('ascii', 'ignore').decode('ascii')
+        # Reemplazar cualquier caracter no alfanumérico (excepto guiones o guiones bajos) por guion bajo
+        clean_base = re.sub(r'[^a-zA-Z0-9_\-]', '_', normalized_base)
+        # Limpiar guiones bajos duplicados
+        clean_base = re.sub(r'_+', '_', clean_base).strip('._')
+        
+        if not clean_base:
+            clean_base = "archivo"
+
+        clean_ext = ext.lower().strip()
+        clean_filename = f"{clean_base}{clean_ext}"
+        
+        if dirname:
+            return f"{dirname.rstrip('/')}/{clean_filename}"
+        return clean_filename
 
     def _save(self, name, content):
         # Normalizar barras a estilo Unix para storage

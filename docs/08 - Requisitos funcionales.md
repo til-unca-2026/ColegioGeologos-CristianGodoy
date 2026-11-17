@@ -5,11 +5,11 @@
 | RF-01 | El sistema deberá mostrar información institucional del Colegio. |
 | RF-02 | El sistema deberá mostrar información de autoridades y contacto institucional. |
 | RF-03 | El sistema deberá permitir consultar reglamentos, resoluciones y documentación institucional incorporada. |
-| RF-04 | El sistema deberá permitir consultar noticias, novedades y eventos. |
-| RF-05 | El sistema deberá permitir consultar información sobre trámites, aranceles e instrucciones incluidas en el alcance. |
-| RF-06 | El sistema deberá mostrar información sobre actividades y servicios profesionales contemplados en el alcance. |
-| RF-07 | El sistema deberá mostrar en el directorio público a todos los matriculados, independientemente de su estado y distinguir visualmente a los que tengan estado activo. |
-| RF-08 | El sistema deberá permitir buscar matriculados por nombre, apellido o número de matrícula. |
+| RF-04 | El sistema deberá permitir consultar noticias, novedades, convocatorias y eventos. |
+| RF-05 | El sistema deberá permitir consultar información sobre trámites, aranceles, requisitos de inscripción y renovación con descarga de modelos en formatos editables. |
+| RF-06 | El sistema deberá mostrar información sobre actividades, beneficios (convenios y oportunidades laborales) y servicios profesionales contemplados en el alcance. |
+| RF-07 | El sistema deberá mostrar en el directorio público a todos los matriculados reflejando fidedignamente su estado real (activo, suspendido o dado de baja), y distinguir visualmente a los que tengan estado activo. |
+| RF-08 | El sistema deberá permitir buscar matriculados por nombre, apellido o número de matrícula arrojando el resultado oficial correspondiente sin omitir registros. |
 | RF-09 | El sistema deberá permitir filtrar matriculados por especialidad. |
 | RF-10 | El sistema deberá mostrar el estado de cada matriculado en la vista de perfil. |
 | RF-11 | El sistema deberá mostrar los datos profesionales definidos para el directorio: matrícula, nombre, apellido, título, universidad, especialidad y estado. |
@@ -26,7 +26,7 @@
 | RF-22 | El sistema deberá permitir al administrador gestionar las especialidades. |
 | RF-23 | El sistema deberá permitir al administrador crear y administrar cuentas de usuario. |
 | RF-24 | El sistema deberá permitir al administrador asignar y gestionar roles y permisos. |
-| RF-25 | El sistema deberá permitir al colaborador crear y editar noticias, novedades y eventos. |
+| RF-25 | El sistema deberá permitir al colaborador crear y editar noticias, novedades, convocatorias y capacitaciones con soporte de enlaces externos para inscripciones. |
 | RF-26 | El sistema deberá permitir al colaborador publicar directamente sus contenidos, sin aprobación previa. |
 | RF-27 | El sistema deberá permitir al administrador gestionar noticias, novedades y eventos. |
 | RF-28 | El sistema deberá permitir al administrador gestionar los documentos institucionales incluidos en el alcance y sus referencias a los archivos almacenados. |

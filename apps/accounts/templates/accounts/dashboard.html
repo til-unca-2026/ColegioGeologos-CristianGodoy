@@ -15,9 +15,9 @@
                     <div class="flex flex-col items-center text-center pb-5 border-b border-slate-100">
                         {% if user.profile_picture %}
                         <img src="{{ user.profile_picture.url }}" alt="{{ user.get_full_name|default:user.username }}"
-                            class="w-20 h-20 rounded-full object-cover border-2 border-emerald-500 mb-3 shadow">
+                            class="w-20 h-20 rounded-full object-cover border-2 border-primary-500 mb-3 shadow">
                         {% else %}
-                        <span class="flex h-20 w-20 items-center justify-center rounded-full border-2 border-emerald-500 bg-emerald-700 text-xl font-bold text-white mb-3 shadow">
+                        <span class="flex h-20 w-20 items-center justify-center rounded-full border-2 border-primary-500 bg-primary-700 text-xl font-bold text-white mb-3 shadow">
                             {{ user.first_name|first|upper|default:"?" }}{{ user.last_name|first|upper|default:"?" }}
                         </span>
                         {% endif %}
@@ -42,7 +42,7 @@
                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold 
                                 {% if group.name == 'Administradores' %}bg-rose-100 text-rose-800
                                 {% elif group.name == 'Colaboradores' %}bg-purple-100 text-purple-800
-                                {% elif group.name == 'Matriculados' %}bg-emerald-100 text-emerald-800
+                                {% elif group.name == 'Matriculados' %}bg-primary-100 text-primary-800
                                 {% else %}bg-slate-100 text-slate-700{% endif %}">
                                 {{ group.name }}
                             </span>
@@ -63,8 +63,8 @@
                             <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">Mi Cuenta</span>
                         </div>
                         <a href="?tab=perfil" data-tab-btn="perfil"
-                            class="nav-tab-link flex items-center px-3 py-2 rounded-lg transition {% if current_tab == 'perfil' %}bg-emerald-50 text-emerald-800 font-semibold border-l-4 border-emerald-700{% else %}text-slate-600 hover:bg-slate-50 hover:text-slate-900{% endif %}">
-                            <svg class="w-4 h-4 mr-3 {% if current_tab == 'perfil' %}text-emerald-700{% else %}text-slate-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            class="nav-tab-link flex items-center px-3 py-2 rounded-lg transition {% if current_tab == 'perfil' %}bg-primary-50 text-primary-800 font-semibold border-l-4 border-primary-700{% else %}text-slate-600 hover:bg-slate-50 hover:text-slate-900{% endif %}">
+                            <svg class="w-4 h-4 mr-3 {% if current_tab == 'perfil' %}text-primary-700{% else %}text-slate-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
@@ -77,8 +77,8 @@
                             <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">Profesional</span>
                         </div>
                         <a href="?tab=matricula" data-tab-btn="matricula"
-                            class="nav-tab-link flex items-center px-3 py-2 rounded-lg transition {% if current_tab == 'matricula' %}bg-emerald-50 text-emerald-800 font-semibold border-l-4 border-emerald-700{% else %}text-slate-600 hover:bg-slate-50 hover:text-slate-900{% endif %}">
-                            <svg class="w-4 h-4 mr-3 {% if current_tab == 'matricula' %}text-emerald-700{% else %}text-slate-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            class="nav-tab-link flex items-center px-3 py-2 rounded-lg transition {% if current_tab == 'matricula' %}bg-primary-50 text-primary-800 font-semibold border-l-4 border-primary-700{% else %}text-slate-600 hover:bg-slate-50 hover:text-slate-900{% endif %}">
+                            <svg class="w-4 h-4 mr-3 {% if current_tab == 'matricula' %}text-primary-700{% else %}text-slate-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
@@ -92,8 +92,8 @@
                             <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">Prensa & Difusión</span>
                         </div>
                         <a href="?tab=contenidos" data-tab-btn="contenidos"
-                            class="nav-tab-link flex items-center px-3 py-2 rounded-lg transition {% if current_tab == 'contenidos' %}bg-emerald-50 text-emerald-800 font-semibold border-l-4 border-emerald-700{% else %}text-slate-600 hover:bg-slate-50 hover:text-slate-900{% endif %}">
-                            <svg class="w-4 h-4 mr-3 {% if current_tab == 'contenidos' %}text-emerald-700{% else %}text-slate-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            class="nav-tab-link flex items-center px-3 py-2 rounded-lg transition {% if current_tab == 'contenidos' %}bg-primary-50 text-primary-800 font-semibold border-l-4 border-primary-700{% else %}text-slate-600 hover:bg-slate-50 hover:text-slate-900{% endif %}">
+                            <svg class="w-4 h-4 mr-3 {% if current_tab == 'contenidos' %}text-primary-700{% else %}text-slate-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
                             </svg>
@@ -110,8 +110,8 @@
                         <!-- 1. Usuarios y sub-elementos (Comisiones, Roles y permisos) -->
                         {% if perms.accounts.view_user or perms.accounts.add_user or user.is_superuser %}
                         <a href="?tab=admin_usuarios" data-tab-btn="admin_usuarios"
-                            class="nav-tab-link flex items-center px-3 py-2 rounded-lg transition {% if current_tab == 'admin_usuarios' %}bg-emerald-50 text-emerald-800 font-semibold border-l-4 border-emerald-700{% else %}text-slate-600 hover:bg-slate-50 hover:text-slate-900{% endif %}">
-                            <svg class="w-4 h-4 mr-3 {% if current_tab == 'admin_usuarios' %}text-emerald-700{% else %}text-slate-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            class="nav-tab-link flex items-center px-3 py-2 rounded-lg transition {% if current_tab == 'admin_usuarios' %}bg-primary-50 text-primary-800 font-semibold border-l-4 border-primary-700{% else %}text-slate-600 hover:bg-slate-50 hover:text-slate-900{% endif %}">
+                            <svg class="w-4 h-4 mr-3 {% if current_tab == 'admin_usuarios' %}text-primary-700{% else %}text-slate-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                             </svg>
@@ -121,8 +121,8 @@
                         <div class="ml-4 pl-3 border-l border-slate-200 space-y-1">
                             {% if can_manage_comision %}
                             <a href="?tab=admin_comision" data-tab-btn="admin_comision"
-                                class="nav-tab-link flex items-center px-2 py-1.5 rounded-md text-xs transition {% if current_tab == 'admin_comision' %}bg-emerald-50 text-emerald-800 font-semibold{% else %}text-slate-500 hover:bg-slate-50 hover:text-slate-800{% endif %}">
-                                <svg class="w-3.5 h-3.5 mr-2 {% if current_tab == 'admin_comision' %}text-emerald-700{% else %}text-slate-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                class="nav-tab-link flex items-center px-2 py-1.5 rounded-md text-xs transition {% if current_tab == 'admin_comision' %}bg-primary-50 text-primary-800 font-semibold{% else %}text-slate-500 hover:bg-slate-50 hover:text-slate-800{% endif %}">
+                                <svg class="w-3.5 h-3.5 mr-2 {% if current_tab == 'admin_comision' %}text-primary-700{% else %}text-slate-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                                 </svg>
@@ -132,8 +132,8 @@
 
                             {% if perms.auth.view_group or perms.auth.view_permission or user.is_superuser %}
                             <a href="?tab=admin_roles" data-tab-btn="admin_roles"
-                                class="nav-tab-link flex items-center px-2 py-1.5 rounded-md text-xs transition {% if current_tab == 'admin_roles' %}bg-emerald-50 text-emerald-800 font-semibold{% else %}text-slate-500 hover:bg-slate-50 hover:text-slate-800{% endif %}">
-                                <svg class="w-3.5 h-3.5 mr-2 {% if current_tab == 'admin_roles' %}text-emerald-700{% else %}text-slate-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                class="nav-tab-link flex items-center px-2 py-1.5 rounded-md text-xs transition {% if current_tab == 'admin_roles' %}bg-primary-50 text-primary-800 font-semibold{% else %}text-slate-500 hover:bg-slate-50 hover:text-slate-800{% endif %}">
+                                <svg class="w-3.5 h-3.5 mr-2 {% if current_tab == 'admin_roles' %}text-primary-700{% else %}text-slate-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                                 </svg>
@@ -146,8 +146,8 @@
                         <!-- 2. Matriculados y sub-elementos (Especialidades, Universidades) -->
                         {% if perms.directory.view_matriculado or perms.directory.add_matriculado or user.is_superuser %}
                         <a href="?tab=admin_matriculados" data-tab-btn="admin_matriculados"
-                            class="nav-tab-link flex items-center px-3 py-2 rounded-lg transition {% if current_tab == 'admin_matriculados' %}bg-emerald-50 text-emerald-800 font-semibold border-l-4 border-emerald-700{% else %}text-slate-600 hover:bg-slate-50 hover:text-slate-900{% endif %}">
-                            <svg class="w-4 h-4 mr-3 {% if current_tab == 'admin_matriculados' %}text-emerald-700{% else %}text-slate-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            class="nav-tab-link flex items-center px-3 py-2 rounded-lg transition {% if current_tab == 'admin_matriculados' %}bg-primary-50 text-primary-800 font-semibold border-l-4 border-primary-700{% else %}text-slate-600 hover:bg-slate-50 hover:text-slate-900{% endif %}">
+                            <svg class="w-4 h-4 mr-3 {% if current_tab == 'admin_matriculados' %}text-primary-700{% else %}text-slate-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
                             </svg>
@@ -156,15 +156,15 @@
 
                         <div class="ml-4 pl-3 border-l border-slate-200 space-y-1">
                             <a href="?tab=admin_especialidades" data-tab-btn="admin_especialidades"
-                                class="nav-tab-link flex items-center px-2 py-1.5 rounded-md text-xs transition {% if current_tab == 'admin_especialidades' %}bg-emerald-50 text-emerald-800 font-semibold{% else %}text-slate-500 hover:bg-slate-50 hover:text-slate-800{% endif %}">
-                                <svg class="w-3.5 h-3.5 mr-2 {% if current_tab == 'admin_especialidades' %}text-emerald-700{% else %}text-slate-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                class="nav-tab-link flex items-center px-2 py-1.5 rounded-md text-xs transition {% if current_tab == 'admin_especialidades' %}bg-primary-50 text-primary-800 font-semibold{% else %}text-slate-500 hover:bg-slate-50 hover:text-slate-800{% endif %}">
+                                <svg class="w-3.5 h-3.5 mr-2 {% if current_tab == 'admin_especialidades' %}text-primary-700{% else %}text-slate-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                                 </svg>
                                 Especialidades
                             </a>
                             <a href="?tab=admin_universidades" data-tab-btn="admin_universidades"
-                                class="nav-tab-link flex items-center px-2 py-1.5 rounded-md text-xs transition {% if current_tab == 'admin_universidades' %}bg-emerald-50 text-emerald-800 font-semibold{% else %}text-slate-500 hover:bg-slate-50 hover:text-slate-800{% endif %}">
-                                <svg class="w-3.5 h-3.5 mr-2 {% if current_tab == 'admin_universidades' %}text-emerald-700{% else %}text-slate-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                class="nav-tab-link flex items-center px-2 py-1.5 rounded-md text-xs transition {% if current_tab == 'admin_universidades' %}bg-primary-50 text-primary-800 font-semibold{% else %}text-slate-500 hover:bg-slate-50 hover:text-slate-800{% endif %}">
+                                <svg class="w-3.5 h-3.5 mr-2 {% if current_tab == 'admin_universidades' %}text-primary-700{% else %}text-slate-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                 </svg>
                                 Universidades
@@ -174,8 +174,8 @@
 
                         <!-- 3. Documentos (vacío por ahora) -->
                         <a href="?tab=admin_documentos" data-tab-btn="admin_documentos"
-                            class="nav-tab-link flex items-center px-3 py-2 rounded-lg transition {% if current_tab == 'admin_documentos' %}bg-emerald-50 text-emerald-800 font-semibold border-l-4 border-emerald-700{% else %}text-slate-600 hover:bg-slate-50 hover:text-slate-900{% endif %}">
-                            <svg class="w-4 h-4 mr-3 {% if current_tab == 'admin_documentos' %}text-emerald-700{% else %}text-slate-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            class="nav-tab-link flex items-center px-3 py-2 rounded-lg transition {% if current_tab == 'admin_documentos' %}bg-primary-50 text-primary-800 font-semibold border-l-4 border-primary-700{% else %}text-slate-600 hover:bg-slate-50 hover:text-slate-900{% endif %}">
+                            <svg class="w-4 h-4 mr-3 {% if current_tab == 'admin_documentos' %}text-primary-700{% else %}text-slate-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                             </svg>
@@ -232,8 +232,8 @@
                                 <p class="text-xs text-slate-500 mt-0.5">Información personal registrada según normativas vigentes y Ley 25.326.</p>
                             </div>
                             <a href="{% url 'accounts:password_change' %}"
-                                class="inline-flex items-center justify-center px-4 py-2 text-xs font-semibold rounded-lg bg-white text-emerald-800 hover:bg-emerald-50 border border-emerald-300 shadow-xs transition">
-                                <svg class="w-3.5 h-3.5 mr-1.5 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                class="inline-flex items-center justify-center px-4 py-2 text-xs font-semibold rounded-lg bg-white text-primary-800 hover:bg-primary-50 border border-primary-300 shadow-xs transition">
+                                <svg class="w-3.5 h-3.5 mr-1.5 text-primary-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
                                 </svg>
                                 Modificar contraseña
@@ -243,7 +243,7 @@
                         <!-- Bloque 1: Cuenta & Seguridad -->
                         <div class="p-6 sm:p-8 space-y-4">
                             <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 mr-2"></span>
+                                <span class="w-1.5 h-1.5 rounded-full bg-primary-600 mr-2"></span>
                                 Cuenta de Acceso e Ingreso
                             </h4>
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-y-4 gap-x-6 text-sm">
@@ -265,7 +265,7 @@
                         <!-- Bloque 2: Identificación Personal (Ley 25.326) -->
                         <div class="p-6 sm:p-8 space-y-4">
                             <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 mr-2"></span>
+                                <span class="w-1.5 h-1.5 rounded-full bg-primary-600 mr-2"></span>
                                 Identidad Personal (Ley 25.326)
                             </h4>
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-y-4 gap-x-6 text-sm">
@@ -315,15 +315,15 @@
                             <!-- Subsección: Foto de Perfil -->
                             <div class="p-6 sm:p-8 space-y-4">
                                 <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 mr-2"></span>
+                                    <span class="w-1.5 h-1.5 rounded-full bg-primary-600 mr-2"></span>
                                     Foto de Perfil
                                 </h4>
                                 <div class="flex flex-col sm:flex-row sm:items-center gap-5">
                                     <div class="shrink-0">
                                         {% if user.profile_picture %}
-                                        <img src="{{ user.profile_picture.url }}" alt="{{ user.get_full_name }}" class="w-20 h-20 rounded-full object-cover border-2 border-emerald-600 shadow-sm">
+                                        <img src="{{ user.profile_picture.url }}" alt="{{ user.get_full_name }}" class="w-20 h-20 rounded-full object-cover border-2 border-primary-600 shadow-sm">
                                         {% else %}
-                                        <div class="w-20 h-20 rounded-full bg-emerald-100 text-emerald-800 border-2 border-emerald-200 flex items-center justify-center font-bold text-xl shadow-xs">
+                                        <div class="w-20 h-20 rounded-full bg-primary-100 text-primary-800 border-2 border-primary-200 flex items-center justify-center font-bold text-xl shadow-xs">
                                             {{ user.first_name|slice:":1"|default:user.username|slice:":1"|upper }}{{ user.last_name|slice:":1"|upper }}
                                         </div>
                                         {% endif %}
@@ -344,7 +344,7 @@
                             <!-- Subsección: Contacto y Privacidad en Directorio -->
                             <div class="p-6 sm:p-8 space-y-6">
                                 <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 mr-2"></span>
+                                    <span class="w-1.5 h-1.5 rounded-full bg-primary-600 mr-2"></span>
                                     Vías de Contacto y Privacidad (Directorio Público)
                                 </h4>
                                 
@@ -396,7 +396,7 @@
                             <!-- Subsección: Domicilio Real -->
                             <div class="p-6 sm:p-8 space-y-4">
                                 <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 mr-2"></span>
+                                    <span class="w-1.5 h-1.5 rounded-full bg-primary-600 mr-2"></span>
                                     Domicilio Real
                                 </h4>
 
@@ -502,7 +502,7 @@
                             <!-- Botón de Guardar Cambios -->
                             <div class="p-6 sm:p-8 bg-slate-50/70 flex items-center justify-end">
                                 <button type="submit"
-                                        class="inline-flex items-center px-5 py-2.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold shadow-sm transition">
+                                        class="inline-flex items-center px-5 py-2.5 rounded-lg bg-primary-700 hover:bg-primary-800 text-white text-xs font-semibold shadow-sm transition">
                                     <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                     </svg>
@@ -514,15 +514,15 @@
                         <!-- Bloque 5: Cargos Institucionales Vigentes -->
                         <div class="p-6 sm:p-8 space-y-4">
                             <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 mr-2"></span>
+                                <span class="w-1.5 h-1.5 rounded-full bg-primary-600 mr-2"></span>
                                 Cargos Institucionales Vigentes
                             </h4>
                             <div>
                                 {% with cargo_vigente=user.cargos.all %}
                                     {% for c in cargo_vigente %}
                                         {% if c.es_vigente %}
-                                            <div class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 mr-2 mb-2">
-                                                <svg class="w-3.5 h-3.5 mr-1.5 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <div class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold bg-primary-50 text-primary-800 border border-primary-200 mr-2 mb-2">
+                                                <svg class="w-3.5 h-3.5 mr-1.5 text-primary-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
                                                 </svg>
                                                 {{ c.get_cargo_display }} — {{ c.get_comision_display }} (desde {{ c.fecha_desde|date:"d/m/Y" }})
@@ -538,7 +538,7 @@
                         <!-- Footer informativo -->
                         <div class="p-4 sm:px-8 bg-slate-50 text-xs text-slate-500 flex items-center justify-between">
                             <div class="flex items-center space-x-2">
-                                <span class="text-emerald-700 font-bold">✔</span>
+                                <span class="text-primary-700 font-bold">✔</span>
                                 <span>Tus datos personales están resguardados bajo secreto profesional y normas de protección de datos.</span>
                             </div>
                             {% if user.fecha_modificacion %}
@@ -565,13 +565,13 @@
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100 mb-6">
                             <div>
                                 <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Matrícula Provincial</span>
-                                <h3 class="text-2xl font-extrabold text-emerald-700">MP-{{ mi_matricula.numero_matricula }}</h3>
+                                <h3 class="text-2xl font-extrabold text-primary-700">MP-{{ mi_matricula.numero_matricula }}</h3>
                                 <p class="text-xs text-slate-500 mt-0.5">Libro {{ mi_matricula.libro }} | Folio {{ mi_matricula.folio }}</p>
                             </div>
                             <div>
                                 {% if mi_estado_actual.estado == 'ACTIVA' %}
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
-                                    <span class="w-2 h-2 rounded-full bg-emerald-500 mr-2"></span>
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-primary-100 text-primary-800">
+                                    <span class="w-2 h-2 rounded-full bg-primary-500 mr-2"></span>
                                     Habilitado / Activa
                                 </span>
                                 {% elif mi_estado_actual.estado == 'SUSPENDIDA' %}
@@ -606,7 +606,7 @@
                                 <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Especialidades</span>
                                 <div class="mt-1 flex flex-wrap gap-1.5">
                                     {% for esp in mi_matricula.especialidades.all %}
-                                    <span class="inline-block bg-emerald-50 text-emerald-700 text-xs px-2.5 py-0.5 rounded font-medium border border-emerald-200">
+                                    <span class="inline-block bg-primary-50 text-primary-700 text-xs px-2.5 py-0.5 rounded font-medium border border-primary-200">
                                         {{ esp.nombre }}
                                     </span>
                                     {% empty %}
@@ -649,8 +649,8 @@
 
                                 {% if tit.escaneo_diploma %}
                                 <a href="{{ tit.escaneo_diploma.url }}" target="_blank"
-                                    class="inline-flex items-center text-xs font-semibold text-emerald-700 hover:text-emerald-800 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200 self-start sm:self-auto">
-                                    <svg class="w-4 h-4 mr-1 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    class="inline-flex items-center text-xs font-semibold text-primary-700 hover:text-primary-800 bg-primary-50 px-3 py-1.5 rounded-lg border border-primary-200 self-start sm:self-auto">
+                                    <svg class="w-4 h-4 mr-1 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                     </svg>
                                     Ver Diploma
@@ -702,7 +702,7 @@
                             <p class="text-sm text-slate-500 mt-0.5">Creación y publicación de noticias, novedades y eventos institucionales.</p>
                         </div>
                         <a href="{% url 'content:contenido_create' %}"
-                            class="inline-flex items-center px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-sm transition">
+                            class="btn-primary-sm">
                             <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                             </svg>
@@ -716,12 +716,12 @@
                             <!-- Filtros rápidos por Tipo -->
                             <div class="flex flex-wrap items-center gap-1.5 text-xs font-medium">
                                 <a href="?tab=contenidos"
-                                    class="px-3 py-1.5 rounded-lg transition {% if not tipo_filtro %}bg-emerald-600 text-white font-semibold shadow-sm{% else %}bg-white text-slate-600 hover:bg-slate-100 border border-slate-200{% endif %}">
+                                    class="px-3 py-1.5 rounded-lg transition {% if not tipo_filtro %}bg-primary-600 text-white font-semibold shadow-sm{% else %}bg-white text-slate-600 hover:bg-slate-100 border border-slate-200{% endif %}">
                                     Todas
                                 </a>
                                 {% for val, label in tipos_contenido %}
                                 <a href="?tab=contenidos&tipo_cont={{ val }}{% if q_cont %}&q_cont={{ q_cont }}{% endif %}"
-                                    class="px-3 py-1.5 rounded-lg transition {% if tipo_filtro == val %}bg-emerald-600 text-white font-semibold shadow-sm{% else %}bg-white text-slate-600 hover:bg-slate-100 border border-slate-200{% endif %}">
+                                    class="px-3 py-1.5 rounded-lg transition {% if tipo_filtro == val %}bg-primary-600 text-white font-semibold shadow-sm{% else %}bg-white text-slate-600 hover:bg-slate-100 border border-slate-200{% endif %}">
                                     {{ label }}
                                 </a>
                                 {% endfor %}
@@ -738,7 +738,7 @@
                                         </svg>
                                     </span>
                                     <input type="text" name="q_cont" value="{{ q_cont }}" placeholder="Buscar por título..."
-                                        class="w-48 sm:w-64 pl-9 pr-3 py-1.5 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-1 focus:ring-emerald-600 bg-white leading-normal">
+                                        class="w-48 sm:w-64 pl-9 pr-3 py-1.5 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-1 focus:ring-primary-600 bg-white leading-normal">
                                 </div>
                                 <button type="submit" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white text-xs font-medium rounded-lg transition">
                                     Buscar
@@ -792,7 +792,7 @@
                                         </td>
                                         <td class="px-3 py-3.5 whitespace-nowrap">
                                             <span class="px-2 py-0.5 rounded text-xs font-semibold
-                                                {% if cont.tipo == 'NOTICIA' %}bg-emerald-100 text-emerald-800
+                                                {% if cont.tipo == 'NOTICIA' %}bg-primary-100 text-primary-800
                                                 {% elif cont.tipo == 'NOVEDAD' %}bg-blue-100 text-blue-800
                                                 {% elif cont.tipo == 'EVENTO' %}bg-amber-100 text-amber-800
                                                 {% elif cont.tipo == 'CAPACITACION' %}bg-purple-100 text-purple-800
@@ -812,8 +812,8 @@
                                         </td>
                                         <td class="px-3 py-3.5 whitespace-nowrap">
                                             {% if cont.estado_publicacion == 'PUBLICADO' %}
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-100 text-emerald-800">
-                                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 mr-1.5"></span>
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-primary-100 text-primary-800">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-primary-600 mr-1.5"></span>
                                                 Publicado
                                             </span>
                                             {% elif cont.estado_publicacion == 'PROGRAMADO' %}
@@ -838,7 +838,7 @@
                                                 <form method="post" action="{% url 'content:contenido_toggle_estado' cont.id %}" class="inline">
                                                     {% csrf_token %}
                                                     <button type="submit" title="{% if cont.estado_publicacion == 'PUBLICADO' %}Pasar a Borrador{% else %}Publicar{% endif %}"
-                                                        class="p-1 rounded text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 transition">
+                                                        class="p-1 rounded text-slate-400 hover:text-primary-700 hover:bg-primary-50 transition">
                                                         {% if cont.estado_publicacion == 'PUBLICADO' %}
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
@@ -854,7 +854,7 @@
 
                                                 <!-- Editar -->
                                                 <a href="{% url 'content:contenido_edit' cont.id %}" title="Editar contenido"
-                                                    class="p-1 rounded text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 transition">
+                                                    class="p-1 rounded text-slate-400 hover:text-primary-700 hover:bg-primary-50 transition">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                                     </svg>
@@ -898,7 +898,7 @@
 
                         {% if perms.directory.add_matriculado or user.is_superuser %}
                         <a href="{% url 'directory:matriculado_create' %}"
-                            class="inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-sm transition">
+                            class="btn-primary-sm">
                             <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                             </svg>
@@ -922,13 +922,13 @@
                                 </span>
                                 <input type="text" name="q_mat" value="{{ search_mat }}"
                                     placeholder="Buscar por matrícula, nombre, DNI, email..."
-                                    class="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500">
+                                    class="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500">
                             </div>
 
                             <!-- Filtro Especialidad -->
                             <div class="sm:col-span-4">
                                 <select name="especialidad"
-                                    class="w-full py-2 px-3 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 bg-white">
+                                    class="w-full py-2 px-3 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500 bg-white">
                                     <option value="">Todas las especialidades</option>
                                     {% for esp in especialidades_disponibles %}
                                     <option value="{{ esp.id }}" {% if especialidad_filtro == esp.id|stringformat:"s" %}selected{% endif %}>
@@ -971,7 +971,7 @@
                                 <tbody class="divide-y divide-slate-100">
                                     {% for mat in matriculados_list %}
                                     <tr class="hover:bg-slate-50/70 transition">
-                                        <td class="px-5 py-4 font-bold text-emerald-700 whitespace-nowrap">
+                                        <td class="px-5 py-4 font-bold text-primary-700 whitespace-nowrap">
                                             MP-{{ mat.numero_matricula }}
                                             <span class="block text-[11px] font-normal text-slate-400">L: {{ mat.libro }} / F: {{ mat.folio }}</span>
                                         </td>
@@ -997,7 +997,7 @@
                                         <td class="px-5 py-4 whitespace-nowrap">
                                             {% with estado=mat.estado_actual %}
                                                 {% if estado.estado == 'ACTIVA' %}
-                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-primary-100 text-primary-800">
                                                     {{ estado.get_estado_display }}
                                                 </span>
                                                 {% elif estado.estado == 'SUSPENDIDA' %}
@@ -1018,7 +1018,7 @@
                                         </td>
                                         <td class="px-5 py-4 text-right whitespace-nowrap text-xs space-x-2">
                                             <a href="{% url 'directory:matriculado_detail' mat.pk %}"
-                                                class="inline-flex items-center text-emerald-700 hover:text-emerald-900 font-semibold bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">
+                                                class="inline-flex items-center text-primary-700 hover:text-primary-900 font-semibold bg-primary-50 px-2.5 py-1 rounded-md border border-primary-200">
                                                 Ver Ficha
                                             </a>
                                             {% if perms.directory.change_matriculado or user.is_superuser %}
@@ -1053,7 +1053,7 @@
                         </div>
                         {% if perms.directory.add_especialidad or user.is_superuser %}
                         <button type="button" onclick="openCreateEspecialidadModal()"
-                            class="inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-sm transition">
+                            class="btn-primary-sm">
                             <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                             </svg>
@@ -1074,7 +1074,7 @@
                                 </span>
                                 <input type="text" name="q_esp" value="{{ search_esp }}"
                                     placeholder="Buscar especialidad por nombre..."
-                                    class="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500">
+                                    class="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500">
                             </div>
                             <button type="submit" class="py-2 px-4 rounded-lg bg-slate-800 text-white text-xs font-semibold hover:bg-slate-900 transition">
                                 Buscar
@@ -1102,7 +1102,7 @@
                                 {% for esp in especialidades_list %}
                                 <tr class="hover:bg-slate-50/70 transition">
                                     <td class="px-5 py-4 font-semibold text-slate-900">
-                                        <span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">
+                                        <span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-50 text-primary-800 border border-primary-200">
                                             {{ esp.nombre }}
                                         </span>
                                     </td>
@@ -1116,7 +1116,7 @@
                                         {% if perms.directory.change_especialidad or user.is_superuser %}
                                         <button type="button"
                                             onclick="openEditEspecialidadModal('{{ esp.id }}', '{{ esp.nombre|escapejs }}', '{{ esp.descripcion|escapejs }}')"
-                                            class="inline-flex items-center text-emerald-700 hover:text-emerald-900 font-medium bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">
+                                            class="inline-flex items-center text-primary-700 hover:text-primary-900 font-medium bg-primary-50 px-2.5 py-1 rounded-md border border-primary-200">
                                             <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                             </svg>
@@ -1146,7 +1146,7 @@
                         </div>
                         {% if perms.directory.add_universidad or user.is_superuser %}
                         <button type="button" onclick="openCreateUniversidadModal()"
-                            class="inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-sm transition">
+                            class="btn-primary-sm">
                             <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                             </svg>
@@ -1167,7 +1167,7 @@
                                 </span>
                                 <input type="text" name="q_univ" value="{{ search_univ }}"
                                     placeholder="Buscar universidad por nombre o sigla..."
-                                    class="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500">
+                                    class="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500">
                             </div>
                             <button type="submit" class="py-2 px-4 rounded-lg bg-slate-800 text-white text-xs font-semibold hover:bg-slate-900 transition">
                                 Buscar
@@ -1197,7 +1197,7 @@
                                     <td class="px-5 py-4 font-semibold text-slate-900">
                                         {{ uni.nombre }}
                                     </td>
-                                    <td class="px-5 py-4 text-xs font-semibold text-emerald-800">
+                                    <td class="px-5 py-4 text-xs font-semibold text-primary-800">
                                         {{ uni.sigla|default:"-" }}
                                     </td>
                                     <td class="px-5 py-4 text-xs text-slate-600">
@@ -1207,7 +1207,7 @@
                                         {% if perms.directory.change_universidad or user.is_superuser %}
                                         <button type="button"
                                             onclick="openEditUniversidadModal('{{ uni.id }}', '{{ uni.nombre|escapejs }}', '{{ uni.sigla|escapejs }}', '{{ uni.pais.code }}')"
-                                            class="inline-flex items-center text-emerald-700 hover:text-emerald-900 font-medium bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">
+                                            class="inline-flex items-center text-primary-700 hover:text-primary-900 font-medium bg-primary-50 px-2.5 py-1 rounded-md border border-primary-200">
                                             <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                             </svg>
@@ -1239,7 +1239,7 @@
                         </div>
                         {% if perms.accounts.add_user or user.is_superuser %}
                         <a href="{% url 'accounts:user_create' %}"
-                            class="inline-flex items-center px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold rounded-lg shadow-sm transition">
+                            class="btn-primary-sm">
                             <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                             </svg>
@@ -1276,7 +1276,7 @@
                                         <td class="px-4 py-4 text-slate-600">{{ u.phone|default:"-" }}</td>
                                         <td class="px-4 py-4">
                                             {% if u.is_active %}
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">Activo</span>
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800">Activo</span>
                                             {% else %}
                                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600">Inactivo</span>
                                             {% endif %}
@@ -1289,7 +1289,7 @@
                                                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold 
                                                     {% if g.name == 'Administradores' %}bg-rose-100 text-rose-800
                                                     {% elif g.name == 'Colaboradores' %}bg-purple-100 text-purple-800
-                                                    {% else %}bg-emerald-100 text-emerald-800{% endif %}">
+                                                    {% else %}bg-primary-100 text-primary-800{% endif %}">
                                                     {{ g.name }}
                                                 </span>
                                                 {% empty %}
@@ -1331,7 +1331,7 @@
                         </div>
                         {% if perms.accounts.add_membresiacomision or user.is_superuser %}
                         <a href="{% url 'accounts:comision_create' %}"
-                            class="inline-flex items-center px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold rounded-lg shadow-sm transition">
+                            class="inline-flex items-center px-4 py-2 bg-primary-700 hover:bg-primary-800 text-white text-xs font-semibold rounded-lg shadow-sm transition">
                             <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                             </svg>
@@ -1347,7 +1347,7 @@
                             
                             <div class="flex items-center space-x-2">
                                 <label for="filtro_comision" class="font-semibold text-slate-600 uppercase tracking-wider text-[11px]">Comisión:</label>
-                                <select id="filtro_comision" name="comision" onchange="this.form.submit()" class="rounded-lg border border-slate-300 px-2.5 py-1.5 bg-white text-slate-700 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600">
+                                <select id="filtro_comision" name="comision" onchange="this.form.submit()" class="rounded-lg border border-slate-300 px-2.5 py-1.5 bg-white text-slate-700 focus:border-primary-600 focus:outline-none focus:ring-1 focus:ring-primary-600">
                                     <option value="">Todas las comisiones</option>
                                     {% for code, label in comisiones_disponibles %}
                                     <option value="{{ code }}" {% if comision_filtro == code %}selected{% endif %}>{{ label }}</option>
@@ -1357,7 +1357,7 @@
 
                             <div class="flex items-center space-x-2">
                                 <label for="filtro_estado" class="font-semibold text-slate-600 uppercase tracking-wider text-[11px]">Estado:</label>
-                                <select id="filtro_estado" name="estado" onchange="this.form.submit()" class="rounded-lg border border-slate-300 px-2.5 py-1.5 bg-white text-slate-700 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600">
+                                <select id="filtro_estado" name="estado" onchange="this.form.submit()" class="rounded-lg border border-slate-300 px-2.5 py-1.5 bg-white text-slate-700 focus:border-primary-600 focus:outline-none focus:ring-1 focus:ring-primary-600">
                                     <option value="">Todos los mandatos</option>
                                     <option value="vigente" {% if estado_filtro == 'vigente' %}selected{% endif %}>Solo Vigentes</option>
                                     <option value="concluido" {% if estado_filtro == 'concluido' %}selected{% endif %}>Solo Concluidos / Históricos</option>
@@ -1407,12 +1407,12 @@
                                             {% if m.fecha_hasta %}
                                                 {{ m.fecha_hasta|date:"d/m/Y" }}
                                             {% else %}
-                                                <span class="text-emerald-700 font-semibold">Actualidad</span>
+                                                <span class="text-primary-700 font-semibold">Actualidad</span>
                                             {% endif %}
                                         </td>
                                         <td class="px-4 py-4">
                                             {% if m.es_vigente %}
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-primary-100 text-primary-800">
                                                 Vigente
                                             </span>
                                             {% else %}
@@ -1475,45 +1475,45 @@
                             <tbody class="divide-y divide-slate-100 text-xs">
                                 <tr>
                                     <td class="py-3 font-medium">Consultar Directorio y Perfiles</td>
-                                    <td class="text-center text-emerald-600 font-bold">✓</td>
-                                    <td class="text-center text-emerald-600 font-bold">✓</td>
-                                    <td class="text-center text-emerald-600 font-bold">✓</td>
-                                    <td class="text-center text-emerald-600 font-bold">✓</td>
+                                    <td class="text-center text-primary-600 font-bold">✓</td>
+                                    <td class="text-center text-primary-600 font-bold">✓</td>
+                                    <td class="text-center text-primary-600 font-bold">✓</td>
+                                    <td class="text-center text-primary-600 font-bold">✓</td>
                                 </tr>
                                 <tr>
                                     <td class="py-3 font-medium">Modificar Datos de Contacto Propios</td>
                                     <td class="text-center text-slate-300">✗</td>
-                                    <td class="text-center text-emerald-600 font-bold">✓</td>
+                                    <td class="text-center text-primary-600 font-bold">✓</td>
                                     <td class="text-center text-slate-300">✗</td>
-                                    <td class="text-center text-emerald-600 font-bold">✓</td>
+                                    <td class="text-center text-primary-600 font-bold">✓</td>
                                 </tr>
                                 <tr>
                                     <td class="py-3 font-medium">Configurar Visibilidad Pública</td>
                                     <td class="text-center text-slate-300">✗</td>
-                                    <td class="text-center text-emerald-600 font-bold">✓</td>
+                                    <td class="text-center text-primary-600 font-bold">✓</td>
                                     <td class="text-center text-slate-300">✗</td>
-                                    <td class="text-center text-emerald-600 font-bold">✓</td>
+                                    <td class="text-center text-primary-600 font-bold">✓</td>
                                 </tr>
                                 <tr>
                                     <td class="py-3 font-medium">Publicar Noticias y Eventos (`content.add_article`)</td>
                                     <td class="text-center text-slate-300">✗</td>
                                     <td class="text-center text-slate-300">✗</td>
-                                    <td class="text-center text-emerald-600 font-bold">✓</td>
-                                    <td class="text-center text-emerald-600 font-bold">✓</td>
+                                    <td class="text-center text-primary-600 font-bold">✓</td>
+                                    <td class="text-center text-primary-600 font-bold">✓</td>
                                 </tr>
                                 <tr>
                                     <td class="py-3 font-medium">Gestionar Matriculados (`directory.add_matriculado`)</td>
                                     <td class="text-center text-slate-300">✗</td>
                                     <td class="text-center text-slate-300">✗</td>
                                     <td class="text-center text-slate-300">✗</td>
-                                    <td class="text-center text-emerald-600 font-bold">✓</td>
+                                    <td class="text-center text-primary-600 font-bold">✓</td>
                                 </tr>
                                 <tr>
                                     <td class="py-3 font-medium">Crear Usuarios y Asignar Grupos (`accounts.add_user`)</td>
                                     <td class="text-center text-slate-300">✗</td>
                                     <td class="text-center text-slate-300">✗</td>
                                     <td class="text-center text-slate-300">✗</td>
-                                    <td class="text-center text-emerald-600 font-bold">✓</td>
+                                    <td class="text-center text-primary-600 font-bold">✓</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -1530,7 +1530,7 @@
                         </div>
                         {% if can_manage_documents %}
                         <a href="{% url 'documents:documento_create' %}"
-                            class="inline-flex items-center px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-sm transition">
+                            class="inline-flex items-center px-4 py-2.5 rounded-lg bg-primary-600 hover:bg-primary-700 text-white text-xs font-semibold shadow-sm transition">
                             <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                             </svg>
@@ -1545,12 +1545,12 @@
                             <!-- Filtros rápidos por Categoría -->
                             <div class="flex flex-wrap items-center gap-1.5 text-xs font-medium">
                                 <a href="?tab=admin_documentos"
-                                    class="px-3 py-1.5 rounded-lg transition {% if not cat_filtro %}bg-emerald-600 text-white font-semibold shadow-sm{% else %}bg-white text-slate-600 hover:bg-slate-100 border border-slate-200{% endif %}">
+                                    class="px-3 py-1.5 rounded-lg transition {% if not cat_filtro %}bg-primary-600 text-white font-semibold shadow-sm{% else %}bg-white text-slate-600 hover:bg-slate-100 border border-slate-200{% endif %}">
                                     Todos
                                 </a>
                                 {% for val, label in categorias_documento %}
                                 <a href="?tab=admin_documentos&cat_doc={{ val }}{% if q_doc %}&q_doc={{ q_doc }}{% endif %}{% if vigente_filtro %}&vigente_doc={{ vigente_filtro }}{% endif %}"
-                                    class="px-3 py-1.5 rounded-lg transition {% if cat_filtro == val %}bg-emerald-600 text-white font-semibold shadow-sm{% else %}bg-white text-slate-600 hover:bg-slate-100 border border-slate-200{% endif %}">
+                                    class="px-3 py-1.5 rounded-lg transition {% if cat_filtro == val %}bg-primary-600 text-white font-semibold shadow-sm{% else %}bg-white text-slate-600 hover:bg-slate-100 border border-slate-200{% endif %}">
                                     {{ label }}
                                 </a>
                                 {% endfor %}
@@ -1561,7 +1561,7 @@
                                 <input type="hidden" name="tab" value="admin_documentos">
                                 {% if cat_filtro %}<input type="hidden" name="cat_doc" value="{{ cat_filtro }}">{% endif %}
                                 <select name="vigente_doc" onchange="this.form.submit()"
-                                    class="py-1.5 px-2.5 text-xs rounded-lg border border-slate-300 bg-white focus:outline-none focus:ring-1 focus:ring-emerald-600 text-slate-700">
+                                    class="py-1.5 px-2.5 text-xs rounded-lg border border-slate-300 bg-white focus:outline-none focus:ring-1 focus:ring-primary-600 text-slate-700">
                                     <option value="" {% if not vigente_filtro %}selected{% endif %}>Todos los estados</option>
                                     <option value="si" {% if vigente_filtro == 'si' %}selected{% endif %}>Solo vigentes</option>
                                     <option value="no" {% if vigente_filtro == 'no' %}selected{% endif %}>No vigentes</option>
@@ -1573,7 +1573,7 @@
                                         </svg>
                                     </span>
                                     <input type="text" name="q_doc" value="{{ q_doc }}" placeholder="Buscar por número o título..."
-                                        class="w-48 sm:w-60 pl-9 pr-3 py-1.5 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-1 focus:ring-emerald-600 bg-white">
+                                        class="w-48 sm:w-60 pl-9 pr-3 py-1.5 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-1 focus:ring-primary-600 bg-white">
                                 </div>
                                 <button type="submit" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white text-xs font-medium rounded-lg transition">
                                     Buscar
@@ -1604,18 +1604,22 @@
                                     <tr class="hover:bg-slate-50/70 transition">
                                         <td class="px-5 py-3.5">
                                             <div class="flex items-start space-x-3">
-                                                <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0 mt-0.5">
+                                                <div class="w-8 h-8 rounded-lg bg-primary-50 text-primary-700 flex items-center justify-center shrink-0 mt-0.5">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                             d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                                                     </svg>
                                                 </div>
                                                 <div>
-                                                    <span class="font-bold text-xs font-mono text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                                                    {% if doc.numero %}
+                                                    <span class="font-bold text-xs font-mono text-primary-800 bg-primary-50 px-2 py-0.5 rounded border border-primary-200">
                                                         {{ doc.numero }}
                                                     </span>
+                                                    {% endif %}
                                                     <p class="font-semibold text-slate-900 text-xs sm:text-sm mt-1 line-clamp-1">{{ doc.titulo }}</p>
+                                                    {% if doc.descripcion %}
                                                     <p class="text-xs text-slate-500 line-clamp-1 mt-0.5">{{ doc.descripcion }}</p>
+                                                    {% endif %}
                                                     <span class="text-[10px] text-slate-400">Cargado por {{ doc.creado_por.get_full_name|default:doc.creado_por.username }}</span>
                                                 </div>
                                             </div>
@@ -1624,7 +1628,7 @@
                                             <span class="px-2 py-0.5 rounded text-xs font-semibold
                                                 {% if doc.categoria == 'ESTATUTO' %}bg-purple-100 text-purple-800
                                                 {% elif doc.categoria == 'REGLAMENTO' %}bg-blue-100 text-blue-800
-                                                {% elif doc.categoria == 'NORMATIVA' %}bg-emerald-100 text-emerald-800
+                                                {% elif doc.categoria == 'NORMATIVA' %}bg-primary-100 text-primary-800
                                                 {% else %}bg-slate-100 text-slate-700{% endif %}">
                                                 {{ doc.get_categoria_display }}
                                             </span>
@@ -1639,8 +1643,8 @@
                                         </td>
                                         <td class="px-3 py-3.5 whitespace-nowrap">
                                             {% if doc.vigente %}
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-100 text-emerald-800">
-                                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 mr-1.5"></span>
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-primary-100 text-primary-800">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-primary-600 mr-1.5"></span>
                                                 Vigente
                                             </span>
                                             {% else %}
@@ -1655,7 +1659,7 @@
                                                 <!-- Descargar / Ver PDF -->
                                                 {% if doc.archivo_almacenado %}
                                                 <a href="{{ doc.archivo_almacenado.url }}" target="_blank" title="Ver documento PDF"
-                                                    class="p-1 rounded text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 transition">
+                                                    class="p-1 rounded text-slate-400 hover:text-primary-700 hover:bg-primary-50 transition">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                             d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -1667,7 +1671,7 @@
                                                 <form method="post" action="{% url 'documents:documento_toggle_vigente' doc.id %}" class="inline">
                                                     {% csrf_token %}
                                                     <button type="submit" title="{% if doc.vigente %}Marcar como no vigente{% else %}Marcar como vigente{% endif %}"
-                                                        class="p-1 rounded text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 transition">
+                                                        class="p-1 rounded text-slate-400 hover:text-primary-700 hover:bg-primary-50 transition">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                                                         </svg>
@@ -1676,7 +1680,7 @@
 
                                                 <!-- Editar -->
                                                 <a href="{% url 'documents:documento_edit' doc.id %}" title="Editar documento"
-                                                    class="p-1 rounded text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 transition">
+                                                    class="p-1 rounded text-slate-400 hover:text-primary-700 hover:bg-primary-50 transition">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                             d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -1685,7 +1689,7 @@
 
                                                 <!-- Eliminar -->
                                                 <form method="post" action="{% url 'documents:documento_delete' doc.id %}"
-                                                    onsubmit="return confirm('¿Estás seguro de que querés eliminar el documento «{{ doc.numero }} - {{ doc.titulo|escapejs }}»?');" class="inline">
+                                                    onsubmit="return confirm('¿Estás seguro de que querés eliminar el documento «{{ doc|escapejs }}»?');" class="inline">
                                                     {% csrf_token %}
                                                     <button type="submit" title="Eliminar documento"
                                                         class="p-1 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition">
@@ -1730,21 +1734,21 @@
 
                 // Actualizar estilo en sidebar
                 links.forEach(l => {
-                    l.classList.remove('bg-emerald-50', 'text-emerald-800', 'font-semibold', 'border-l-4', 'border-emerald-700');
+                    l.classList.remove('bg-primary-50', 'text-primary-800', 'font-semibold', 'border-l-4', 'border-primary-700');
                     l.classList.add('text-slate-600', 'hover:bg-slate-50', 'hover:text-slate-900');
                     const svg = l.querySelector('svg');
                     if (svg) {
-                        svg.classList.remove('text-emerald-700');
+                        svg.classList.remove('text-primary-700');
                         svg.classList.add('text-slate-400');
                     }
                 });
 
                 this.classList.remove('text-slate-600', 'hover:bg-slate-50', 'hover:text-slate-900');
-                this.classList.add('bg-emerald-50', 'text-emerald-800', 'font-semibold', 'border-l-4', 'border-emerald-700');
+                this.classList.add('bg-primary-50', 'text-primary-800', 'font-semibold', 'border-l-4', 'border-primary-700');
                 const activeSvg = this.querySelector('svg');
                 if (activeSvg) {
                     activeSvg.classList.remove('text-slate-400');
-                    activeSvg.classList.add('text-emerald-700');
+                    activeSvg.classList.add('text-primary-700');
                 }
 
                 // Mostrar panel correspondiente
@@ -1784,13 +1788,13 @@
             <div>
                 <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Nombre <span class="text-red-500">*</span></label>
                 <input type="text" name="nombre" id="input-esp-nombre" required
-                    class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+                    class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm focus:border-primary-600 focus:outline-none focus:ring-1 focus:ring-primary-600"
                     placeholder="Ej: Minería, Hidrogeología...">
             </div>
             <div>
                 <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Descripción</label>
                 <textarea name="descripcion" id="input-esp-descripcion" rows="3"
-                    class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+                    class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm focus:border-primary-600 focus:outline-none focus:ring-1 focus:ring-primary-600"
                     placeholder="Breve descripción del área de especialización..."></textarea>
             </div>
             <div class="flex items-center justify-end space-x-2 pt-4 border-t border-slate-100">
@@ -1799,7 +1803,7 @@
                     Cancelar
                 </button>
                 <button type="submit"
-                    class="px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-sm transition">
+                    class="px-5 py-2 rounded-lg bg-primary-600 hover:bg-primary-700 text-white text-xs font-semibold shadow-sm transition">
                     Guardar
                 </button>
             </div>
@@ -1823,14 +1827,14 @@
             <div>
                 <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Nombre Completo <span class="text-red-500">*</span></label>
                 <input type="text" name="nombre" id="input-univ-nombre" required
-                    class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+                    class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm focus:border-primary-600 focus:outline-none focus:ring-1 focus:ring-primary-600"
                     placeholder="Ej: Universidad Nacional de Catamarca">
             </div>
             <div class="grid grid-cols-2 gap-3">
                 <div>
                     <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Sigla</label>
                     <input type="text" name="sigla" id="input-univ-sigla"
-                        class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+                        class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm focus:border-primary-600 focus:outline-none focus:ring-1 focus:ring-primary-600"
                         placeholder="Ej: UNCa">
                 </div>
                 <div>
@@ -1844,7 +1848,7 @@
                     Cancelar
                 </button>
                 <button type="submit"
-                    class="px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-sm transition">
+                    class="px-5 py-2 rounded-lg bg-primary-600 hover:bg-primary-700 text-white text-xs font-semibold shadow-sm transition">
                     Guardar
                 </button>
             </div>
@@ -1857,7 +1861,7 @@ function openCreateEspecialidadModal() {
     const modal = document.getElementById('modal-dashboard-especialidad');
     const form = document.getElementById('form-dashboard-especialidad');
     document.getElementById('modal-esp-title').innerText = 'Nueva Especialidad';
-    form.action = "{% url 'directory:especialidad_create' %}";
+    form.action ="{% url 'directory:especialidad_create' %}";
     document.getElementById('input-esp-nombre').value = '';
     document.getElementById('input-esp-descripcion').value = '';
     modal.classList.remove('hidden');
@@ -1883,7 +1887,7 @@ function openCreateUniversidadModal() {
     const modal = document.getElementById('modal-dashboard-universidad');
     const form = document.getElementById('form-dashboard-universidad');
     document.getElementById('modal-univ-title').innerText = 'Nueva Universidad';
-    form.action = "{% url 'directory:universidad_create' %}";
+    form.action ="{% url 'directory:universidad_create' %}";
     document.getElementById('input-univ-nombre').value = '';
     document.getElementById('input-univ-sigla').value = '';
     modal.classList.remove('hidden');
