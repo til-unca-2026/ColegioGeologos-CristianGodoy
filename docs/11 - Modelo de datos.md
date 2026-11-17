@@ -275,9 +275,9 @@ Archivo institucional del Colegio, como estatutos, reglamentos y normativas. Lo 
 | Campo | Tipo | Descripción |
 | :---- | :---- | :---- |
 | titulo | String | Nombre del documento. |
-| descripcion | Text | Explicación breve de qué contiene y para qué sirve. |
+| descripcion | Text, opcional | Explicación breve de qué contiene y para qué sirve (opcional). |
 | categoria | Choice | Clase de documento: ESTATUTO, REGLAMENTO, NORMATIVA, OTRO. |
-| numero | String | Número o identificación oficial del documento, por ejemplo «Resolución 12/2024». |
+| numero | String, opcional | Número o identificación oficial del documento (por ejemplo «Resolución 12/2024», opcional si no posee). |
 | fecha\_documento | Date, opcional | Fecha del documento (sanción, firma o emisión). |
 | vigente | Boolean | Indica si el documento está en vigor. Los reemplazados se conservan marcados como no vigentes. |
 | archivo\_almacenado | File | Archivo en Supabase Storage. La base de datos solo guarda su referencia. |
@@ -519,9 +519,9 @@ class DetalleEvento {
 %% ==========================================
 class Documento {
     +titulo: String
-    +descripcion: Text
+    +descripcion: Text nullable
     +categoria: Choice
-    +numero: String
+    +numero: String nullable
     +fecha_documento: Date nullable
     +vigente: Boolean
     +archivo_almacenado: File

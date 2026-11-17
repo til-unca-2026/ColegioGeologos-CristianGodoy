@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import (
     NovedadesListView,
+    CapacitacionesListView,
     NovedadDetailView,
     ContenidoCreateView,
     ContenidoUpdateView,
@@ -14,6 +15,7 @@ app_name = "content"
 urlpatterns = [
     # Listado público y detalle
     path("", NovedadesListView.as_view(), name="novedades_list"),
+    path("capacitaciones/", CapacitacionesListView.as_view(), name="capacitaciones_list"),
     path("detalle/<slug:slug>/", NovedadDetailView.as_view(), name="novedad_detail"),
     path("detalle-id/<int:pk>/", NovedadDetailView.as_view(), name="novedad_detail_id"),
 

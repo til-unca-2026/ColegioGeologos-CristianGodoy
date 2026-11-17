@@ -259,3 +259,30 @@ class DocumentoDashboardAndAdminViewsTests(TestCase):
         self.assertFalse(Documento.objects.filter(pk=doc.pk).exists())
         # Verificar que la señal intentó limpiar el archivo en Supabase
         mock_storage_delete.assert_called()
+
+    @patch("core.storage.SupabaseStorage._save", return_value="documentos/sin_numero_ni_desc.pdf")
+    def test_admin_can_create_documento_without_numero_and_descripcion(self, mock_storage_save):
+        self.client.force_login(self.admin)
+        url = reverse("documents:documento_create")
+        pdf_file = SimpleUploadedFile("form_tramite.pdf", b"%PDF-1.4 test content", content_type="application/pdf")
+
+        data = {
+            "numero": "",
+            "titulo": "Formulario de Solicitud de Trámite",
+            "categoria": Documento.Categoria.MODELO_NOTA,
+            "fecha_documento": "",
+            "descripcion": "",
+            "archivo_almacenado": pdf_file,
+            "visibilidad": Documento.Visibilidad.PUBLICO,
+            "vigente": True,
+        }
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, f"{reverse('accounts:dashboard')}?tab=admin_documentos")
+
+        doc = Documento.objects.filter(titulo="Formulario de Solicitud de Trámite").first()
+        self.assertIsNotNone(doc)
+        self.assertEqual(doc.numero, "")
+        self.assertEqual(doc.descripcion, "")
+        self.assertEqual(str(doc), "Formulario de Solicitud de Trámite")
+

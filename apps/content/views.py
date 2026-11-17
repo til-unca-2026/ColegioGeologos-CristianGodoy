@@ -91,6 +91,54 @@ class NovedadesListView(ListView):
         return context
 
 
+class CapacitacionesListView(ListView):
+    """
+    Vista dedicada para la Sección 'Capacitaciones' (RF-04, RF-06, CU-04).
+    Muestra exclusivamente cursos, talleres y jornadas profesionales con enlace de inscripción externo.
+    """
+    model = Contenido
+    template_name = "content/capacitaciones_list.html"
+    context_object_name = "capacitaciones"
+    paginate_by = 9
+
+    def get_queryset(self):
+        user = self.request.user
+        now = timezone.now()
+
+        qs = Contenido.objects.filter(
+            tipo=Contenido.Tipo.CAPACITACION,
+            estado_publicacion=Contenido.EstadoPublicacion.PUBLICADO,
+            fecha_publicacion__lte=now,
+        ).select_related("creado_por", "detalle_evento").prefetch_related("imagenes")
+
+        es_staff = user.is_authenticated and (
+            user.is_superuser or user.groups.filter(name__in=["administradores", "colaboradores", "Administradores", "Colaboradores"]).exists()
+        )
+
+        if not es_staff:
+            if user.is_authenticated:
+                qs = qs.filter(visibilidad__in=[Contenido.Visibilidad.PUBLICO, Contenido.Visibilidad.MATRICULADOS])
+            else:
+                qs = qs.filter(visibilidad=Contenido.Visibilidad.PUBLICO)
+
+        # Búsqueda opcional
+        q = self.request.GET.get("q", "").strip()
+        if q:
+            qs = qs.filter(
+                Q(titulo__icontains=q) | Q(resumen__icontains=q) | Q(cuerpo__icontains=q) | Q(detalle_evento__lugar__icontains=q)
+            )
+
+        # Ordenar primero los próximos eventos por fecha de inicio, o por fecha de publicación
+        return qs.order_by("-detalle_evento__inicio", "-fecha_publicacion")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["q"] = self.request.GET.get("q", "")
+        context["total_capacitaciones"] = self.get_queryset().count()
+        context["now"] = timezone.now()
+        return context
+
+
 class NovedadDetailView(DetailView):
     model = Contenido
     template_name = "content/novedad_detail.html"

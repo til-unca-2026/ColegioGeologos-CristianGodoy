@@ -17,13 +17,15 @@ from .views import (
     UniversidadCreateAjaxView,
     DirectorioPublicListView,
     DirectorioPublicDetailView,
+    MatriculacionTramitesView,
 )
 
 app_name = "directory"
 
 urlpatterns = [
-    # Directorio Público (Público general)
+    # Sección Matriculados y Directorio Público
     path("", DirectorioPublicListView.as_view(), name="public_list"),
+    path("tramites/", MatriculacionTramitesView.as_view(), name="tramites"),
     path("profesional/<int:pk>/", DirectorioPublicDetailView.as_view(), name="public_detail"),
 
     # Gestión de Matriculados (Administración / Ficha interna)

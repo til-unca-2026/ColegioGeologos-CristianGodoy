@@ -12,6 +12,8 @@ class Contenido(models.Model):
         NOVEDAD = "NOVEDAD", "Novedad"
         EVENTO = "EVENTO", "Evento"
         CAPACITACION = "CAPACITACION", "Capacitación"
+        CONVENIO = "CONVENIO", "Convenio / Beneficio"
+        CONVOCATORIA = "CONVOCATORIA", "Convocatoria Laboral"
         OTRO = "OTRO", "Otro"
 
     class EstadoPublicacion(models.TextChoices):

@@ -15,4 +15,6 @@
 | RNF-11 | Las credenciales y configuraciones sensibles deberán gestionarse mediante variables de entorno u otros mecanismos seguros de configuración. |
 | RNF-12 | Las funcionalidades principales deberán poder verificarse mediante pruebas funcionales. |
 | RNF-13 | El sistema deberá permitir a los usuarios registrados solicitar el restablecimiento de su contraseña mediante el envío de un enlace seguro a su correo electrónico verificado. |
-| RNF-14 | La carga de archivos adjuntos (imágenes y documentos) deberá validar el formato (`.jpg`, `.png`, `.pdf`) y limitar el tamaño máximo por archivo a un límite configurable (ej. 5 MB) antes de su procesamiento y posterior almacenamiento en Supabase Storage. |
+| RNF-14 | La carga de archivos adjuntos (imágenes y documentos) deberá validar el formato (`.jpg`, `.png`, `.pdf`, `.docx`) y limitar el tamaño máximo por archivo a un límite configurable (ej. 5 MB) antes de su procesamiento y posterior almacenamiento en Supabase Storage. |
+| RNF-15 | La adquisición del dominio institucional (e.g. `.org.ar` o `.ar`) y la titularidad del alojamiento web y base de datos deberán estar registradas y contratadas a nombre formal del Colegio de Geólogos o su representación legal vigente. |
+| RNF-16 | La base de datos en producción deberá contar con un esquema de copias de seguridad (backups) automáticas y periódicas gestionado por el proveedor de alojamiento. |

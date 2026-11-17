@@ -18,7 +18,13 @@ from django.contrib import admin
 from django.urls import include, path
 from django.views.generic import TemplateView
 
-from .views import HomeView, site_under_construction
+from .views import (
+    HomeView,
+    QuienesSomosView,
+    ServiciosProfesionalesView,
+    BeneficiosMatriculadosView,
+    site_under_construction,
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -27,6 +33,9 @@ urlpatterns = [
     path('content/', include('apps.content.urls')),
     path('documents/', include('apps.documents.urls')),
     path('', HomeView.as_view(), name='home'),
+    path('quienes-somos/', QuienesSomosView.as_view(), name='quienes_somos'),
+    path('servicios-profesionales/', ServiciosProfesionalesView.as_view(), name='servicios_profesionales'),
+    path('beneficios/', BeneficiosMatriculadosView.as_view(), name='beneficios'),
     path('site-under-construction/', site_under_construction, name='site_under_construction'),
 ]
 

@@ -107,7 +107,8 @@ class DocumentoCreateView(AdminRequiredMixin, CreateView):
         documento = form.save(commit=False)
         documento.creado_por = self.request.user
         documento.save()
-        messages.success(self.request, f"Documento «{documento.numero} - {documento.titulo}» creado con éxito.")
+        nombre_doc = f"«{documento.numero} - {documento.titulo}»" if documento.numero else f"«{documento.titulo}»"
+        messages.success(self.request, f"Documento {nombre_doc} creado con éxito.")
         return redirect(self.get_success_url())
 
     def get_context_data(self, **kwargs):
@@ -128,7 +129,8 @@ class DocumentoUpdateView(AdminRequiredMixin, UpdateView):
         documento = form.save(commit=False)
         documento.modificado_por = self.request.user
         documento.save()
-        messages.success(self.request, f"Documento «{documento.numero} - {documento.titulo}» actualizado con éxito.")
+        nombre_doc = f"«{documento.numero} - {documento.titulo}»" if documento.numero else f"«{documento.titulo}»"
+        messages.success(self.request, f"Documento {nombre_doc} actualizado con éxito.")
         return redirect(self.get_success_url())
 
     def get_context_data(self, **kwargs):
@@ -145,9 +147,9 @@ class DocumentoDeleteView(AdminRequiredMixin, DeleteView):
 
     def delete(self, request, *args, **kwargs):
         documento = self.get_object()
-        titulo = f"{documento.numero} - {documento.titulo}"
+        titulo = f"«{documento.numero} - {documento.titulo}»" if documento.numero else f"«{documento.titulo}»"
         documento.delete()
-        messages.success(request, f"El documento «{titulo}» fue eliminado correctamente.")
+        messages.success(request, f"El documento {titulo} fue eliminado correctamente.")
         return redirect(self.get_success_url())
 
 
@@ -161,6 +163,7 @@ class DocumentoToggleVigenteView(AdminRequiredMixin, View):
         documento.modificado_por = request.user
         documento.save(update_fields=["vigente", "modificado_por"])
         estado_str = "vigente" if documento.vigente else "no vigente"
-        messages.success(request, f"El documento «{documento.numero}» ahora figura como {estado_str}.")
+        identificador = documento.numero if documento.numero else documento.titulo
+        messages.success(request, f"El documento «{identificador}» ahora figura como {estado_str}.")
         return redirect(f"{reverse_lazy('accounts:dashboard')}?tab=admin_documentos")
 

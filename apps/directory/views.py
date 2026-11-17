@@ -1,11 +1,12 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.db import transaction
-from django.db.models import Q
+from django.db.models import OuterRef, Q, Subquery
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, DetailView, ListView, UpdateView, View
+from django.views.generic import CreateView, DetailView, ListView, UpdateView, TemplateView, View
+from apps.documents.models import Documento
 from .forms import (
     MatriculadoForm,
     TituloForm,
@@ -432,11 +433,43 @@ class UniversidadCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateV
 # VISTAS PÚBLICAS DEL DIRECTORIO (RF-07 a RF-13, CU-02, CU-03)
 # ==============================================================================
 
+class MatriculacionTramitesView(TemplateView):
+    """
+    Vista pública informativa sobre requisitos de matriculación, renovación y trámites (RF-05, RF-06).
+    Muestra la guía del circuito administrativo y modelos de notas/formularios oficiales disponibles.
+    """
+    template_name = "directory/matriculacion_tramites.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+
+        doc_qs = Documento.objects.filter(
+            vigente=True,
+            categoria=Documento.Categoria.MODELO_NOTA
+        )
+
+        if not user.is_authenticated:
+            doc_qs = doc_qs.filter(visibilidad=Documento.Visibilidad.PUBLICO)
+        else:
+            es_staff = user.is_superuser or user.groups.filter(
+                name__in=["administradores", "colaboradores", "Administradores", "Colaboradores"]
+            ).exists()
+            if not es_staff:
+                doc_qs = doc_qs.filter(
+                    visibilidad__in=[Documento.Visibilidad.PUBLICO, Documento.Visibilidad.MATRICULADOS]
+                )
+
+        context["modelos_notas"] = doc_qs.order_by("-fecha_documento", "-fecha_creacion")
+        return context
+
+
 class DirectorioPublicListView(ListView):
     """
-    Listado público de matriculados habilitado para cualquier visitante.
+    Listado público de matriculados habilitado para cualquier visitante (RF-07, RF-08, RF-09).
     Permite buscar por nombre, apellido o matrícula y filtrar por especialidad.
-    Distingue visualmente el estado de habilitación profesional.
+    Refleja fidedignamente el padrón con todos los estados de matrícula (activa, suspendida, baja)
+    y distingue visualmente a los habilitados al día para garantizar la fe pública registral.
     """
     model = Matriculado
     template_name = "directory/directorio_public_list.html"
@@ -452,7 +485,6 @@ class DirectorioPublicListView(ListView):
 
         query = self.request.GET.get("q", "").strip()
         especialidad_id = self.request.GET.get("especialidad", "")
-        solo_activos = self.request.GET.get("solo_activos", "")
 
         if query:
             qs = qs.filter(
@@ -464,11 +496,6 @@ class DirectorioPublicListView(ListView):
         if especialidad_id:
             qs = qs.filter(especialidades__id=especialidad_id)
 
-        # Distinción opcional de filtro por estado activo
-        if solo_activos == "1":
-            # Filtrar aquellos cuyo último estado vigente es ACTIVA
-            qs = qs.filter(estados__estado=HistorialEstadoMatricula.Estado.ACTIVA).distinct()
-
         return qs
 
     def get_context_data(self, **kwargs):
@@ -476,15 +503,14 @@ class DirectorioPublicListView(ListView):
         context["especialidades"] = Especialidad.objects.all().order_by("nombre")
         context["query"] = self.request.GET.get("q", "").strip()
         context["selected_especialidad"] = self.request.GET.get("especialidad", "")
-        context["solo_activos"] = self.request.GET.get("solo_activos", "")
         return context
 
 
 class DirectorioPublicDetailView(DetailView):
     """
-    Perfil público del profesional matriculado.
-    Muestra datos profesionales: matrícula, nombre, títulos, universidades, especialidades y estado.
-    Respeta la Ley 25.326: correo y teléfono solo se muestran si el profesional autorizó su publicación.
+    Perfil público del profesional matriculado (RF-10, RF-11, RF-12, RF-13).
+    Muestra datos profesionales: matrícula, nombre, títulos, universidades, especialidades y estado registral real.
+    Respeta la Ley 25.326: correo y teléfono solo se muestran si el profesional autorizó voluntariamente su publicación.
     """
     model = Matriculado
     template_name = "directory/directorio_public_detail.html"

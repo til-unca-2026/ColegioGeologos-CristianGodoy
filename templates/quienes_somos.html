@@ -1,0 +1,277 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Quiénes Somos | Colegio de Geólogos de Catamarca{% endblock %}
+
+{% block content %}
+<div class="bg-slate-50 min-h-screen py-10 sm:py-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 sm:space-y-16">
+
+        <!-- Encabezado / Hero Institucional -->
+        <div class="text-center max-w-3xl mx-auto space-y-4">
+            <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-semibold bg-primary-100 text-primary-800 tracking-wide uppercase">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+                Institucional
+            </span>
+            <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">
+                ¿Quiénes somos?
+            </h1>
+            <p class="text-lg text-slate-600 leading-relaxed">
+                Conocé la historia, el propósito y los principios que guían la labor del Colegio de Geólogos de la Provincia de Catamarca.
+            </p>
+        </div>
+
+        <!-- 1. Sección Principal: Quiénes Somos -->
+        <div class="bg-white rounded-3xl p-6 sm:p-10 shadow-sm border border-slate-200/80 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-80 h-80 bg-primary-50 rounded-full blur-3xl -z-10 translate-x-1/3 -translate-y-1/3"></div>
+
+            <div class="space-y-5 text-slate-700 leading-relaxed text-base sm:text-lg">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-semibold">
+                    <span class="w-2 h-2 rounded-full bg-primary-600"></span>
+                    Ley Provincial N.º 5445
+                </div>
+
+                <p class="font-medium text-slate-900 text-lg sm:text-xl leading-relaxed">
+                    El <strong class="text-primary-800">Colegio de Geólogos de la Provincia de Catamarca</strong> es una institución de derecho público no estatal, creada por la Ley Provincial N.º 5445, cuya misión es representar, jerarquizar y fortalecer el ejercicio de la profesión geológica en el ámbito provincial.
+                </p>
+
+                <p>
+                    Promovemos el ejercicio profesional responsable, ético y comprometido con la sociedad, garantizando la matriculación y habilitación de los profesionales, defendiendo sus incumbencias y fomentando la formación continua, la actualización científica y el desarrollo de nuevas oportunidades laborales.
+                </p>
+
+                <p>
+                    Trabajamos para consolidar el papel de la geología en el desarrollo sostenible de Catamarca, contribuyendo al conocimiento y aprovechamiento responsable de los recursos naturales, la protección ambiental, la prevención de riesgos geológicos y el desarrollo territorial.
+                </p>
+
+                <p>
+                    Aspiramos a ser un espacio de encuentro, participación y crecimiento profesional, fortaleciendo los vínculos entre nuestros matriculados, las instituciones académicas, los organismos públicos, el sector privado y la comunidad.
+                </p>
+            </div>
+        </div>
+
+        <!-- 1.a. Tarjeta: Nuestra Identidad (entre ¿Quiénes somos? y Misión/Visión) -->
+        <div class="bg-primary-900 text-white rounded-2xl p-6 sm:p-8 shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+            <div class="space-y-2 max-w-2xl">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-primary-200 shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </div>
+                    <h2 class="text-xl font-bold tracking-tight text-white">Nuestra Identidad</h2>
+                </div>
+                <p class="text-sm text-primary-100 leading-relaxed pl-13">
+                    Una institución que escucha, representa, acompaña y genera oportunidades reales para el crecimiento de la geología en Catamarca.
+                </p>
+            </div>
+
+            <div class="shrink-0 w-full sm:w-auto">
+                <a href="{% url 'accounts:autoridades' %}" class="inline-flex items-center justify-center w-full sm:w-auto px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-semibold text-white transition group">
+                    <span>Conocé a las autoridades actuales</span>
+                    <svg class="w-4 h-4 ml-1.5 transform group-hover:translate-x-1 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+
+        <!-- Misión y Visión (Cards contiguas) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+            <!-- Misión -->
+            <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200/80 flex flex-col justify-between hover:border-primary-300 transition duration-200">
+                <div class="space-y-4">
+                    <div class="w-12 h-12 rounded-2xl bg-primary-50 text-primary-700 flex items-center justify-center border border-primary-100">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-900">Nuestra Misión</h2>
+                    <div class="space-y-3 text-slate-600 text-sm sm:text-base leading-relaxed">
+                        <p>
+                            Representar, jerarquizar y fortalecer el ejercicio de la profesión geológica en la provincia de Catamarca, promoviendo la ética, la excelencia profesional, la formación continua y la defensa de los derechos e incumbencias de nuestros matriculados.
+                        </p>
+                        <p>
+                            Fomentar la participación y la integración de los profesionales, contribuyendo mediante el conocimiento científico y técnico al desarrollo sostenible de la provincia y al bienestar de la sociedad.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visión -->
+            <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200/80 flex flex-col justify-between hover:border-primary-300 transition duration-200">
+                <div class="space-y-4">
+                    <div class="w-12 h-12 rounded-2xl bg-primary-50 text-primary-700 flex items-center justify-center border border-primary-100">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-900">Nuestra Visión</h2>
+                    <div class="space-y-3 text-slate-600 text-sm sm:text-base leading-relaxed">
+                        <p>
+                            Ser una institución de referencia en el ámbito provincial y regional, reconocida por su compromiso con la profesión geológica, la calidad técnica, la transparencia institucional y su contribución al desarrollo de Catamarca.
+                        </p>
+                        <p>
+                            Consolidar un Colegio moderno, participativo e inclusivo, que genere oportunidades para sus profesionales, fortalezca los vínculos con los sectores público, privado y académico, y promueva una mayor participación de la geología en las decisiones estratégicas para el futuro de nuestra provincia.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Objetivos Institucionales -->
+        <div class="pt-8 sm:pt-14 space-y-8">
+            <div class="text-center max-w-2xl mx-auto space-y-2">
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                    Objetivos Institucionales
+                </h2>
+                <p class="text-slate-600 text-sm sm:text-base">
+                    Nuestras metas estratégicas para impulsar la geología y el ejercicio profesional en Catamarca.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Objetivo 1 -->
+                <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-3 hover:border-primary-400 hover:shadow-md transition">
+                    <div class="flex items-center space-x-3">
+                        <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-primary-100 text-primary-800 font-bold text-sm">
+                            1
+                        </span>
+                        <h3 class="font-bold text-slate-900 text-base leading-snug">
+                            Jerarquizar y defender el ejercicio profesional
+                        </h3>
+                    </div>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        Promover el reconocimiento, la valoración y el respeto de las competencias e incumbencias profesionales de los geólogos, velando por el cumplimiento de la legislación vigente y las normas de ética profesional.
+                    </p>
+                </div>
+
+                <!-- Objetivo 2 -->
+                <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-3 hover:border-primary-400 hover:shadow-md transition">
+                    <div class="flex items-center space-x-3">
+                        <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-primary-100 text-primary-800 font-bold text-sm">
+                            2
+                        </span>
+                        <h3 class="font-bold text-slate-900 text-base leading-snug">
+                            Fortalecer la formación continua
+                        </h3>
+                    </div>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        Impulsar capacitaciones, jornadas técnicas, seminarios, convenios y actividades académicas que favorezcan el perfeccionamiento profesional y la incorporación de nuevas tecnologías.
+                    </p>
+                </div>
+
+                <!-- Objetivo 3 -->
+                <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-3 hover:border-primary-400 hover:shadow-md transition">
+                    <div class="flex items-center space-x-3">
+                        <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-primary-100 text-primary-800 font-bold text-sm">
+                            3
+                        </span>
+                        <h3 class="font-bold text-slate-900 text-base leading-snug">
+                            Promover oportunidades laborales
+                        </h3>
+                    </div>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        Generar vínculos con instituciones, organismos y empresas para facilitar la inserción laboral, el intercambio de conocimientos y el crecimiento profesional de nuestros matriculados.
+                    </p>
+                </div>
+
+                <!-- Objetivo 4 -->
+                <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-3 hover:border-primary-400 hover:shadow-md transition">
+                    <div class="flex items-center space-x-3">
+                        <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-primary-100 text-primary-800 font-bold text-sm">
+                            4
+                        </span>
+                        <h3 class="font-bold text-slate-900 text-base leading-snug">
+                            Modernizar la gestión institucional
+                        </h3>
+                    </div>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        Optimizar los servicios del Colegio mediante herramientas digitales que faciliten la matriculación, las certificaciones, los trámites administrativos, la comunicación y el acceso a información de interés profesional.
+                    </p>
+                </div>
+
+                <!-- Objetivo 5 -->
+                <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-3 hover:border-primary-400 hover:shadow-md transition">
+                    <div class="flex items-center space-x-3">
+                        <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-primary-100 text-primary-800 font-bold text-sm">
+                            5
+                        </span>
+                        <h3 class="font-bold text-slate-900 text-base leading-snug">
+                            Participación e integración
+                        </h3>
+                    </div>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        Consolidar espacios de encuentro, diálogo y participación que permitan atender las necesidades de los matriculados, promoviendo una institución cercana, inclusiva y representativa de toda la provincia.
+                    </p>
+                </div>
+
+                <!-- Objetivo 6 -->
+                <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-3 hover:border-primary-400 hover:shadow-md transition">
+                    <div class="flex items-center space-x-3">
+                        <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-primary-100 text-primary-800 font-bold text-sm">
+                            6
+                        </span>
+                        <h3 class="font-bold text-slate-900 text-base leading-snug">
+                            Desarrollo sostenible
+                        </h3>
+                    </div>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        Promover la participación del conocimiento geológico en la gestión responsable de los recursos naturales, la actividad minera, la protección ambiental, la prevención de riesgos geológicos y el ordenamiento territorial.
+                    </p>
+                </div>
+
+                <!-- Objetivo 7 (Abarca ancho completo en pantallas grandes o destacado) -->
+                <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-3 hover:border-primary-400 hover:shadow-md transition md:col-span-2 lg:col-span-3">
+                    <div class="flex items-center space-x-3">
+                        <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-primary-100 text-primary-800 font-bold text-sm">
+                            7
+                        </span>
+                        <h3 class="font-bold text-slate-900 text-base leading-snug">
+                            Consolidar la presencia institucional
+                        </h3>
+                    </div>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        Fortalecer las relaciones con universidades, organismos públicos, empresas, asociaciones profesionales y la comunidad, posicionando al Colegio como un referente técnico y científico en temas vinculados con las ciencias de la Tierra.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nuestro Compromiso (Banner destacado final) -->
+        <div class="bg-gradient-to-br from-primary-900 via-primary-800 to-[#0e2a22] rounded-3xl p-8 sm:p-12 text-white shadow-xl relative overflow-hidden">
+            <div class="max-w-3xl space-y-4 relative z-10">
+                <span class="text-primary-300 font-semibold text-xs uppercase tracking-wider block">
+                    Vocación y Futuro
+                </span>
+                <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight">
+                    Nuestro Compromiso
+                </h2>
+                <p class="text-base sm:text-lg text-primary-100 leading-relaxed">
+                    Trabajamos por un Colegio más cercano a sus profesionales, abierto a nuevas ideas y comprometido con el crecimiento de la geología en Catamarca.
+                </p>
+                <p class="text-lg sm:text-xl font-semibold text-white">
+                    Creemos en una institución que escucha, representa, acompaña y genera oportunidades.
+                </p>
+
+                <div class="pt-4 flex flex-wrap gap-4">
+                    <a href="{% url 'directory:public_list' %}"
+                        class="inline-flex items-center justify-center px-5 py-2.5 rounded-xl bg-white text-primary-900 font-bold text-sm shadow hover:bg-primary-50 transition">
+                        Ver Directorio de Matriculados
+                    </a>
+                    <a href="{% url 'content:novedades_list' %}"
+                        class="inline-flex items-center justify-center px-5 py-2.5 rounded-xl border border-white/30 text-white font-semibold text-sm hover:bg-white/10 transition">
+                        Novedades y Capacitaciones
+                    </a>
+                </div>
+            </div>
+
+            <!-- Decoración gráfica de fondo -->
+            <div class="absolute -bottom-10 -right-10 w-72 h-72 bg-white/5 rounded-full blur-2xl pointer-events-none"></div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

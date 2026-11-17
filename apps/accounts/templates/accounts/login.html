@@ -9,20 +9,18 @@
     <div
         class="my-6 grid w-full max-w-4xl grid-cols-1 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl md:grid-cols-2">
 
-        <div class="relative flex flex-col justify-between overflow-hidden bg-slate-950 p-8 text-white sm:p-12">
-            <img src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=1000&q=80"
-                alt="Brújula de geólogo y rocas" class="absolute inset-0 h-full w-full object-cover opacity-85">
-            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/60 to-slate-950/70">
-            </div>
+        <div class="relative flex flex-col justify-between overflow-hidden p-8 text-white sm:p-12">
+            <img src="{% static 'img/login/login.jpg' %}"
+                alt="Imagen Login Colegio de Geólogos" class="absolute inset-0 h-full w-full object-cover">
 
-            <div class="relative z-10">
-                <h2 class="mb-3 text-2xl font-bold tracking-tight sm:text-3xl">Colegio<br>de Geólogos<br>de Catamarca</h2>
-                <p class="text-sm leading-relaxed text-emerald-100 sm:text-base">
+            <div class="relative z-10 [text-shadow:_0_2px_10px_rgb(0_0_0_/_80%),_0_1px_3px_rgb(0_0_0_/_90%)]">
+                <h2 class="mb-3 text-2xl font-bold tracking-tight sm:text-3xl text-white">Colegio<br>de Geólogos<br>de Catamarca</h2>
+                <p class="text-sm leading-relaxed text-slate-100 sm:text-base font-medium">
                     Accedé a tu cuenta para gestionar tu información y mantenerte al día con las novedades del Colegio.
                 </p>
             </div>
 
-            <p class="relative z-10 mt-8 border-t border-emerald-800/60 pt-6 text-xs text-emerald-100/90">
+            <p class="relative z-10 mt-8 border-t border-white/30 pt-6 text-xs text-slate-100 [text-shadow:_0_1px_4px_rgb(0_0_0_/_80%)]">
                 Las cuentas de matriculado son generadas formalmente por la administración del Colegio.
             </p>
         </div>
@@ -47,7 +45,7 @@
                     <input type="text" name="{{ form.username.html_name }}" id="{{ form.username.id_for_label }}"
                         value="{{ form.username.value|default_if_none:'' }}" required autofocus
                         autocomplete="username" placeholder="Ingresá tu nombre de usuario"
-                        class="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                        class="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-600"
                         {% if form.username.errors %}aria-invalid="true" aria-describedby="username-errors"{% endif %}>
                     {% if form.username.errors %}
                     <div id="username-errors" class="mt-1 text-sm text-red-600">
@@ -65,7 +63,7 @@
                     </label>
                     <input type="password" name="{{ form.password.html_name }}" id="{{ form.password.id_for_label }}"
                         required autocomplete="current-password" placeholder="Ingresá tu contraseña"
-                        class="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                        class="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-600"
                         {% if form.password.errors %}aria-invalid="true" aria-describedby="password-errors"{% endif %}>
                     {% if form.password.errors %}
                     <div id="password-errors" class="mt-1 text-sm text-red-600">
@@ -77,12 +75,12 @@
                 </div>
 
                 <button type="submit"
-                    class="w-full rounded-lg bg-[#143d32] px-4 py-2.5 text-sm font-semibold text-white shadow-md transition hover:bg-[#0d2821] active:scale-[0.98]">
+                    class="w-full rounded-lg bg-primary-900 px-4 py-2.5 text-sm font-semibold text-white shadow-md transition hover:bg-[#0d2821] active:scale-[0.98]">
                     Ingresar
                 </button>
                 <p class="mt-4 text-center text-sm">
                     <a href="{% url 'accounts:password_reset' %}"
-                        class="font-semibold text-emerald-700 hover:text-emerald-900 hover:underline">
+                        class="font-semibold text-primary-700 hover:text-primary-900 hover:underline">
                         ¿Olvidó su contraseña?
                     </a>
                 </p>
