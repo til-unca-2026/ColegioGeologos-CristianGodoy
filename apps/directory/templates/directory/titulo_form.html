@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title|default:"Título Universitario" }} | Dashboard Colegio de Geólogos{% endblock %}
+
+{% block content %}
+<section class="min-h-[calc(100vh-105px)] bg-slate-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-2xl mx-auto space-y-6">
+
+        <!-- Migas de pan y título -->
+        <div>
+            <nav class="flex items-center text-xs text-slate-500 mb-2 space-x-2">
+                <a href="{% url 'accounts:dashboard' %}?tab=admin_matriculados" class="hover:text-primary-700 font-medium">Dashboard</a>
+                <span>/</span>
+                <a href="{% url 'accounts:dashboard' %}?tab=admin_matriculados" class="hover:text-primary-700 font-medium">Matriculados</a>
+                <span>/</span>
+                <a href="{% url 'directory:matriculado_detail' matriculado.pk %}" class="hover:text-primary-700 font-medium">Matrícula {{ matriculado.numero_matricula }}</a>
+                <span>/</span>
+                <span class="text-slate-700 font-semibold">{{ title|default:"Título Universitario" }}</span>
+            </nav>
+            <h1 class="text-2xl font-bold text-slate-900">{{ title|default:"Agregar Título Universitario" }}</h1>
+            <p class="text-sm text-slate-500 mt-1">
+                Matriculado: <strong class="text-slate-800">{{ matriculado.usuario.get_full_name|default:matriculado.usuario.username }}</strong> (Mat. N° {{ matriculado.numero_matricula }})
+            </p>
+        </div>
+
+        <!-- Formulario -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <form method="post" enctype="multipart/form-data" novalidate class="p-6 sm:p-8 space-y-6">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                <div class="p-4 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-sm">
+                    {{ form.non_field_errors }}
+                </div>
+                {% endif %}
+
+                <div>
+                    <label for="{{ form.denominacion.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                        Denominación del Título <span class="text-rose-600">*</span>
+                    </label>
+                    {{ form.denominacion }}
+                    {% if form.denominacion.errors %}
+                    <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.denominacion.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="{{ form.tipo.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                            Nivel / Tipo de Título <span class="text-rose-600">*</span>
+                        </label>
+                        {{ form.tipo }}
+                        {% if form.tipo.errors %}
+                        <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.tipo.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.emitido_por.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                            Universidad Emisora <span class="text-rose-600">*</span>
+                        </label>
+                        {{ form.emitido_por }}
+                        {% if form.emitido_por.errors %}
+                        <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.emitido_por.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="{{ form.fecha_egreso.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                            Fecha de Egreso
+                        </label>
+                        {{ form.fecha_egreso }}
+                        {% if form.fecha_egreso.errors %}
+                        <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.fecha_egreso.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.fecha_expedicion.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                            Fecha de Expedición del Diploma
+                        </label>
+                        {{ form.fecha_expedicion }}
+                        {% if form.fecha_expedicion.errors %}
+                        <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.fecha_expedicion.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div>
+                    <label for="{{ form.escaneo_diploma.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                        Escaneo del Diploma (PDF / Imagen)
+                    </label>
+                    {{ form.escaneo_diploma }}
+                    {% if form.escaneo_diploma.errors %}
+                    <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.escaneo_diploma.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="pt-8 flex items-center justify-end gap-3 border-t border-slate-100">
+                    <a href="{% url 'directory:matriculado_detail' matriculado.pk %}"
+                        class="btn-secondary">
+                        Cancelar
+                    </a>
+                    <button type="submit"
+                        class="btn-primary">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        Guardar Título
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

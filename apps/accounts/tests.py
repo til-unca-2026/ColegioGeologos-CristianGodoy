@@ -48,7 +48,10 @@ class AuthenticationViewsTests(TestCase):
         )
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Usuario o contraseña incorrectos.")
+        self.assertContains(
+            response,
+            "Por favor introduzca un nombre de usuario y una contraseña correctos.",
+        )
 
     def test_logout_redirects_home_and_shows_flash_message(self):
         self.client.force_login(self.user)
@@ -87,9 +90,9 @@ class DashboardViewTests(TestCase):
         self.client.force_login(self.user)
         response = self.client.get(reverse("accounts:dashboard"))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Padrón de Matriculados")
-        self.assertContains(response, "Cuentas de Usuarios")
-        self.assertContains(response, "Roles y permisos")
+        self.assertContains(response, "Matriculados")
+        self.assertContains(response, "Usuarios")
+        self.assertContains(response, "Comisiones")
 
     def test_dashboard_user_with_permission_sees_assigned_section(self):
         from django.contrib.auth.models import Permission
@@ -98,7 +101,7 @@ class DashboardViewTests(TestCase):
         self.client.force_login(self.user)
         response = self.client.get(reverse("accounts:dashboard"))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Cuentas de Usuarios")
+        self.assertContains(response, "Usuarios")
 
 
 class PasswordRecoveryTests(TestCase):
@@ -237,8 +240,8 @@ class UserManagementViewsTests(TestCase):
         self.assertEqual(new_user.cuil_cuit, "20-35123456-8")
         self.assertEqual(str(new_user.fecha_nacimiento), "1990-05-15")
         self.assertEqual(new_user.domicilio_real_calle, "San Martin")
-        self.assertTrue(new_user.publicar_email)
-        self.assertTrue(new_user.publicar_telefono)
+        self.assertFalse(new_user.publicar_email)  # Privacidad por defecto: nace privado
+        self.assertFalse(new_user.publicar_telefono)
         self.assertTrue(new_user.must_change_password)
         self.assertTrue(new_user.is_active)
         self.assertFalse(new_user.is_staff)  # REGLA: Nunca es staff
@@ -458,9 +461,25 @@ class AutoridadesPublicViewTests(TestCase):
         MembresiaComision.objects.create(
             usuario=self.user_ex,
             comision=MembresiaComision.Comision.DIRECTIVA,
-            cargo=MembresiaComision.Cargo.VOCAL_TITULAR,
+            cargo=MembresiaComision.Cargo.VOCAL_TITULAR_1,
             fecha_desde=self.hoy - datetime.timedelta(days=400),
             fecha_hasta=self.hoy - datetime.timedelta(days=10),
+        )
+
+        # Miembro vigente revisora de cuentas
+        self.user_rev = user_model.objects.create_user(
+            username="revisor_user",
+            first_name="Martín",
+            last_name="Revisor",
+            password="pass",
+            must_change_password=False,
+        )
+        MembresiaComision.objects.create(
+            usuario=self.user_rev,
+            comision=MembresiaComision.Comision.REVISORA_CUENTAS,
+            cargo=MembresiaComision.Cargo.REVISOR_TITULAR_1,
+            fecha_desde=self.hoy - datetime.timedelta(days=50),
+            fecha_hasta=None,
         )
 
     def test_autoridades_page_status_and_template(self):
@@ -468,14 +487,16 @@ class AutoridadesPublicViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "accounts/autoridades.html")
 
-    def test_only_vigentes_directiva_are_displayed(self):
+    def test_only_vigentes_directiva_and_revisora_are_displayed(self):
         response = self.client.get(reverse("accounts:autoridades"))
         content = response.content.decode()
 
         self.assertIn("Carlos Gómez", content)
-        self.assertIn("Presidente", content)
+        self.assertIn("Presidente/a", content)
         self.assertIn("Ana Martínez", content)
-        self.assertIn("Secretario", content)
+        self.assertIn("Secretario/a", content)
+        self.assertIn("Martín Revisor", content)
+        self.assertIn("Revisor/a de Cuentas Titular 1", content)
         # Mandato vencido no debe mostrarse
         self.assertNotIn("Pedro Antiguo", content)
 

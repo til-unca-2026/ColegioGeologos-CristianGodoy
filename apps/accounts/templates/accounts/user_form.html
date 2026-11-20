@@ -7,33 +7,22 @@
     <div class="max-w-4xl mx-auto space-y-6">
 
         <!-- Navegación de migas de pan y encabezado -->
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-                <nav class="flex items-center text-xs text-slate-500 mb-2 space-x-2">
-                    <a href="{% url 'accounts:dashboard' %}?tab=admin_usuarios" class="hover:text-primary-700 font-medium">Dashboard</a>
-                    <span>/</span>
-                    <a href="{% url 'accounts:dashboard' %}?tab=admin_usuarios" class="hover:text-primary-700 font-medium">Cuentas de Usuarios</a>
-                    <span>/</span>
-                    <span class="text-slate-700 font-semibold">{% if is_edit %}Editar{% else %}Nuevo{% endif %}</span>
-                </nav>
-                <h1 class="text-2xl font-bold text-slate-900">{{ title }}</h1>
-                <p class="text-sm text-slate-500 mt-1">
-                    {% if is_edit %}
-                    Actualice los datos personales, domicilio, contacto y grupo asignado a la cuenta.
-                    {% else %}
-                    Complete el formulario para dar de alta un nuevo usuario, cumpliendo con la Ley 25.326 y asignándole su grupo institucional.
-                    {% endif %}
-                </p>
-            </div>
-            <div>
-                <a href="{% url 'accounts:dashboard' %}?tab=admin_usuarios"
-                   class="inline-flex items-center px-4 py-2 border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 transition shadow-sm">
-                    <svg class="w-4 h-4 mr-1.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                    </svg>
-                    Volver a Usuarios
-                </a>
-            </div>
+        <div>
+            <nav class="flex items-center text-xs text-slate-500 mb-2 space-x-2">
+                <a href="{% url 'accounts:dashboard' %}?tab=admin_usuarios" class="hover:text-primary-700 font-medium">Dashboard</a>
+                <span>/</span>
+                <a href="{% url 'accounts:dashboard' %}?tab=admin_usuarios" class="hover:text-primary-700 font-medium">Cuentas de Usuarios</a>
+                <span>/</span>
+                <span class="text-slate-700 font-semibold">{% if is_edit %}Editar{% else %}Nuevo{% endif %}</span>
+            </nav>
+            <h1 class="text-2xl font-bold text-slate-900">{{ title }}</h1>
+            <p class="text-sm text-slate-500 mt-1">
+                {% if is_edit %}
+                Actualice los datos personales, domicilio, contacto y grupo asignado a la cuenta.
+                {% else %}
+                Complete el formulario para dar de alta un nuevo usuario, cumpliendo con la Ley 25.326 y asignándole su grupo institucional.
+                {% endif %}
+            </p>
         </div>
 
         <!-- Formulario Principal -->
@@ -47,22 +36,22 @@
                 </div>
                 {% endif %}
 
-                <!-- SECCIÓN 1: ROL Y GRUPO DE DJANGO -->
+                <!-- SECCIÓN 1: ROL Y GRUPO DE ACCESO -->
                 <div class="py-8 first:pt-0">
                     <div class="border-b border-slate-200 pb-3 mb-6">
                         <h2 class="text-base font-semibold text-slate-900 flex items-center gap-2.5">
                             <span class="flex h-6 w-6 items-center justify-center rounded-full bg-primary-100 text-primary-800 text-xs font-bold">1</span>
-                            Grupo Institucional y Nivel de Acceso
+                            Grupo Institucional y Nivel de Acceso (Opcional)
                         </h2>
                         <p class="text-xs text-slate-500 mt-1 ml-8">
-                            Seleccione el grupo de Django admin que define las capacidades del usuario en la plataforma.
+                            Seleccione un grupo solo si el usuario cumplirá funciones administrativas o de redacción. A los matriculados se les asigna su grupo automáticamente al matricularlos.
                         </p>
                     </div>
 
                     <div class="ml-8 space-y-5">
                         <div>
                             <label for="{{ form.group.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                                {{ form.group.label }} <span class="text-rose-600">*</span>
+                                {{ form.group.label }}
                             </label>
                             {{ form.group }}
                             {% if form.group.help_text %}
@@ -75,22 +64,22 @@
 
                         <!-- Tarjetas explicativas de grupos -->
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-1">
-                            <div class="p-3.5 rounded-lg border border-primary-200 bg-primary-50/50">
-                                <span class="text-xs font-bold text-primary-800 block">Matriculados</span>
-                                <span class="text-[11px] text-primary-700 leading-tight block mt-0.5">
-                                    Acceso al portal de autogestión, consulta de estado matricular y pagos.
+                            <div class="p-3.5 rounded-lg border border-slate-200 bg-slate-50/70">
+                                <span class="text-xs font-bold text-slate-800 block">Sin Grupo / Estándar</span>
+                                <span class="text-[11px] text-slate-600 leading-tight block mt-0.5">
+                                    Usuario base. Si se trata de un profesional, el rol de Matriculado se le otorgará automáticamente al registrar su matrícula.
                                 </span>
                             </div>
                             <div class="p-3.5 rounded-lg border border-purple-200 bg-purple-50/50">
                                 <span class="text-xs font-bold text-purple-800 block">Colaboradores</span>
                                 <span class="text-[11px] text-purple-700 leading-tight block mt-0.5">
-                                    Generación y redacción de contenidos (noticias, eventos, novedades).
+                                    Permisos especiales para redactar y publicar contenidos (noticias, capacitaciones, novedades).
                                 </span>
                             </div>
                             <div class="p-3.5 rounded-lg border border-rose-200 bg-rose-50/50">
                                 <span class="text-xs font-bold text-rose-800 block">Administradores</span>
                                 <span class="text-[11px] text-rose-700 leading-tight block mt-0.5">
-                                    Gestión completa desde el Dashboard: usuarios, documentos, contenidos y padrón.
+                                    Permisos integrales de administración desde el Dashboard del Colegio.
                                 </span>
                             </div>
                         </div>
@@ -160,15 +149,15 @@
                     </div>
                 </div>
 
-                <!-- SECCIÓN 3: DATOS PERSONALES Y DE IDENTIDAD (Ley 25.326) -->
+                <!-- SECCIÓN 3: DATOS PERSONALES Y DE IDENTIDAD -->
                 <div class="py-8">
                     <div class="border-b border-slate-200 pb-3 mb-6">
                         <h2 class="text-base font-semibold text-slate-900 flex items-center gap-2.5">
                             <span class="flex h-6 w-6 items-center justify-center rounded-full bg-primary-100 text-primary-800 text-xs font-bold">3</span>
-                            Datos de Identidad Personal (Protegidos Ley 25.326)
+                            Datos de Identidad Personal
                         </h2>
                         <p class="text-xs text-slate-500 mt-1 ml-8">
-                            Información personal oficial y datos civiles.
+                            Nombre, apellido y DNI son requeridos. El resto de los datos puede completarse ahora o más adelante.
                         </p>
                     </div>
 
@@ -205,7 +194,7 @@
 
                         <div>
                             <label for="{{ form.cuil_cuit.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                                CUIL / CUIT <span class="text-rose-600">*</span>
+                                CUIL / CUIT (Opcional)
                             </label>
                             {{ form.cuil_cuit }}
                             {% if form.cuil_cuit.errors %}
@@ -215,7 +204,7 @@
 
                         <div>
                             <label for="{{ form.fecha_nacimiento.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                                Fecha de nacimiento <span class="text-rose-600">*</span>
+                                Fecha de nacimiento (Opcional)
                             </label>
                             {{ form.fecha_nacimiento }}
                             {% if form.fecha_nacimiento.errors %}
@@ -225,7 +214,7 @@
 
                         <div>
                             <label for="{{ form.lugar_nacimiento.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                                Lugar de nacimiento <span class="text-rose-600">*</span>
+                                Lugar de nacimiento (Opcional)
                             </label>
                             {{ form.lugar_nacimiento }}
                             {% if form.lugar_nacimiento.errors %}
@@ -245,22 +234,22 @@
                     </div>
                 </div>
 
-                <!-- SECCIÓN 4: DOMICILIO REAL (Ley 25.326) -->
+                <!-- SECCIÓN 4: DOMICILIO REAL (Opcional) -->
                 <div class="py-8">
                     <div class="border-b border-slate-200 pb-3 mb-6">
                         <h2 class="text-base font-semibold text-slate-900 flex items-center gap-2.5">
                             <span class="flex h-6 w-6 items-center justify-center rounded-full bg-primary-100 text-primary-800 text-xs font-bold">4</span>
-                            Domicilio Real (Protegido Ley 25.326)
+                            Domicilio Real (Opcional)
                         </h2>
                         <p class="text-xs text-slate-500 mt-1 ml-8">
-                            Lugar de residencia particular del usuario.
+                            Lugar de residencia particular del usuario. Puede completarse posteriormente en autogestión.
                         </p>
                     </div>
 
                     <div class="ml-8 grid grid-cols-1 md:grid-cols-3 gap-5">
                         <div class="md:col-span-2">
                             <label for="{{ form.domicilio_real_calle.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                                Calle <span class="text-rose-600">*</span>
+                                Calle
                             </label>
                             {{ form.domicilio_real_calle }}
                             {% if form.domicilio_real_calle.errors %}
@@ -270,7 +259,7 @@
 
                         <div>
                             <label for="{{ form.domicilio_real_numero.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                                Número <span class="text-rose-600">*</span>
+                                Número
                             </label>
                             {{ form.domicilio_real_numero }}
                             {% if form.domicilio_real_numero.errors %}
@@ -280,14 +269,14 @@
 
                         <div>
                             <label for="{{ form.domicilio_real_piso_depto.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                                Piso / Depto (Opcional)
+                                Piso / Depto
                             </label>
                             {{ form.domicilio_real_piso_depto }}
                         </div>
 
                         <div>
                             <label for="{{ form.domicilio_real_localidad.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                                Localidad <span class="text-rose-600">*</span>
+                                Localidad
                             </label>
                             {{ form.domicilio_real_localidad }}
                             {% if form.domicilio_real_localidad.errors %}
@@ -297,7 +286,7 @@
 
                         <div>
                             <label for="{{ form.domicilio_real_provincia.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                                Provincia / Región <span class="text-rose-600">*</span>
+                                Provincia / Región
                             </label>
                             {{ form.domicilio_real_provincia }}
                             <datalist id="lista-provincias-argentinas">
@@ -334,7 +323,7 @@
 
                         <div>
                             <label for="{{ form.domicilio_real_cp.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                                Código Postal <span class="text-rose-600">*</span>
+                                Código Postal
                             </label>
                             {{ form.domicilio_real_cp }}
                             {% if form.domicilio_real_cp.errors %}
@@ -354,15 +343,15 @@
                     </div>
                 </div>
 
-                <!-- SECCIÓN 5: CONTACTO, VISIBILIDAD Y FOTO -->
+                <!-- SECCIÓN 5: CONTACTO Y FOTO (Opcional) -->
                 <div class="py-8">
                     <div class="border-b border-slate-200 pb-3 mb-6">
                         <h2 class="text-base font-semibold text-slate-900 flex items-center gap-2.5">
                             <span class="flex h-6 w-6 items-center justify-center rounded-full bg-primary-100 text-primary-800 text-xs font-bold">5</span>
-                            Contacto, Preferencias Públicas y Foto
+                            Contacto y Foto de Perfil (Opcional)
                         </h2>
                         <p class="text-xs text-slate-500 mt-1 ml-8">
-                            Canales de comunicación y permisos de visibilidad para el padrón/directorio.
+                            Canal de comunicación telefónico y fotografía institucional.
                         </p>
                     </div>
 
@@ -370,7 +359,7 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div>
                                 <label for="{{ form.phone.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                                    Teléfono de contacto (Formato internacional)
+                                    Teléfono de contacto
                                 </label>
                                 {{ form.phone }}
                                 {% if form.phone.errors %}
@@ -389,6 +378,7 @@
                             </div>
                         </div>
 
+                        {% if is_edit %}
                         <div class="p-4 bg-slate-50 rounded-lg border border-slate-200 space-y-3.5">
                             <p class="text-xs font-bold text-slate-700 uppercase tracking-wide">Preferencias de Privacidad en Directorio</p>
                             
@@ -420,10 +410,12 @@
                                 </div>
                             </div>
                         </div>
+                        {% endif %}
                     </div>
                 </div>
 
-                <!-- SECCIÓN 6: ESTADO Y POLÍTICAS DE SEGURIDAD -->
+                {% if is_edit %}
+                <!-- SECCIÓN 6: ESTADO Y POLÍTICAS DE SEGURIDAD (Solo en edición) -->
                 <div class="py-8">
                     <div class="border-b border-slate-200 pb-3 mb-6">
                         <h2 class="text-base font-semibold text-slate-900 flex items-center gap-2.5">
@@ -442,7 +434,7 @@
                                     Debe cambiar la contraseña en el próximo inicio
                                 </label>
                                 <p class="text-slate-500">
-                                    Obliga al usuario a ingresar una nueva contraseña al iniciar sesión. Recomendado siempre para cuentas nuevas.
+                                    Obliga al usuario a ingresar una nueva contraseña al iniciar sesión.
                                 </p>
                             </div>
                         </div>
@@ -462,6 +454,7 @@
                         </div>
                     </div>
                 </div>
+                {% endif %}
 
                 <!-- BOTONES DE ACCIÓN -->
                 <div class="pt-8 flex items-center justify-end gap-3">

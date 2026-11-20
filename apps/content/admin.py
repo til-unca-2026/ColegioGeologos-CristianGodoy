@@ -5,7 +5,7 @@ from .models import Contenido, ImagenContenido, DetalleEvento
 class ImagenContenidoInline(admin.TabularInline):
     model = ImagenContenido
     extra = 1
-    fields = ("imagen", "texto_alt", "epigrafe", "orden", "es_portada")
+    fields = ("imagen", "epigrafe", "orden", "es_portada")
 
 
 class DetalleEventoInline(admin.StackedInline):
@@ -22,7 +22,6 @@ class ContenidoAdmin(admin.ModelAdmin):
         "tipo",
         "estado_publicacion",
         "visibilidad",
-        "destacado",
         "fecha_publicacion",
         "esta_publicado_status",
         "creado_por",
@@ -31,7 +30,6 @@ class ContenidoAdmin(admin.ModelAdmin):
         "tipo",
         "estado_publicacion",
         "visibilidad",
-        "destacado",
         "fecha_publicacion",
     )
     search_fields = ("titulo", "resumen", "cuerpo", "slug")
@@ -60,7 +58,6 @@ class ContenidoAdmin(admin.ModelAdmin):
                     "estado_publicacion",
                     "fecha_publicacion",
                     "visibilidad",
-                    "destacado",
                 )
             },
         ),
@@ -92,9 +89,9 @@ class ContenidoAdmin(admin.ModelAdmin):
 
 @admin.register(ImagenContenido)
 class ImagenContenidoAdmin(admin.ModelAdmin):
-    list_display = ("id", "contenido", "orden", "es_portada", "texto_alt")
+    list_display = ("id", "contenido", "orden", "es_portada", "epigrafe")
     list_filter = ("es_portada", "contenido__tipo")
-    search_fields = ("contenido__titulo", "texto_alt", "epigrafe")
+    search_fields = ("contenido__titulo", "epigrafe")
 
 
 @admin.register(DetalleEvento)

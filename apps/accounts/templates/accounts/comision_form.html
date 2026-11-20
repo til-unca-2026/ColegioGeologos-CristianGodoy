@@ -113,5 +113,52 @@
 
     </div>
 </section>
+
+<!-- Filtrado dinámico de cargos según la comisión seleccionada -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const comisionSelect = document.getElementById("{{ form.comision.id_for_label }}");
+    const cargoSelect = document.getElementById("{{ form.cargo.id_for_label }}");
+    if (!comisionSelect || !cargoSelect) return;
+
+    const cargosRevisora = [
+        "REVISOR_TITULAR_1",
+        "REVISOR_TITULAR_2",
+        "REVISOR_SUPLENTE_1",
+        "REVISOR_SUPLENTE_2"
+    ];
+
+    const allOptions = Array.from(cargoSelect.options).map(opt => ({
+        value: opt.value,
+        text: opt.text,
+        selected: opt.selected
+    }));
+
+    function updateCargos() {
+        const selectedComision = comisionSelect.value;
+        const currentCargoValue = cargoSelect.value;
+        cargoSelect.innerHTML = "";
+
+        allOptions.forEach(opt => {
+            if (!opt.value) {
+                const newOpt = new Option(opt.text, opt.value);
+                cargoSelect.add(newOpt);
+                return;
+            }
+            const isRevisora = cargosRevisora.includes(opt.value);
+            if (selectedComision === "REVISORA_CUENTAS" && isRevisora) {
+                const newOpt = new Option(opt.text, opt.value, false, opt.value === currentCargoValue);
+                cargoSelect.add(newOpt);
+            } else if (selectedComision === "DIRECTIVA" && !isRevisora) {
+                const newOpt = new Option(opt.text, opt.value, false, opt.value === currentCargoValue);
+                cargoSelect.add(newOpt);
+            }
+        });
+    }
+
+    comisionSelect.addEventListener("change", updateCargos);
+    updateCargos();
+});
+</script>
 {% endblock %}
 

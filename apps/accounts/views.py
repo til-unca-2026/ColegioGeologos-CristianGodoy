@@ -95,7 +95,13 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 
         if can_manage_matriculados:
             from apps.directory.models import Matriculado, Especialidad, Universidad
-            from apps.directory.forms import EspecialidadForm, UniversidadForm
+            from apps.directory.forms import (
+                EspecialidadForm,
+                UniversidadForm,
+                TituloForm,
+                HistorialEstadoMatriculaForm,
+                AntecedenteDisciplinarioForm,
+            )
             search_mat = self.request.GET.get("q_mat", "").strip()
             especialidad_filtro = self.request.GET.get("especialidad", "")
             
@@ -139,6 +145,9 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             context["search_univ"] = search_univ
             context["especialidad_form"] = EspecialidadForm()
             context["universidad_form"] = UniversidadForm()
+            context["matriculado_titulo_form"] = TituloForm()
+            context["matriculado_estado_form"] = HistorialEstadoMatriculaForm()
+            context["matriculado_antecedente_form"] = AntecedenteDisciplinarioForm()
 
         if can_manage_users:
             User = get_user_model()
@@ -399,21 +408,22 @@ class AccountPasswordResetConfirmView(PasswordResetConfirmView):
 
 class AutoridadesView(ListView):
     template_name = "accounts/autoridades.html"
-    context_object_name = "autoridades"
+    context_object_name = "autoridades_directiva"
 
     def get_queryset(self):
         hoy = timezone.now().date()
-        cargo_order = [
+        cargo_order_directiva = [
             MembresiaComision.Cargo.PRESIDENTE,
             MembresiaComision.Cargo.VICEPRESIDENTE,
             MembresiaComision.Cargo.SECRETARIO,
-            MembresiaComision.Cargo.PROSECRETARIO,
             MembresiaComision.Cargo.TESORERO,
-            MembresiaComision.Cargo.PROTESORERO,
-            MembresiaComision.Cargo.VOCAL_TITULAR,
-            MembresiaComision.Cargo.VOCAL_SUPLENTE,
+            MembresiaComision.Cargo.VOCAL_TITULAR_1,
+            MembresiaComision.Cargo.VOCAL_TITULAR_2,
+            MembresiaComision.Cargo.VOCAL_TITULAR_3,
+            MembresiaComision.Cargo.VOCAL_SUPLENTE_1,
+            MembresiaComision.Cargo.VOCAL_SUPLENTE_2,
         ]
-        whens = [When(cargo=cargo, then=Value(i)) for i, cargo in enumerate(cargo_order)]
+        whens = [When(cargo=cargo, then=Value(i)) for i, cargo in enumerate(cargo_order_directiva)]
 
         return (
             MembresiaComision.objects.filter(
@@ -425,3 +435,30 @@ class AutoridadesView(ListView):
             .annotate(cargo_priority=Case(*whens, default=Value(99), output_field=IntegerField()))
             .order_by("cargo_priority", "-fecha_desde", "usuario__last_name", "usuario__first_name")
         )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        hoy = timezone.now().date()
+
+        # Mantener 'autoridades' para compatibilidad retroactiva
+        context["autoridades"] = context["autoridades_directiva"]
+
+        cargo_order_revisora = [
+            MembresiaComision.Cargo.REVISOR_TITULAR_1,
+            MembresiaComision.Cargo.REVISOR_TITULAR_2,
+            MembresiaComision.Cargo.REVISOR_SUPLENTE_1,
+            MembresiaComision.Cargo.REVISOR_SUPLENTE_2,
+        ]
+        whens_revisora = [When(cargo=cargo, then=Value(i)) for i, cargo in enumerate(cargo_order_revisora)]
+
+        context["autoridades_revisora"] = (
+            MembresiaComision.objects.filter(
+                comision=MembresiaComision.Comision.REVISORA_CUENTAS,
+                fecha_desde__lte=hoy,
+            )
+            .filter(Q(fecha_hasta__isnull=True) | Q(fecha_hasta__gte=hoy))
+            .select_related("usuario")
+            .annotate(cargo_priority=Case(*whens_revisora, default=Value(99), output_field=IntegerField()))
+            .order_by("cargo_priority", "-fecha_desde", "usuario__last_name", "usuario__first_name")
+        )
+        return context

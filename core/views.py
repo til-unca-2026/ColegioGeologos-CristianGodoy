@@ -3,6 +3,7 @@ from django.utils import timezone
 from django.views.generic import TemplateView
 from apps.content.models import Contenido
 from apps.documents.models import Documento
+from apps.directory.models import Matriculado, Especialidad
 
 
 class HomeView(TemplateView):
@@ -29,15 +30,19 @@ class HomeView(TemplateView):
                     visibilidad__in=[Contenido.Visibilidad.PUBLICO, Contenido.Visibilidad.MATRICULADOS]
                 )
 
-        # 1. Novedades y Noticias recientes (excluyendo Eventos y Capacitaciones)
+        # 1. Novedades y Noticias recientes (excluyendo Capacitaciones, Beneficios y Convocatorias)
         noticias_qs = (
-            base_qs.exclude(tipo__in=[Contenido.Tipo.EVENTO, Contenido.Tipo.CAPACITACION])
-            .order_by("-destacado", "-fecha_publicacion")[:2]
+            base_qs.exclude(tipo__in=[
+                Contenido.Tipo.CAPACITACION,
+                Contenido.Tipo.BENEFICIO,
+                Contenido.Tipo.CONVOCATORIA,
+            ])
+            .order_by("-fecha_publicacion")[:2]
         )
 
-        # 2. Próximos Eventos y Capacitaciones
+        # 2. Próximas Capacitaciones
         eventos_qs = (
-            base_qs.filter(tipo__in=[Contenido.Tipo.EVENTO, Contenido.Tipo.CAPACITACION])
+            base_qs.filter(tipo=Contenido.Tipo.CAPACITACION)
             .select_related("detalle_evento")
             .order_by("detalle_evento__inicio", "-fecha_publicacion")[:2]
         )
@@ -56,6 +61,13 @@ class HomeView(TemplateView):
         context["home_noticias"] = noticias_qs
         context["home_eventos"] = eventos_qs
         context["home_documentos"] = documentos_recientes
+
+        # Especialidades dinámicas para enlace con filtro al Directorio
+        context["home_especialidades"] = Especialidad.objects.all().order_by("nombre")
+
+        # Métrica de matriculados registrados
+        context["total_matriculados"] = Matriculado.objects.count()
+
         return context
 
 
@@ -94,20 +106,21 @@ class ServiciosProfesionalesView(TemplateView):
         return context
 
 
-class BeneficiosMatriculadosView(TemplateView):
+class ConveniosView(TemplateView):
     """
-    Vista de beneficios para matriculados (RF-06):
-    Convenios institucionales (publicaciones y documentos oficiales) y convocatorias laborales vigentes.
+    Vista dedicada para Beneficios para matriculados (RF-06).
+    Muestra publicaciones vigentes de acuerdos comerciales, descuentos y beneficios.
     """
-    template_name = "beneficios.html"
+    template_name = "convenios.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         now = timezone.now()
         user = self.request.user
 
-        # Publicaciones de contenidos (noticias/comunicados de convenios y convocatorias)
+        # Publicaciones de beneficios directos para matriculados
         base_qs = Contenido.objects.filter(
+            tipo=Contenido.Tipo.BENEFICIO,
             estado_publicacion=Contenido.EstadoPublicacion.PUBLICADO,
             fecha_publicacion__lte=now,
         ).select_related("creado_por")
@@ -123,27 +136,52 @@ class BeneficiosMatriculadosView(TemplateView):
                     visibilidad__in=[Contenido.Visibilidad.PUBLICO, Contenido.Visibilidad.MATRICULADOS]
                 )
 
-        context["convenios"] = base_qs.filter(tipo=Contenido.Tipo.CONVENIO).order_by("-fecha_publicacion")
-        context["convocatorias"] = base_qs.filter(tipo=Contenido.Tipo.CONVOCATORIA).order_by("-fecha_publicacion")
+        context["convenios"] = base_qs.order_by("-fecha_publicacion")
+        return context
 
-        # Documentos oficiales de convenios vigentes (PDFs firmados / actas de convenio)
-        doc_qs = Documento.objects.filter(
-            vigente=True,
-            categoria=Documento.Categoria.CONVENIO
-        )
+
+class ConvocatoriasLaboralesView(TemplateView):
+    """
+    Vista dedicada para Convocatorias y Oportunidades Laborales (RF-06).
+    Muestra difusión de búsquedas profesionales para geólogos en la región.
+    """
+    template_name = "convocatorias.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        now = timezone.now()
+        user = self.request.user
+
+        base_qs = Contenido.objects.filter(
+            tipo=Contenido.Tipo.CONVOCATORIA,
+            estado_publicacion=Contenido.EstadoPublicacion.PUBLICADO,
+            fecha_publicacion__lte=now,
+        ).select_related("creado_por")
+
         if not user.is_authenticated:
-            doc_qs = doc_qs.filter(visibilidad=Documento.Visibilidad.PUBLICO)
+            base_qs = base_qs.filter(visibilidad=Contenido.Visibilidad.PUBLICO)
         else:
             es_staff = user.is_superuser or user.groups.filter(
                 name__in=["administradores", "colaboradores", "Administradores", "Colaboradores"]
             ).exists()
             if not es_staff:
-                doc_qs = doc_qs.filter(
-                    visibilidad__in=[Documento.Visibilidad.PUBLICO, Documento.Visibilidad.MATRICULADOS]
+                base_qs = base_qs.filter(
+                    visibilidad__in=[Contenido.Visibilidad.PUBLICO, Contenido.Visibilidad.MATRICULADOS]
                 )
 
-        context["documentos_convenios"] = doc_qs.order_by("-fecha_documento", "-fecha_creacion")
+        context["convocatorias"] = base_qs.order_by("-fecha_publicacion")
         return context
+
+
+class BeneficiosMatriculadosView(TemplateView):
+    """
+    Vista retrocompatible para /beneficios/, redirige o renderiza convenios por defecto.
+    """
+    template_name = "convenios.html"
+
+    def get(self, request, *args, **kwargs):
+        from django.shortcuts import redirect
+        return redirect("convenios")
 
 
 

@@ -5,38 +5,33 @@
 {% endblock %}
 
 {% block content %}
-<div class="bg-slate-50 min-h-screen py-8">
-    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+<section class="min-h-[calc(100vh-105px)] bg-slate-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-3xl mx-auto space-y-6">
 
-        <!-- Navegación de migas de pan -->
-        <nav class="flex items-center text-xs text-slate-500 mb-6 space-x-2">
-            <a href="{% url 'accounts:dashboard' %}?tab=admin_documentos" class="hover:text-primary-700 font-medium">← Volver al Dashboard (Documentos)</a>
-        </nav>
+        <!-- Navegación de migas de pan y encabezado -->
+        <div>
+            <nav class="flex items-center text-xs text-slate-500 mb-2 space-x-2">
+                <a href="{% url 'accounts:dashboard' %}?tab=admin_documentos" class="hover:text-primary-700 font-medium">Dashboard</a>
+                <span>/</span>
+                <a href="{% url 'accounts:dashboard' %}?tab=admin_documentos" class="hover:text-primary-700 font-medium">Documentos</a>
+                <span>/</span>
+                <span class="text-slate-700 font-semibold">{% if is_create %}Nuevo Documento{% else %}Editar Documento{% endif %}</span>
+            </nav>
+            <h1 class="text-2xl font-bold text-slate-900">
+                {% if is_create %}Cargar Nuevo Documento Institucional{% else %}Editar Documento Institucional{% endif %}
+            </h1>
+            <p class="text-sm text-slate-500 mt-1">
+                Estatutos, reglamentos, normativas y resoluciones oficiales del Colegio de Geólogos.
+            </p>
+        </div>
 
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-            <!-- Encabezado del Formulario -->
-            <div class="px-6 py-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/50">
-                <div>
-                    <h1 class="text-xl font-bold text-slate-900">
-                        {% if is_create %}Cargar nuevo documento institucional{% else %}Editar documento institucional{% endif %}
-                    </h1>
-                    <p class="text-xs text-slate-500 mt-1">
-                        Estatutos, reglamentos, normativas y resoluciones del Colegio de Geólogos.
-                    </p>
-                </div>
-                <div class="flex items-center space-x-2">
-                    <span class="text-xs px-2.5 py-1 rounded-full font-semibold bg-primary-100 text-primary-800">
-                        Documentación Oficial
-                    </span>
-                </div>
-            </div>
-
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
             <!-- Formulario Principal -->
-            <form method="post" enctype="multipart/form-data" class="p-6 sm:p-8 space-y-6">
+            <form method="post" enctype="multipart/form-data" novalidate class="p-6 sm:p-10 space-y-6">
                 {% csrf_token %}
 
                 {% if form.non_field_errors %}
-                <div class="rounded-lg bg-red-50 p-4 border border-red-200 text-xs text-red-700">
+                <div class="p-4 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-sm">
                     {{ form.non_field_errors }}
                 </div>
                 {% endif %}
@@ -137,14 +132,14 @@
                 </div>
 
                 <!-- Botones de Acción -->
-                <div class="pt-6 border-t border-slate-100 flex items-center justify-end space-x-3">
+                <div class="pt-8 flex items-center justify-end gap-3 border-t border-slate-100">
                     <a href="{% url 'accounts:dashboard' %}?tab=admin_documentos"
-                        class="px-4 py-2.5 rounded-lg border border-slate-300 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition">
+                        class="btn-secondary">
                         Cancelar
                     </a>
                     <button type="submit"
-                        class="px-5 py-2.5 rounded-lg bg-primary-600 hover:bg-primary-700 text-white text-xs font-semibold shadow-sm transition inline-flex items-center">
-                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        class="btn-primary">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                         </svg>
                         {% if is_create %}Guardar Documento{% else %}Guardar Cambios{% endif %}
@@ -154,6 +149,6 @@
         </div>
 
     </div>
-</div>
+</section>
 {% endblock %}
 

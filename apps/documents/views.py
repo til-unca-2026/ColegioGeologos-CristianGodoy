@@ -84,7 +84,7 @@ class AdminRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
             return False
         return (
             user.is_superuser
-            or user.groups.filter(name="Administradores").exists()
+            or user.groups.filter(name__in=["administradores", "Administradores"]).exists()
             or user.has_perm("documents.add_documento")
             or user.has_perm("documents.change_documento")
         )

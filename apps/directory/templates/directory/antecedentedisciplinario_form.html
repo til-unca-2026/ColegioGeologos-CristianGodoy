@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title|default:"Antecedente Disciplinario" }} | Dashboard Colegio de Geólogos{% endblock %}
+
+{% block content %}
+<section class="min-h-[calc(100vh-105px)] bg-slate-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-2xl mx-auto space-y-6">
+
+        <!-- Migas de pan y título -->
+        <div>
+            <nav class="flex items-center text-xs text-slate-500 mb-2 space-x-2">
+                <a href="{% url 'accounts:dashboard' %}?tab=admin_matriculados" class="hover:text-primary-700 font-medium">Dashboard</a>
+                <span>/</span>
+                <a href="{% url 'accounts:dashboard' %}?tab=admin_matriculados" class="hover:text-primary-700 font-medium">Matriculados</a>
+                <span>/</span>
+                <a href="{% url 'directory:matriculado_detail' matriculado.pk %}" class="hover:text-primary-700 font-medium">Matrícula {{ matriculado.numero_matricula }}</a>
+                <span>/</span>
+                <span class="text-slate-700 font-semibold">{{ title|default:"Antecedente Disciplinario" }}</span>
+            </nav>
+            <h1 class="text-2xl font-bold text-slate-900">{{ title|default:"Registrar Antecedente Disciplinario" }}</h1>
+            <p class="text-sm text-slate-500 mt-1">
+                Matriculado: <strong class="text-slate-800">{{ matriculado.usuario.get_full_name|default:matriculado.usuario.username }}</strong> (Mat. N° {{ matriculado.numero_matricula }})
+            </p>
+        </div>
+
+        <!-- Formulario -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <form method="post" novalidate class="p-6 sm:p-8 space-y-6">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                <div class="p-4 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-sm">
+                    {{ form.non_field_errors }}
+                </div>
+                {% endif %}
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="{{ form.numero_expediente.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                            N° Expediente <span class="text-rose-600">*</span>
+                        </label>
+                        {{ form.numero_expediente }}
+                        {% if form.numero_expediente.errors %}
+                        <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.numero_expediente.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.estado_expediente.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                            Estado del Expediente <span class="text-rose-600">*</span>
+                        </label>
+                        {{ form.estado_expediente }}
+                        {% if form.estado_expediente.errors %}
+                        <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.estado_expediente.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="{{ form.tipo_sancion.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                            Tipo de Sanción <span class="text-rose-600">*</span>
+                        </label>
+                        {{ form.tipo_sancion }}
+                        {% if form.tipo_sancion.errors %}
+                        <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.tipo_sancion.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.monto_multa.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                            Monto Multa (Opcional)
+                        </label>
+                        {{ form.monto_multa }}
+                        {% if form.monto_multa.errors %}
+                        <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.monto_multa.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="{{ form.fecha_inicio_sancion.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                            Inicio de Sanción
+                        </label>
+                        {{ form.fecha_inicio_sancion }}
+                        {% if form.fecha_inicio_sancion.errors %}
+                        <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.fecha_inicio_sancion.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.fecha_fin_sancion.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                            Fin de Sanción
+                        </label>
+                        {{ form.fecha_fin_sancion }}
+                        {% if form.fecha_fin_sancion.errors %}
+                        <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.fecha_fin_sancion.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="{{ form.fecha_resolucion.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                            Fecha de Resolución
+                        </label>
+                        {{ form.fecha_resolucion }}
+                        {% if form.fecha_resolucion.errors %}
+                        <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.fecha_resolucion.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.fecha_firmeza.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                            Fecha de Firmeza
+                        </label>
+                        {{ form.fecha_firmeza }}
+                        {% if form.fecha_firmeza.errors %}
+                        <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.fecha_firmeza.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div>
+                    <label for="{{ form.descripcion.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                        Descripción / Consideraciones
+                    </label>
+                    {{ form.descripcion }}
+                    {% if form.descripcion.errors %}
+                    <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.descripcion.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="pt-8 flex items-center justify-end gap-3 border-t border-slate-100">
+                    <a href="{% url 'directory:matriculado_detail' matriculado.pk %}"
+                        class="btn-secondary">
+                        Cancelar
+                    </a>
+                    <button type="submit"
+                        class="btn-primary">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        Guardar Antecedente
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

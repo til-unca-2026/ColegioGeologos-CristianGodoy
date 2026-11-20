@@ -66,13 +66,13 @@ Toda persona con acceso al sistema: matriculados, colaboradores y administradore
 
 # **MembresiaComision**
 
-Cargo que ocupa una persona en una comisión del Colegio durante un período, por ejemplo presidente de la Comisión Directiva entre dos fechas. Un usuario puede tener varios cargos a lo largo del tiempo.
+Cargo que ocupa una persona en una comisión del Colegio durante un período, por ejemplo presidente de la Comisión Directiva o revisor de cuentas entre dos fechas. Un usuario puede tener varios cargos a lo largo del tiempo.
 
 | Campo | Tipo | Descripción |
 | :---- | :---- | :---- |
 | usuario | Relación → Usuario | Persona que ocupa el cargo. |
-| comision | Choice | Comisión a la que pertenece el cargo: DIRECTIVA. |
-| cargo | Choice | Puesto dentro de la comisión: PRESIDENTE, VICEPRESIDENTE, SECRETARIO, PROSECRETARIO, TESORERO, PROTESORERO, VOCAL\_TITULAR, VOCAL\_SUPLENTE. |
+| comision | Choice | Comisión a la que pertenece el cargo: DIRECTIVA (Comisión Directiva), REVISORA_CUENTAS (Comisión Revisora de Cuentas). |
+| cargo | Choice | Puesto dentro de la comisión. Para Comisión Directiva: PRESIDENTE (Presidente/a), VICEPRESIDENTE (Vicepresidente/a), SECRETARIO (Secretario/a), TESORERO (Tesorero/a), VOCAL_TITULAR_1 (Vocal Titular 1), VOCAL_TITULAR_2 (Vocal Titular 2), VOCAL_TITULAR_3 (Vocal Titular 3), VOCAL_SUPLENTE_1 (Vocal Suplente 1), VOCAL_SUPLENTE_2 (Vocal Suplente 2). Para Comisión Revisora de Cuentas: REVISOR_TITULAR_1 (Revisor/a de Cuentas Titular 1), REVISOR_TITULAR_2 (Revisor/a de Cuentas Titular 2), REVISOR_SUPLENTE_1 (Revisor/a de Cuentas Suplente 1), REVISOR_SUPLENTE_2 (Revisor/a de Cuentas Suplente 2). |
 | fecha\_desde | Date | Fecha en que la persona asume el cargo. |
 | fecha\_hasta | Date, opcional | Fecha en que la persona deja el cargo. |
 | fecha\_creacion | DateTime | Fecha y hora en que se creó. |
@@ -227,7 +227,7 @@ Publicación del sitio: noticias, novedades, eventos, capacitaciones, etc. Los c
 
 | Campo | Tipo | Descripción |
 | :---- | :---- | :---- |
-| tipo | Choice | Clase de contenido: NOTICIA, NOVEDAD, EVENTO, CAPACITACION, OTRO. |
+| tipo | Choice | Clase de contenido: NOTICIA, COMUNICADO, EVENTO, CAPACITACION, BENEFICIO, CONVOCATORIA, OTRO. |
 | titulo | String | Título de la publicación. |
 | slug | String, único | Versión del título apta para direcciones web: minúsculas, sin acentos ni espacios, con guiones (por ejemplo jornada-de-geologia-minera-2026). Se genera a partir del título. |
 | resumen | String | Texto breve que se muestra en listados y tarjetas. |
@@ -235,7 +235,6 @@ Publicación del sitio: noticias, novedades, eventos, capacitaciones, etc. Los c
 | estado\_publicacion | Choice | Situación del contenido: BORRADOR (en preparación / sin fecha), PROGRAMADO (con fecha futura), PUBLICADO (con fecha actual o pasada), ARCHIVADO (dado de baja / pausado). El estado se calcula automáticamente a partir de la fecha de publicación, o se puede forzar a ARCHIVADO. |
 | fecha\_publicacion | DateTime, opcional | Fecha y hora en que se publica o programa el contenido. Vacía por defecto: contenido en borrador. Con fecha futura: queda programado. Con fecha actual o pasada: queda publicado inmediatamente. |
 | visibilidad | Choice | Quién puede verlo: PUBLICO, MATRICULADOS, INTERNO (ver Reglas generales). |
-| destacado | Boolean | Si es verdadero, se resalta en un lugar destacado del sitio. Por defecto falso. |
 | fecha\_creacion | DateTime, automático | Cuándo se creó el contenido. |
 | fecha\_modificacion | DateTime, automático | Cuándo se modificó por última vez. |
 | creado\_por | Relación → Usuario, protegida | Colaborador o administrador que creó el contenido. No se puede eliminar un usuario que haya generado contenido (on\_delete: PROTECT). |
@@ -249,7 +248,6 @@ Imagen de un contenido. Un contenido puede tener ninguna, una o varias, por ejem
 | :---- | :---- | :---- |
 | contenido | Relación → Contenido | Contenido al que pertenece la imagen. |
 | imagen | Image | Archivo de la imagen. |
-| texto\_alt | String | Descripción de la imagen para lectores de pantalla y para cuando no carga (corresponde al atributo alt de HTML). |
 | epigrafe | String, opcional | Texto visible debajo de la imagen: describe la foto o da el crédito. |
 | orden | Integer | Posición de la imagen dentro de la galería, de menor a mayor. |
 | es\_portada | Boolean | Indica si es la imagen principal del contenido. Solo una por contenido. |
@@ -276,7 +274,7 @@ Archivo institucional del Colegio, como estatutos, reglamentos y normativas. Lo 
 | :---- | :---- | :---- |
 | titulo | String | Nombre del documento. |
 | descripcion | Text, opcional | Explicación breve de qué contiene y para qué sirve (opcional). |
-| categoria | Choice | Clase de documento: ESTATUTO, REGLAMENTO, NORMATIVA, OTRO. |
+| categoria | Choice | Clase de documento: LEY, ESTATUTO, REGLAMENTO, RESOLUCION, ACTA, CONVENIO, ARANCEL, MODELO, OTRO. |
 | numero | String, opcional | Número o identificación oficial del documento (por ejemplo «Resolución 12/2024», opcional si no posee). |
 | fecha\_documento | Date, opcional | Fecha del documento (sanción, firma o emisión). |
 | vigente | Boolean | Indica si el documento está en vigor. Los reemplazados se conservan marcados como no vigentes. |
@@ -488,7 +486,6 @@ class Contenido {
     +estado_publicacion: Choice
     +fecha_publicacion: DateTime nullable
     +visibilidad: Choice
-    +destacado: Boolean
     +fecha_creacion: DateTime
     +fecha_modificacion: DateTime
     +creado_por: Usuario
@@ -498,7 +495,6 @@ class Contenido {
 class ImagenContenido {
     +contenido: Contenido
     +imagen: Image
-    +texto_alt: String
     +epigrafe: String nullable
     +orden: Integer
     +es_portada: Boolean

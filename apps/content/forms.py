@@ -37,16 +37,6 @@ class ContenidoForm(forms.ModelForm):
             "accept": "image/*",
         }),
     )
-    texto_alt_portada = forms.CharField(
-        required=False,
-        max_length=255,
-        label="Texto alternativo de la imagen",
-        help_text="Descripción para accesibilidad (lectores de pantalla).",
-        widget=forms.TextInput(attrs={
-            "class": INPUT_CSS,
-            "placeholder": "Ej: Foto grupal en la apertura de la jornada de minería",
-        }),
-    )
     epigrafe_portada = forms.CharField(
         required=False,
         max_length=255,
@@ -77,7 +67,6 @@ class ContenidoForm(forms.ModelForm):
             "cuerpo",
             "fecha_publicacion",
             "visibilidad",
-            "destacado",
         ]
         widgets = {
             "tipo": forms.Select(attrs={"class": SELECT_CSS, "id": "id_tipo"}),
@@ -100,7 +89,6 @@ class ContenidoForm(forms.ModelForm):
                 },
             ),
             "visibilidad": forms.Select(attrs={"class": SELECT_CSS}),
-            "destacado": forms.CheckboxInput(attrs={"class": CHECKBOX_CSS}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -114,7 +102,6 @@ class ContenidoForm(forms.ModelForm):
             # Pre-cargar datos de la portada existente si los tiene
             portada = self.instance.imagenes.filter(es_portada=True).first()
             if portada:
-                self.initial["texto_alt_portada"] = portada.texto_alt
                 self.initial["epigrafe_portada"] = portada.epigrafe
 
 

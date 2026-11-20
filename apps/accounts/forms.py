@@ -79,12 +79,12 @@ class AdminUserCreateForm(forms.ModelForm):
         help_text="Mínimo 8 caracteres. El usuario podrá y deberá cambiarla en su primer login.",
     )
     group = forms.ModelChoiceField(
-        queryset=Group.objects.all().order_by("name"),
-        label="Rol / Grupo de acceso",
-        required=True,
-        empty_label="Seleccione un grupo...",
+        queryset=Group.objects.exclude(name__iexact="matriculados").order_by("name"),
+        label="Rol / Grupo especial (Opcional)",
+        required=False,
+        empty_label="Sin grupo especial (Usuario estándar / Pendiente de matriculación)",
         widget=forms.Select(attrs={"class": SELECT_CSS}),
-        help_text="Define los permisos del usuario en la plataforma (Matriculados, Colaboradores o Administradores).",
+        help_text="Opcional. Seleccione solo si el usuario cumplirá funciones especiales (Administradores o Colaboradores). El rol 'Matriculados' se asigna automáticamente al crear la matrícula.",
     )
 
     class Meta:
@@ -94,20 +94,19 @@ class AdminUserCreateForm(forms.ModelForm):
             "username",
             "email",
             "password",
-            # Identidad (Ley 25.326)
+            # Identidad básica
             "first_name",
             "last_name",
             "dni",
+            # Identidad complementaria (Opcional)
             "cuil_cuit",
             "fecha_nacimiento",
             "lugar_nacimiento",
             "nacionalidad",
-            # Contacto y visibilidad
+            # Contacto y foto (Opcional)
             "phone",
-            "publicar_email",
-            "publicar_telefono",
             "profile_picture",
-            # Domicilio real (Ley 25.326)
+            # Domicilio real (Opcional)
             "domicilio_real_calle",
             "domicilio_real_numero",
             "domicilio_real_piso_depto",
@@ -115,9 +114,6 @@ class AdminUserCreateForm(forms.ModelForm):
             "domicilio_real_provincia",
             "domicilio_real_pais",
             "domicilio_real_cp",
-            # Estado y Seguridad
-            "must_change_password",
-            "is_active",
         ]
         widgets = {
             "username": forms.TextInput(attrs={"class": INPUT_CSS, "placeholder": "ej: jgomez o nro_dni"}),
@@ -142,46 +138,51 @@ class AdminUserCreateForm(forms.ModelForm):
             }),
             "domicilio_real_pais": CountrySelectWidget(attrs={"class": SELECT_CSS}),
             "domicilio_real_cp": forms.TextInput(attrs={"class": INPUT_CSS, "placeholder": "Código Postal"}),
-            "publicar_email": forms.CheckboxInput(attrs={"class": CHECKBOX_CSS}),
-            "publicar_telefono": forms.CheckboxInput(attrs={"class": CHECKBOX_CSS}),
-            "must_change_password": forms.CheckboxInput(attrs={"class": CHECKBOX_CSS}),
-            "is_active": forms.CheckboxInput(attrs={"class": CHECKBOX_CSS}),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # Solo lo estrictamente esencial es obligatorio
         self.fields["email"].required = True
         self.fields["first_name"].required = True
         self.fields["last_name"].required = True
         self.fields["dni"].required = True
-        self.fields["cuil_cuit"].required = True
-        self.fields["fecha_nacimiento"].required = True
-        self.fields["lugar_nacimiento"].required = True
-        self.fields["domicilio_real_calle"].required = True
-        self.fields["domicilio_real_numero"].required = True
-        self.fields["domicilio_real_localidad"].required = True
-        self.fields["domicilio_real_provincia"].required = True
-        self.fields["domicilio_real_cp"].required = True
-        self.fields["must_change_password"].initial = True
-        self.fields["is_active"].initial = True
+        # Todo lo demás es opcional para no trabar la creación
+        self.fields["cuil_cuit"].required = False
+        self.fields["fecha_nacimiento"].required = False
+        self.fields["lugar_nacimiento"].required = False
+        self.fields["domicilio_real_calle"].required = False
+        self.fields["domicilio_real_numero"].required = False
+        self.fields["domicilio_real_localidad"].required = False
+        self.fields["domicilio_real_provincia"].required = False
+        self.fields["domicilio_real_cp"].required = False
 
     def clean_email(self):
-        email = self.cleaned_data.get("email", "").strip().lower()
-        if User.objects.filter(email__iexact=email).exists():
+        email = (self.cleaned_data.get("email") or "").strip().lower()
+        if not email:
+            raise ValidationError("El correo electrónico es obligatorio.")
+        qs = User.objects.filter(email__iexact=email)
+        if self.instance and self.instance.pk:
+            qs = qs.exclude(pk=self.instance.pk)
+        if qs.exists():
             raise ValidationError("Ya existe un usuario registrado con este correo electrónico.")
         return email
 
     def clean_dni(self):
-        dni = self.cleaned_data.get("dni", "").strip()
-        if dni and User.objects.filter(dni=dni).exists():
-            raise ValidationError("Ya existe un usuario registrado con este número de DNI.")
-        return dni
+        dni = (self.cleaned_data.get("dni") or "").strip()
+        if dni:
+            if User.objects.filter(dni=dni).exists():
+                raise ValidationError("Ya existe un usuario registrado con este número de DNI.")
+            return dni
+        return None
 
     def clean_cuil_cuit(self):
-        cuil_cuit = self.cleaned_data.get("cuil_cuit", "").strip()
-        if cuil_cuit and User.objects.filter(cuil_cuit=cuil_cuit).exists():
-            raise ValidationError("Ya existe un usuario registrado con este CUIL/CUIT.")
-        return cuil_cuit
+        cuil_cuit = (self.cleaned_data.get("cuil_cuit") or "").strip()
+        if cuil_cuit:
+            if User.objects.filter(cuil_cuit=cuil_cuit).exists():
+                raise ValidationError("Ya existe un usuario registrado con este CUIL/CUIT.")
+            return cuil_cuit
+        return None
 
     def save(self, commit=True):
         user = super().save(commit=False)
@@ -189,14 +190,22 @@ class AdminUserCreateForm(forms.ModelForm):
         if password:
             user.set_password(password)
 
-        # Regla del sistema: Ningún usuario es staff (salvo superusuario dev)
+        # Regla de seguridad y estado por defecto
         user.is_staff = False
+        user.is_active = True
+        user.must_change_password = True
+
+        # Privacidad por defecto: los datos nacen privados
+        user.publicar_email = False
+        user.publicar_telefono = False
 
         group = self.cleaned_data.get("group")
         if commit:
             user.save()
             if group:
                 user.groups.set([group])
+            else:
+                user.groups.clear()
 
         return user
 
@@ -298,7 +307,9 @@ class AdminUserEditForm(forms.ModelForm):
                 self.fields["group"].initial = current_group
 
     def clean_email(self):
-        email = self.cleaned_data.get("email", "").strip().lower()
+        email = (self.cleaned_data.get("email") or "").strip().lower()
+        if not email:
+            raise ValidationError("El correo electrónico es obligatorio.")
         qs = User.objects.filter(email__iexact=email)
         if self.instance and self.instance.pk:
             qs = qs.exclude(pk=self.instance.pk)
@@ -307,22 +318,22 @@ class AdminUserEditForm(forms.ModelForm):
         return email
 
     def clean_dni(self):
-        dni = self.cleaned_data.get("dni", "").strip()
+        dni = (self.cleaned_data.get("dni") or "").strip()
         qs = User.objects.filter(dni=dni)
         if self.instance and self.instance.pk:
             qs = qs.exclude(pk=self.instance.pk)
         if dni and qs.exists():
             raise ValidationError("Ya existe otro usuario registrado con este número de DNI.")
-        return dni
+        return dni if dni else None
 
     def clean_cuil_cuit(self):
-        cuil_cuit = self.cleaned_data.get("cuil_cuit", "").strip()
+        cuil_cuit = (self.cleaned_data.get("cuil_cuit") or "").strip()
         qs = User.objects.filter(cuil_cuit=cuil_cuit)
         if self.instance and self.instance.pk:
             qs = qs.exclude(pk=self.instance.pk)
         if cuil_cuit and qs.exists():
             raise ValidationError("Ya existe otro usuario registrado con este CUIL/CUIT.")
-        return cuil_cuit
+        return cuil_cuit if cuil_cuit else None
 
     def save(self, commit=True):
         user = super().save(commit=False)
@@ -347,7 +358,7 @@ class AdminUserEditForm(forms.ModelForm):
 
 class MembresiaComisionForm(forms.ModelForm):
     """
-    Formulario para asignar o editar cargos dentro de la Comisión Directiva desde el Dashboard.
+    Formulario para asignar o editar cargos dentro de las Comisiones (Directiva, Revisora de Cuentas) desde el Dashboard.
     """
     class Meta:
         model = MembresiaComision
@@ -377,10 +388,29 @@ class MembresiaComisionForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
+        comision = cleaned_data.get("comision")
+        cargo = cleaned_data.get("cargo")
         fecha_desde = cleaned_data.get("fecha_desde")
         fecha_hasta = cleaned_data.get("fecha_hasta")
+
         if fecha_desde and fecha_hasta and fecha_hasta < fecha_desde:
             raise ValidationError("La fecha de finalización no puede ser anterior a la fecha de asunción.")
+
+        # Validación cruzada entre Comisión y Cargo
+        cargos_revisora = [
+            MembresiaComision.Cargo.REVISOR_TITULAR_1,
+            MembresiaComision.Cargo.REVISOR_TITULAR_2,
+            MembresiaComision.Cargo.REVISOR_SUPLENTE_1,
+            MembresiaComision.Cargo.REVISOR_SUPLENTE_2,
+        ]
+
+        if comision == MembresiaComision.Comision.REVISORA_CUENTAS:
+            if cargo not in cargos_revisora:
+                raise ValidationError({"cargo": "El cargo seleccionado no corresponde a la Comisión Revisora de Cuentas."})
+        elif comision == MembresiaComision.Comision.DIRECTIVA:
+            if cargo in cargos_revisora:
+                raise ValidationError({"cargo": "El cargo seleccionado no corresponde a la Comisión Directiva."})
+
         return cleaned_data
 
 
