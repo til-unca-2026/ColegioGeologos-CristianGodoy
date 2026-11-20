@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Novedades, Noticias y Eventos - Colegio de Geólogos de Catamarca{% endblock %}
+{% block title %}Noticias, Comunicados y Eventos - Colegio de Geólogos de Catamarca{% endblock %}
 
 {% block content %}
 <div class="bg-slate-50 min-h-screen py-8">
@@ -12,12 +12,12 @@
                 <div class="flex items-center space-x-2 text-xs font-medium text-slate-500 mb-1">
                     <a href="{% url 'home' %}" class="hover:text-primary-700">Inicio</a>
                     <span>/</span>
-                    <span class="text-primary-800 font-semibold">Novedades y Noticias</span>
+                    <span class="text-primary-800 font-semibold">Noticias</span>
                 </div>
-                <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">Novedades, Noticias y Eventos
+                <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">Noticias, Comunicados y Eventos
                 </h1>
                 <p class="text-slate-600 text-sm sm:text-base mt-1">
-                    Manténgase al día con las actividades, comunicados y capacitaciones del Colegio.
+                    Manténgase al día con las noticias institucionales, comunicados oficiales y actividades del Colegio.
                 </p>
             </div>
 
@@ -26,7 +26,7 @@
                 class="flex items-center gap-1.5 bg-white p-1.5 rounded-xl border border-slate-200 shadow-sm overflow-x-auto">
                 <a href="{% url 'content:novedades_list' %}{% if q %}?q={{ q }}{% endif %}"
                     class="px-3 py-1.5 rounded-lg text-xs font-semibold transition {% if not tipo_actual %}bg-primary-800 text-white shadow-sm{% else %}text-slate-600 hover:text-slate-900 hover:bg-slate-100{% endif %}">
-                    Todas
+                    Todo
                 </a>
                 {% for val, label in tipos_disponibles %}
                 <a href="{% url 'content:novedades_list' %}?tipo={{ val }}{% if q %}&q={{ q }}{% endif %}"
@@ -76,15 +76,14 @@
         <!-- Grid de Tarjetas de Novedades en 2 Columnas -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
             {% for n in novedades %}
-            <div
-                class="bg-white rounded-2xl shadow-sm border border-slate-200/90 overflow-hidden hover:shadow-xl hover:border-primary-300 transition-all duration-300 flex flex-col justify-between group">
+            <a href="{% url 'content:novedad_detail' n.slug %}"
+                class="bg-white rounded-2xl shadow-sm border border-slate-200/90 overflow-hidden hover:shadow-xl hover:border-primary-300 transition-all duration-300 flex flex-col justify-between group block">
                 <div>
-                    <!-- Imagen y badges -->
-                    <a href="{% url 'content:novedad_detail' n.slug %}"
-                        class="block relative h-48 sm:h-52 w-full overflow-hidden bg-slate-100">
+                    <!-- Imagen de portada con fecha calendario solo si es evento/capacitacion -->
+                    <div class="relative h-48 sm:h-52 w-full overflow-hidden bg-slate-100">
                         {% if n.imagen_portada %}
                         <img src="{{ n.imagen_portada.imagen.url }}"
-                            alt="{{ n.imagen_portada.texto_alt|default:n.titulo }}"
+                            alt="{{ n.imagen_portada.epigrafe|default:n.titulo }}"
                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                         {% else %}
                         <div class="w-full h-full flex items-center justify-center bg-slate-100 text-slate-300">
@@ -95,71 +94,47 @@
                         </div>
                         {% endif %}
 
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent">
-                        </div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
 
-                        <div class="absolute top-3 left-3 flex items-center gap-1.5">
-                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider border shadow-sm backdrop-blur-sm
-                                {% if n.tipo == 'EVENTO' %}bg-amber-100/90 text-amber-900 border-amber-300
-                                {% elif n.tipo == 'NOVEDAD' %}bg-blue-100/90 text-blue-900 border-blue-300
-                                {% elif n.tipo == 'CAPACITACION' %}bg-purple-100/90 text-purple-900 border-purple-300
-                                {% else %}bg-primary-100/90 text-primary-900 border-primary-300{% endif %}">
-                                {{ n.get_tipo_display }}
-                            </span>
-                            {% if n.destacado %}
-                            <span
-                                class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-white shadow-sm">
-                                ★ Destacado
-                            </span>
-                            {% endif %}
+                        <!-- Etiqueta de fecha tipo calendario en esquina superior izquierda solo si es evento/capacitacion -->
+                        {% if n.detalle_evento and n.detalle_evento.inicio %}
+                        <div class="absolute top-3 left-3 min-w-[48px] rounded-lg border border-white/30 bg-white/95 p-1.5 text-center text-primary-800 shadow-md backdrop-blur-xs">
+                            <span class="block text-[9px] font-bold uppercase leading-tight">{{ n.detalle_evento.inicio|date:"M" }}</span>
+                            <span class="block text-base font-extrabold leading-tight">{{ n.detalle_evento.inicio|date:"d" }}</span>
                         </div>
-                    </a>
+                        {% endif %}
+                    </div>
 
                     <!-- Cuerpo de la tarjeta -->
                     <div class="p-5 sm:p-6">
                         <div class="flex items-center space-x-2 text-xs text-slate-500 mb-2">
-                            <span class="font-semibold text-primary-800 uppercase tracking-wider text-[11px]">{{ n.get_tipo_display }}</span>
+                            <span class="rounded bg-blue-50 px-2 py-0.5 font-semibold text-blue-800 uppercase tracking-wider text-[11px] border border-blue-200/60">{{ n.get_tipo_display }}</span>
                             <span>•</span>
-                            <span>{% if n.fecha_publicacion %}{{ n.fecha_publicacion|date:"d/m/Y H:i" }}{% else %}{{ n.fecha_creacion|date:"d/m/Y H:i" }}{% endif %} hs</span>
+                            <span class="text-slate-400">{% if n.fecha_publicacion %}{{ n.fecha_publicacion|date:"d/m/Y H:i" }}{% else %}{{ n.fecha_creacion|date:"d/m/Y H:i" }}{% endif %} hs</span>
                         </div>
-                        <a href="{% url 'content:novedad_detail' n.slug %}">
-                            <h2
-                                class="text-lg sm:text-xl font-bold text-slate-900 group-hover:text-primary-800 transition line-clamp-2 mb-2 leading-snug">
-                                {{ n.titulo }}
-                            </h2>
-                        </a>
+                        <h2 class="text-lg sm:text-xl font-bold text-slate-900 group-hover:text-primary-800 transition line-clamp-2 mb-2 leading-snug">
+                            {{ n.titulo }}
+                        </h2>
                         <p class="text-sm text-slate-600 leading-relaxed mb-4 line-clamp-3">
                             {{ n.resumen }}
                         </p>
 
                         <!-- Indicador de Evento si corresponde -->
-                        {% if n.detalle_evento %}
-                        <div
-                            class="flex items-center text-xs text-amber-800 bg-amber-50 px-3 py-2 rounded-lg border border-amber-200 mb-3 space-x-2">
-                            <svg class="w-4 h-4 shrink-0 text-amber-600" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                            <span><strong>{{ n.detalle_evento.inicio|date:"d/m/Y H:i" }} hs</strong> | {{ n.detalle_evento.lugar }} ({{ n.detalle_evento.get_modalidad_display }})</span>
+                        {% if n.detalle_evento and n.detalle_evento.lugar %}
+                        <div class="flex items-center text-xs text-slate-600 bg-slate-50 px-3 py-2 rounded-lg border border-slate-200 mb-3 space-x-2">
+                            <span>📍 {{ n.detalle_evento.lugar }}{% if n.detalle_evento.modalidad %} ({{ n.detalle_evento.get_modalidad_display }}){% endif %}</span>
                         </div>
                         {% endif %}
                     </div>
                 </div>
 
-                <!-- Footer con autor y botón de leer completo -->
-                <div
-                    class="px-5 sm:px-6 pb-5 pt-0 mt-auto flex items-center justify-between border-t border-slate-100 pt-3">
-                    <span class="text-xs text-slate-400 font-medium">
-                        Por {{ n.creado_por.get_full_name|default:n.creado_por.username }}
+                <!-- Footer sutil con "Ver más" sin autor -->
+                <div class="px-5 sm:px-6 pb-4 pt-3 mt-auto flex items-center justify-end border-t border-slate-100">
+                    <span class="text-xs font-semibold text-primary-700 transition group-hover:text-primary-800 flex items-center gap-1">
+                        Ver más <span class="transition-transform group-hover:translate-x-0.5">→</span>
                     </span>
-                    <a href="{% url 'content:novedad_detail' n.slug %}"
-                        class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-primary-50 text-primary-800 hover:bg-primary-700 hover:text-white font-semibold text-xs transition duration-200 shadow-sm border border-primary-200 group-hover:border-primary-700">
-                        Leer {{ n.get_tipo_display|lower }} completa <span
-                            class="ml-1.5 transition-transform group-hover:translate-x-1">→</span>
-                    </a>
                 </div>
-            </div>
+            </a>
             {% empty %}
             <div class="col-span-1 md:col-span-2 bg-white rounded-2xl p-10 text-center border border-slate-200">
                 <svg class="w-12 h-12 mx-auto text-slate-300 mb-3" fill="none" stroke="currentColor"

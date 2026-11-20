@@ -30,34 +30,29 @@
 {% endblock %}
 
 {% block content %}
-<div class="bg-slate-50 min-h-screen py-8">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+<section class="min-h-[calc(100vh-105px)] bg-slate-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto space-y-6">
 
-        <!-- Navegación de migas de pan -->
-        <nav class="flex items-center text-xs text-slate-500 mb-6 space-x-2">
-            <a href="{% url 'accounts:dashboard' %}?tab=contenidos" class="hover:text-primary-700 font-medium">← Volver al Dashboard (Contenidos)</a>
-        </nav>
+        <!-- Navegación de migas de pan y encabezado -->
+        <div>
+            <nav class="flex items-center text-xs text-slate-500 mb-2 space-x-2">
+                <a href="{% url 'accounts:dashboard' %}?tab=contenidos" class="hover:text-primary-700 font-medium">Dashboard</a>
+                <span>/</span>
+                <a href="{% url 'accounts:dashboard' %}?tab=contenidos" class="hover:text-primary-700 font-medium">Contenidos</a>
+                <span>/</span>
+                <span class="text-slate-700 font-semibold">{% if is_create %}Nuevo{% else %}Editar{% endif %}</span>
+            </nav>
+            <h1 class="text-2xl font-bold text-slate-900">
+                {% if is_create %}Crear Nuevo Contenido Institucional{% else %}Editar Contenido Institucional{% endif %}
+            </h1>
+            <p class="text-sm text-slate-500 mt-1">
+                Completá la información del comunicado, evento o noticia oficial del Colegio de Geólogos.
+            </p>
+        </div>
 
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-            <!-- Encabezado del Formulario -->
-            <div class="px-6 py-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/50">
-                <div>
-                    <h1 class="text-xl font-bold text-slate-900">
-                        {% if is_create %}Crear nuevo contenido institucional{% else %}Editar contenido{% endif %}
-                    </h1>
-                    <p class="text-xs text-slate-500 mt-1">
-                        Completá la información del comunicado, evento o noticia.
-                    </p>
-                </div>
-                <div class="flex items-center space-x-2">
-                    <span class="text-xs px-2.5 py-1 rounded-full font-semibold bg-primary-100 text-primary-800">
-                        Prensa & Difusión
-                    </span>
-                </div>
-            </div>
-
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
             <!-- Formulario Principal -->
-            <form method="post" enctype="multipart/form-data" id="contenido-form" class="p-6 sm:p-8 space-y-6">
+            <form method="post" enctype="multipart/form-data" id="contenido-form" class="p-6 sm:p-10 space-y-6">
                 {% csrf_token %}
 
                 {% if form.non_field_errors %}
@@ -114,7 +109,7 @@
                     <!-- Resumen -->
                     <div>
                         <label for="{{ form.resumen.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
-                            Resumen / Bajada *
+                            Resumen / Bajada <span class="text-slate-400 font-normal">(Opcional si es afiche o flyer)</span>
                         </label>
                         {{ form.resumen }}
                         <p class="text-[11px] text-slate-400 mt-1">{{ form.resumen.help_text }}</p>
@@ -126,48 +121,57 @@
                     <!-- Cuerpo con Editor Rico (Quill) -->
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">
-                            Cuerpo del contenido *
+                            Cuerpo del contenido <span class="text-slate-400 font-normal">(Opcional si la información está contenida en la imagen publicitaria)</span>
                         </label>
                         <!-- Campo oculto donde se sincroniza el HTML de Quill -->
                         {{ form.cuerpo }}
                         <div id="quill-editor"></div>
-                        <p class="text-[11px] text-slate-400 mt-1">Podés aplicar negrita, cursiva, encabezados, listas con viñetas y enlaces.</p>
+                        <p class="text-[11px] text-slate-400 mt-1">Podés redactar texto o dejarlo vacío si publicás un flyer publicitario completo.</p>
                         {% if form.cuerpo.errors %}
                         <p class="text-xs text-red-600 mt-1">{{ form.cuerpo.errors.0 }}</p>
                         {% endif %}
                     </div>
 
-                    <!-- Fecha de publicación y Estado dinámico -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start pt-2">
-                        <div>
-                            <div class="flex items-center justify-between mb-1">
-                                <label for="{{ form.fecha_publicacion.id_for_label }}" class="block text-xs font-semibold text-slate-700">
+                    <!-- Modo de Publicación, Fecha y Estado dinámico -->
+                    <div class="pt-2 space-y-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
+                            <!-- Selector del modo de publicación -->
+                            <div>
+                                <label for="select-modo-publicacion" class="block text-xs font-semibold text-slate-700 mb-1">
+                                    Modo de publicación *
+                                </label>
+                                <select id="select-modo-publicacion"
+                                    class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600 bg-white">
+                                    <option value="INMEDIATA">Publicación instantánea</option>
+                                    <option value="PROGRAMADA">Programada para fecha/hora futura</option>
+                                    <option value="BORRADOR">Borrador / Pausa</option>
+                                </select>
+                                <p class="text-[11px] text-slate-400 mt-1">Elegí cuándo debe activarse este contenido.</p>
+                            </div>
+
+                            <!-- Input de fecha y hora que responde al selector -->
+                            <div>
+                                <label for="{{ form.fecha_publicacion.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
                                     Fecha y hora de publicación
                                 </label>
-                                <button type="button" id="btn-publicar-ahora" class="text-[11px] text-primary-700 hover:text-primary-900 font-semibold underline">
-                                    Publicar ahora
-                                </button>
+                                {{ form.fecha_publicacion }}
+                                <p id="ayuda-fecha-publicacion" class="text-[11px] text-slate-400 mt-1">Se sincroniza automáticamente según el modo seleccionado.</p>
+                                {% if form.fecha_publicacion.errors %}
+                                <p class="text-xs text-red-600 mt-1">{{ form.fecha_publicacion.errors.0 }}</p>
+                                {% endif %}
                             </div>
-                            {{ form.fecha_publicacion }}
-
-                            <!-- Indicador en tiempo real del estado calculado -->
-                            <div class="mt-2 p-2.5 rounded-lg border text-xs" id="indicador-estado-box">
-                                <span class="font-medium text-slate-500">Estado previsto:</span>
-                                <span id="indicador-estado-badge" class="ml-1.5 px-2 py-0.5 rounded-full font-semibold text-[11px]"></span>
-                                <p id="indicador-estado-desc" class="text-[11px] text-slate-500 mt-1"></p>
-                            </div>
-
-                            {% if form.fecha_publicacion.errors %}
-                            <p class="text-xs text-red-600 mt-1">{{ form.fecha_publicacion.errors.0 }}</p>
-                            {% endif %}
                         </div>
 
-                        <div class="sm:pt-6">
-                            <label class="inline-flex items-center space-x-2 cursor-pointer">
-                                {{ form.destacado }}
-                                <span class="text-xs font-semibold text-slate-700">Marcar como contenido destacado</span>
-                            </label>
-                            <p class="text-[11px] text-slate-400 mt-0.5 ml-6">{{ form.destacado.help_text }}</p>
+                        <!-- Card informativa a ancho completo con colores dinámicos -->
+                        <div id="indicador-estado-box" class="p-3.5 rounded-xl border text-xs transition-all duration-300 flex items-start gap-3">
+                            <span id="indicador-estado-icono" class="shrink-0 mt-0.5"></span>
+                            <div class="space-y-0.5">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-bold uppercase tracking-wider text-[11px]" id="indicador-estado-label">Estado Previsto:</span>
+                                    <span id="indicador-estado-badge" class="px-2 py-0.5 rounded-full font-semibold text-[11px]"></span>
+                                </div>
+                                <p id="indicador-estado-desc" class="text-xs leading-relaxed"></p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -180,10 +184,12 @@
 
                     {% if portada_actual %}
                     <div class="flex items-center space-x-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
-                        <img src="{{ portada_actual.imagen.url }}" alt="{{ portada_actual.texto_alt }}" class="w-16 h-16 object-cover rounded-md border">
+                        <img src="{{ portada_actual.imagen.url }}" alt="{{ portada_actual.epigrafe|default:'Portada actual' }}" class="w-16 h-16 object-cover rounded-md border">
                         <div class="text-xs text-slate-600">
                             <p class="font-semibold text-slate-800">Portada actual</p>
-                            <p class="text-slate-500">{{ portada_actual.texto_alt|default:"Sin texto alternativo" }}</p>
+                            {% if portada_actual.epigrafe %}
+                            <p class="text-slate-500">{{ portada_actual.epigrafe }}</p>
+                            {% endif %}
                             <p class="text-[11px] text-slate-400 mt-0.5">Subí un nuevo archivo solo si querés reemplazarla.</p>
                         </div>
                     </div>
@@ -200,25 +206,14 @@
                         {% endif %}
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <label for="{{ form.texto_alt_portada.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
-                                Texto alternativo (alt)
-                            </label>
-                            {{ form.texto_alt_portada }}
-                            {% if form.texto_alt_portada.errors %}
-                            <p class="text-xs text-red-600 mt-1">{{ form.texto_alt_portada.errors.0 }}</p>
-                            {% endif %}
-                        </div>
-                        <div>
-                            <label for="{{ form.epigrafe_portada.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
-                                Epígrafe (Pie de foto)
-                            </label>
-                            {{ form.epigrafe_portada }}
-                            {% if form.epigrafe_portada.errors %}
-                            <p class="text-xs text-red-600 mt-1">{{ form.epigrafe_portada.errors.0 }}</p>
-                            {% endif %}
-                        </div>
+                    <div>
+                        <label for="{{ form.epigrafe_portada.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
+                            Epígrafe / Pie de foto (Opcional)
+                        </label>
+                        {{ form.epigrafe_portada }}
+                        {% if form.epigrafe_portada.errors %}
+                        <p class="text-xs text-red-600 mt-1">{{ form.epigrafe_portada.errors.0 }}</p>
+                        {% endif %}
                     </div>
 
                     <!-- Galería de imágenes adicionales -->
@@ -238,7 +233,7 @@
                             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                                 {% for img in galeria_actual %}
                                 <div class="relative group rounded-lg overflow-hidden border border-slate-200 bg-slate-50">
-                                    <img src="{{ img.imagen.url }}" alt="{{ img.texto_alt }}" class="w-full h-24 object-cover">
+                                    <img src="{{ img.imagen.url }}" alt="{{ img.epigrafe|default:img.contenido.titulo }}" class="w-full h-24 object-cover">
                                     <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-2">
                                         <button type="submit" formaction="{% url 'content:imagen_delete' img.id %}" formmethod="post"
                                             onclick="return confirm('¿Eliminar esta foto de la galería?');"
@@ -254,95 +249,108 @@
                     </div>
                 </div>
 
-                <!-- SECCIÓN 3: DETALLE DE EVENTO (CONDICIONAL) -->
-                <div id="seccion-evento" class="space-y-4 pt-4 border-t border-slate-100 {% if form.tipo.value != 'EVENTO' and form.tipo.value != 'CAPACITACION' %}hidden{% endif %}">
-                    <div class="flex items-center justify-between pb-2 border-b border-amber-200">
-                        <h2 class="text-sm font-bold text-amber-900 uppercase tracking-wider flex items-center">
-                            <span class="w-2 h-2 rounded-full bg-amber-500 mr-2"></span>
-                            3. Datos Específicos del Evento o Capacitación
-                        </h2>
-                        <span class="text-[11px] text-amber-700 font-medium">Requerido para eventos</span>
+                <!-- SECCIÓN 3: DETALLE DE EVENTO O CAPACITACIÓN (CARD SITUACIONAL) -->
+                <div id="seccion-evento" class="rounded-xl border transition-all duration-200 p-5 sm:p-6 bg-slate-50/80 border-slate-200">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-200/80 gap-2 mb-4">
+                        <div class="flex items-center space-x-2.5">
+                            <span id="evento-indicador-punto" class="w-2.5 h-2.5 rounded-full bg-slate-400 transition-colors"></span>
+                            <h2 id="evento-titulo-header" class="text-sm font-bold uppercase tracking-wider text-slate-700 transition-colors">
+                                3. Datos Específicos del Evento o Capacitación
+                            </h2>
+                        </div>
+                        <span id="evento-badge-estado" class="text-[11px] px-2.5 py-0.5 rounded-full font-semibold transition-all bg-slate-200/80 text-slate-500 self-start sm:self-auto">
+                            Inactivo (Solo aplica para Eventos o Capacitaciones)
+                        </span>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <label for="{{ evento_form.inicio.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
-                                Fecha y hora de inicio *
-                            </label>
-                            {{ evento_form.inicio }}
-                            {% if evento_form.inicio.errors %}
-                            <p class="text-xs text-red-600 mt-1">{{ evento_form.inicio.errors.0 }}</p>
-                            {% endif %}
-                        </div>
-                        <div>
-                            <label for="{{ evento_form.fin.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
-                                Fecha y hora de finalización (opcional)
-                            </label>
-                            {{ evento_form.fin }}
-                            {% if evento_form.fin.errors %}
-                            <p class="text-xs text-red-600 mt-1">{{ evento_form.fin.errors.0 }}</p>
-                            {% endif %}
-                        </div>
-                    </div>
+                    <p id="evento-aviso-inactivo" class="text-xs text-slate-400 mb-4 transition-all">
+                        Estos campos se habilitarán automáticamente al seleccionar la categoría <strong class="text-slate-600">Evento</strong> o <strong class="text-slate-600">Capacitación</strong> en la Sección 1.
+                    </p>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <label for="{{ evento_form.lugar.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
-                                Lugar o plataforma *
-                            </label>
-                            {{ evento_form.lugar }}
-                            {% if evento_form.lugar.errors %}
-                            <p class="text-xs text-red-600 mt-1">{{ evento_form.lugar.errors.0 }}</p>
-                            {% endif %}
+                    <div id="evento-contenedor-campos" class="space-y-4 transition-opacity duration-200 opacity-50 pointer-events-none">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label for="{{ evento_form.inicio.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
+                                    Fecha y hora de inicio <span class="text-red-500">*</span>
+                                </label>
+                                {{ evento_form.inicio }}
+                                {% if evento_form.inicio.errors %}
+                                <p class="text-xs text-red-600 mt-1">{{ evento_form.inicio.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <label for="{{ evento_form.fin.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
+                                    Fecha y hora de finalización (opcional)
+                                </label>
+                                {{ evento_form.fin }}
+                                {% if evento_form.fin.errors %}
+                                <p class="text-xs text-red-600 mt-1">{{ evento_form.fin.errors.0 }}</p>
+                                {% endif %}
+                            </div>
                         </div>
-                        <div>
-                            <label for="{{ evento_form.modalidad.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
-                                Modalidad *
-                            </label>
-                            {{ evento_form.modalidad }}
-                            {% if evento_form.modalidad.errors %}
-                            <p class="text-xs text-red-600 mt-1">{{ evento_form.modalidad.errors.0 }}</p>
-                            {% endif %}
-                        </div>
-                    </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <label for="{{ evento_form.link_inscripcion.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
-                                Enlace de inscripción (opcional)
-                            </label>
-                            {{ evento_form.link_inscripcion }}
-                            {% if evento_form.link_inscripcion.errors %}
-                            <p class="text-xs text-red-600 mt-1">{{ evento_form.link_inscripcion.errors.0 }}</p>
-                            {% endif %}
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label for="{{ evento_form.lugar.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
+                                    Lugar o plataforma <span class="text-red-500">*</span>
+                                </label>
+                                {{ evento_form.lugar }}
+                                {% if evento_form.lugar.errors %}
+                                <p class="text-xs text-red-600 mt-1">{{ evento_form.lugar.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <label for="{{ evento_form.modalidad.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
+                                    Modalidad <span class="text-red-500">*</span>
+                                </label>
+                                {{ evento_form.modalidad }}
+                                {% if evento_form.modalidad.errors %}
+                                <p class="text-xs text-red-600 mt-1">{{ evento_form.modalidad.errors.0 }}</p>
+                                {% endif %}
+                            </div>
                         </div>
-                        <div>
-                            <label for="{{ evento_form.cupo.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
-                                Cupo de participantes (opcional)
-                            </label>
-                            {{ evento_form.cupo }}
-                            {% if evento_form.cupo.errors %}
-                            <p class="text-xs text-red-600 mt-1">{{ evento_form.cupo.errors.0 }}</p>
-                            {% endif %}
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label for="{{ evento_form.link_inscripcion.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
+                                    Enlace de inscripción (opcional)
+                                </label>
+                                {{ evento_form.link_inscripcion }}
+                                {% if evento_form.link_inscripcion.errors %}
+                                <p class="text-xs text-red-600 mt-1">{{ evento_form.link_inscripcion.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <label for="{{ evento_form.cupo.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
+                                    Cupo de participantes (opcional)
+                                </label>
+                                {{ evento_form.cupo }}
+                                {% if evento_form.cupo.errors %}
+                                <p class="text-xs text-red-600 mt-1">{{ evento_form.cupo.errors.0 }}</p>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- BOTONES DE ACCIÓN -->
-                <div class="flex items-center justify-end space-x-3 pt-6 border-t border-slate-100">
+                <div class="pt-8 flex items-center justify-end gap-3 border-t border-slate-100">
                     <a href="{% url 'accounts:dashboard' %}?tab=contenidos"
-                        class="px-5 py-2.5 rounded-lg border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition">
+                        class="btn-secondary">
                         Cancelar
                     </a>
                     <button type="submit"
-                        class="inline-flex items-center px-6 py-2.5 rounded-lg bg-primary-600 hover:bg-primary-700 text-white text-xs font-semibold shadow-sm transition">
-                        {% if is_create %}Guardar contenido{% else %}Guardar cambios{% endif %}
+                        class="btn-primary">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        {% if is_create %}Guardar Contenido{% else %}Guardar Cambios{% endif %}
                     </button>
                 </div>
             </form>
         </div>
     </div>
-</div>
+</section>
 
 <!-- Quill Rich Text Editor Script -->
 <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
@@ -384,19 +392,46 @@
             });
         }
 
-        // 2. Control de visibilidad y campos de sección Evento
+        // 2. Control de habilitación/deshabilitación y estilos de la sección Evento
         const tipoSelect = document.getElementById('id_tipo');
         const seccionEvento = document.getElementById('seccion-evento');
         const eventoInputs = seccionEvento ? seccionEvento.querySelectorAll('input, select') : [];
+        const puntoEvento = document.getElementById('evento-indicador-punto');
+        const tituloEvento = document.getElementById('evento-titulo-header');
+        const badgeEvento = document.getElementById('evento-badge-estado');
+        const avisoEvento = document.getElementById('evento-aviso-inactivo');
+        const contenedorCampos = document.getElementById('evento-contenedor-campos');
 
         function toggleEvento() {
             const val = tipoSelect ? tipoSelect.value : '';
-            const esEvento = (val === 'EVENTO' || val === 'CAPACITACION');
+            const esEvento = ['EVENTO', 'CAPACITACION'].includes(val);
             if (esEvento) {
-                seccionEvento.classList.remove('hidden');
+                // Card en estado activo
+                seccionEvento.className = 'rounded-xl border transition-all duration-300 p-5 sm:p-6 bg-amber-50/40 border-amber-300 shadow-xs ring-1 ring-amber-200/50';
+                if (puntoEvento) puntoEvento.className = 'w-2.5 h-2.5 rounded-full bg-amber-500 transition-colors animate-pulse';
+                if (tituloEvento) tituloEvento.className = 'text-sm font-bold uppercase tracking-wider text-amber-900 transition-colors';
+                if (badgeEvento) {
+                    badgeEvento.className = 'text-[11px] px-2.5 py-0.5 rounded-full font-semibold transition-all bg-amber-100 text-amber-800 border border-amber-200';
+                    badgeEvento.textContent = 'Activo (Requerido para ' + (val === 'CAPACITACION' ? 'Capacitaciones' : 'Eventos') + ')';
+                }
+                if (avisoEvento) avisoEvento.classList.add('hidden');
+                if (contenedorCampos) {
+                    contenedorCampos.classList.remove('opacity-50', 'pointer-events-none');
+                }
                 eventoInputs.forEach(el => el.disabled = false);
             } else {
-                seccionEvento.classList.add('hidden');
+                // Card en estado inactivo / reposo
+                seccionEvento.className = 'rounded-xl border transition-all duration-300 p-5 sm:p-6 bg-slate-50/80 border-slate-200';
+                if (puntoEvento) puntoEvento.className = 'w-2.5 h-2.5 rounded-full bg-slate-300 transition-colors';
+                if (tituloEvento) tituloEvento.className = 'text-sm font-bold uppercase tracking-wider text-slate-500 transition-colors';
+                if (badgeEvento) {
+                    badgeEvento.className = 'text-[11px] px-2.5 py-0.5 rounded-full font-semibold transition-all bg-slate-200/80 text-slate-500';
+                    badgeEvento.textContent = 'Inactivo (Solo aplica para Eventos o Capacitaciones)';
+                }
+                if (avisoEvento) avisoEvento.classList.remove('hidden');
+                if (contenedorCampos) {
+                    contenedorCampos.classList.add('opacity-50', 'pointer-events-none');
+                }
                 // Deshabilitar campos para que el navegador no los valide ni envíe
                 eventoInputs.forEach(el => el.disabled = true);
             }
@@ -407,53 +442,111 @@
             toggleEvento();
         }
 
-        // 3. Indicador dinámico de estado de publicación según la fecha
+        // 3. Control y sincronización del Modo de Publicación (Borrador, Inmediata, Programada)
+        const selectModo = document.getElementById('select-modo-publicacion');
         const fechaInput = document.getElementById('id_fecha_publicacion');
-        const btnPublicarAhora = document.getElementById('btn-publicar-ahora');
-        const box = document.getElementById('indicador-estado-box');
-        const badge = document.getElementById('indicador-estado-badge');
-        const desc = document.getElementById('indicador-estado-desc');
+        const ayudaFecha = document.getElementById('ayuda-fecha-publicacion');
+        const boxPublicacion = document.getElementById('indicador-estado-box');
+        const iconoPublicacion = document.getElementById('indicador-estado-icono');
+        const labelPublicacion = document.getElementById('indicador-estado-label');
+        const badgePublicacion = document.getElementById('indicador-estado-badge');
+        const descPublicacion = document.getElementById('indicador-estado-desc');
 
-        function actualizarIndicadorEstado() {
-            const val = fechaInput.value;
-            if (!val) {
-                // Borrador / Pausa
-                box.className = 'mt-2 p-2.5 rounded-lg border text-xs bg-slate-50 border-slate-200';
-                badge.className = 'ml-1.5 px-2 py-0.5 rounded-full font-semibold text-[11px] bg-slate-200 text-slate-700';
-                badge.textContent = 'Borrador / Pausa';
-                desc.textContent = 'La publicación no será visible públicamente. Permanecerá guardada para editar.';
-            } else {
-                const fechaSeleccionada = new Date(val);
-                const ahora = new Date();
-                if (fechaSeleccionada > ahora) {
-                    // Programada
-                    box.className = 'mt-2 p-2.5 rounded-lg border text-xs bg-amber-50 border-amber-200';
-                    badge.className = 'ml-1.5 px-2 py-0.5 rounded-full font-semibold text-[11px] bg-amber-100 text-amber-800';
-                    badge.textContent = 'Programado';
-                    desc.textContent = 'La publicación se activará automáticamente cuando llegue la fecha y hora indicada.';
-                } else {
-                    // Publicada
-                    box.className = 'mt-2 p-2.5 rounded-lg border text-xs bg-primary-50 border-primary-200';
-                    badge.className = 'ml-1.5 px-2 py-0.5 rounded-full font-semibold text-[11px] bg-primary-100 text-primary-800';
-                    badge.textContent = 'Publicación instantánea';
-                    desc.textContent = 'La publicación será visible de inmediato según su visibilidad.';
+        function obtenerFechaLocalISO(diasExtra = 0) {
+            const now = new Date();
+            if (diasExtra > 0) {
+                now.setDate(now.getDate() + diasExtra);
+            }
+            const offset = now.getTimezoneOffset() * 60000;
+            return (new Date(now.getTime() - offset)).toISOString().slice(0, 16);
+        }
+
+        function aplicarModoPublicacion(modo, esInicial = false) {
+            if (modo === 'BORRADOR') {
+                fechaInput.value = '';
+                fechaInput.readOnly = true;
+                fechaInput.classList.add('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
+                if (ayudaFecha) ayudaFecha.textContent = 'Sin fecha asignada: el contenido permanece como borrador privado.';
+
+                // Card Roja / Rosada
+                boxPublicacion.className = 'p-3.5 rounded-xl border text-xs transition-all duration-300 flex items-start gap-3 bg-rose-50 border-rose-200 text-rose-900';
+                if (labelPublicacion) labelPublicacion.className = 'font-bold uppercase tracking-wider text-[11px] text-rose-800';
+                badgePublicacion.className = 'px-2 py-0.5 rounded-full font-semibold text-[11px] bg-rose-100 text-rose-800 border border-rose-200';
+                badgePublicacion.textContent = 'Borrador / Pausa';
+                descPublicacion.textContent = 'El contenido quedará guardado de forma privada. No será visible en el sitio web ni en el padrón de noticias.';
+                iconoPublicacion.innerHTML = `<svg class="w-5 h-5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>`;
+
+            } else if (modo === 'INMEDIATA') {
+                if (!esInicial || !fechaInput.value) {
+                    fechaInput.value = obtenerFechaLocalISO();
                 }
+                fechaInput.readOnly = true;
+                fechaInput.classList.add('bg-slate-100', 'text-slate-600', 'cursor-not-allowed');
+                if (ayudaFecha) ayudaFecha.textContent = 'Se asigna la fecha y hora actual automáticamente para publicarse ya.';
+
+                // Card Verde / Esmeralda
+                boxPublicacion.className = 'p-3.5 rounded-xl border text-xs transition-all duration-300 flex items-start gap-3 bg-emerald-50 border-emerald-200 text-emerald-900';
+                if (labelPublicacion) labelPublicacion.className = 'font-bold uppercase tracking-wider text-[11px] text-emerald-800';
+                badgePublicacion.className = 'px-2 py-0.5 rounded-full font-semibold text-[11px] bg-emerald-100 text-emerald-800 border border-emerald-200';
+                badgePublicacion.textContent = 'Publicación Inmediata';
+                descPublicacion.textContent = 'El contenido se publicará inmediatamente al guardar y será visible según su nivel de visibilidad.';
+                iconoPublicacion.innerHTML = `<svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`;
+
+            } else if (modo === 'PROGRAMADA') {
+                fechaInput.readOnly = false;
+                fechaInput.classList.remove('bg-slate-100', 'text-slate-400', 'text-slate-600', 'cursor-not-allowed');
+                const ahora = new Date();
+                const actual = fechaInput.value ? new Date(fechaInput.value) : null;
+                // Si no tiene fecha futura asignada, sugerir mañana a las 09:00
+                if (!actual || actual <= ahora) {
+                    fechaInput.value = obtenerFechaLocalISO(1);
+                }
+                if (ayudaFecha) ayudaFecha.textContent = 'Seleccioná la fecha y hora futura en la que querés que el sitio active la publicación.';
+
+                // Card Amarilla / Ámbar
+                boxPublicacion.className = 'p-3.5 rounded-xl border text-xs transition-all duration-300 flex items-start gap-3 bg-amber-50 border-amber-200 text-amber-900';
+                if (labelPublicacion) labelPublicacion.className = 'font-bold uppercase tracking-wider text-[11px] text-amber-800';
+                badgePublicacion.className = 'px-2 py-0.5 rounded-full font-semibold text-[11px] bg-amber-100 text-amber-800 border border-amber-200';
+                badgePublicacion.textContent = 'Publicación Programada';
+                descPublicacion.textContent = 'El contenido se activará y publicará automáticamente cuando llegue la fecha y hora indicada.';
+                iconoPublicacion.innerHTML = `<svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`;
             }
         }
 
+        // Detectar estado inicial (ej. al abrir una noticia existente para editar)
         if (fechaInput) {
-            fechaInput.addEventListener('input', actualizarIndicadorEstado);
-            fechaInput.addEventListener('change', actualizarIndicadorEstado);
-            actualizarIndicadorEstado();
-        }
+            const fechaValor = fechaInput.value;
+            let modoInicial = 'INMEDIATA';
+            if (!fechaValor) {
+                modoInicial = 'BORRADOR';
+            } else {
+                const fechaDate = new Date(fechaValor);
+                const ahora = new Date();
+                if (fechaDate > ahora) {
+                    modoInicial = 'PROGRAMADA';
+                } else {
+                    modoInicial = 'INMEDIATA';
+                }
+            }
+            if (selectModo) {
+                selectModo.value = modoInicial;
+                aplicarModoPublicacion(modoInicial, true);
 
-        if (btnPublicarAhora) {
-            btnPublicarAhora.addEventListener('click', function () {
-                const now = new Date();
-                const offset = now.getTimezoneOffset() * 60000;
-                const localISOTime = (new Date(now.getTime() - offset)).toISOString().slice(0, 16);
-                fechaInput.value = localISOTime;
-                actualizarIndicadorEstado();
+                selectModo.addEventListener('change', function () {
+                    aplicarModoPublicacion(selectModo.value, false);
+                });
+            }
+
+            fechaInput.addEventListener('input', function () {
+                if (selectModo && selectModo.value === 'PROGRAMADA') {
+                    const actual = new Date(fechaInput.value);
+                    const ahora = new Date();
+                    if (actual <= ahora) {
+                        descPublicacion.textContent = 'Atención: elegiste una fecha pasada o actual. Si guardás ahora, se publicará de inmediato.';
+                    } else {
+                        descPublicacion.textContent = 'El contenido se activará y publicará automáticamente cuando llegue la fecha y hora indicada.';
+                    }
+                }
             });
         }
     });

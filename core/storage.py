@@ -3,6 +3,7 @@ import mimetypes
 import os
 import re
 import unicodedata
+import uuid
 from threading import Lock
 from django.core.files.storage import Storage
 from django.core.files.base import ContentFile
@@ -74,6 +75,30 @@ class SupabaseStorage(Storage):
         if dirname:
             return f"{dirname.rstrip('/')}/{clean_filename}"
         return clean_filename
+
+    def get_available_name(self, name, max_length=None):
+        """
+        Garantiza que cada archivo almacenado tenga un identificador único irrepetible
+        mediante un sufijo UUID (8 caracteres hex). Esto evita colisiones donde dos usuarios
+        suben archivos con el mismo nombre (ej: foto.jpg) y previene que al borrar uno se
+        elimine el del otro.
+        """
+        name = str(name).replace('\\', '/')
+        dirname, filename = os.path.split(name)
+        base, ext = os.path.splitext(filename)
+
+        unique_suffix = uuid.uuid4().hex[:8]
+        unique_filename = f"{base}_{unique_suffix}{ext}"
+
+        if max_length and len(unique_filename) > max_length:
+            # Si excede la longitud máxima, recortar la base
+            overflow = len(unique_filename) - max_length
+            base = base[:-overflow]
+            unique_filename = f"{base}_{unique_suffix}{ext}"
+
+        if dirname:
+            return f"{dirname.rstrip('/')}/{unique_filename}"
+        return unique_filename
 
     def _save(self, name, content):
         # Normalizar barras a estilo Unix para storage

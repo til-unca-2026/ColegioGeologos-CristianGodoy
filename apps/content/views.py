@@ -1,10 +1,11 @@
+from urllib.parse import urlparse
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db import transaction
 from django.db.models import Q
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views import View
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
@@ -23,7 +24,7 @@ class ContentPermissionRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
             return False
         return (
             user.is_superuser
-            or user.groups.filter(name__in=["administradores", "colaboradores"]).exists()
+            or user.groups.filter(name__in=["administradores", "colaboradores", "Administradores", "Colaboradores"]).exists()
             or user.has_perm("content.add_contenido")
             or user.has_perm("content.change_contenido")
         )
@@ -43,6 +44,13 @@ class NovedadesListView(ListView):
     context_object_name = "novedades"
     paginate_by = 10
 
+    # Tipos que cuentan con su propia sección y plantilla exclusiva
+    TIPOS_EXCLUIDOS = [
+        Contenido.Tipo.CAPACITACION,
+        Contenido.Tipo.BENEFICIO,
+        Contenido.Tipo.CONVOCATORIA,
+    ]
+
     def get_queryset(self):
         user = self.request.user
         now = timezone.now()
@@ -52,12 +60,14 @@ class NovedadesListView(ListView):
         qs = Contenido.objects.filter(
             estado_publicacion=Contenido.EstadoPublicacion.PUBLICADO,
             fecha_publicacion__lte=now,
+        ).exclude(
+            tipo__in=self.TIPOS_EXCLUIDOS
         ).select_related("creado_por").prefetch_related("imagenes", "detalle_evento")
 
         # Reglas de visibilidad:
         # Colaboradores y administradores ven contenidos públicos, de matriculados e internos
         es_staff = user.is_authenticated and (
-            user.is_superuser or user.groups.filter(name__in=["administradores", "colaboradores"]).exists()
+            user.is_superuser or user.groups.filter(name__in=["administradores", "colaboradores", "Administradores", "Colaboradores"]).exists()
         )
 
         if not es_staff:
@@ -68,9 +78,10 @@ class NovedadesListView(ListView):
                 # Visitante anónimo: solo PUBLICO
                 qs = qs.filter(visibilidad=Contenido.Visibilidad.PUBLICO)
 
-        # Filtro por tipo
+        # Filtro por tipo (solo entre los tipos válidos para esta sección)
         tipo = self.request.GET.get("tipo", "").strip()
-        if tipo and tipo in Contenido.Tipo.values:
+        tipos_validos = [choice[0] for choice in self.get_tipos_disponibles()]
+        if tipo and tipo in tipos_validos:
             qs = qs.filter(tipo=tipo)
 
         # Búsqueda por texto (título, resumen, cuerpo)
@@ -82,11 +93,17 @@ class NovedadesListView(ListView):
 
         return qs.order_by("-fecha_publicacion", "-fecha_creacion")
 
+    def get_tipos_disponibles(self):
+        return [
+            choice for choice in Contenido.Tipo.choices
+            if choice[0] not in self.TIPOS_EXCLUIDOS
+        ]
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["tipo_actual"] = self.request.GET.get("tipo", "")
         context["q"] = self.request.GET.get("q", "")
-        context["tipos_disponibles"] = Contenido.Tipo.choices
+        context["tipos_disponibles"] = self.get_tipos_disponibles()
         context["total_publicaciones"] = self.get_queryset().count()
         return context
 
@@ -160,7 +177,7 @@ class NovedadDetailView(DetailView):
 
         # Validación de permisos para ver la nota:
         es_staff = user.is_authenticated and (
-            user.is_superuser or user.groups.filter(name__in=["administradores", "colaboradores"]).exists()
+            user.is_superuser or user.groups.filter(name__in=["administradores", "colaboradores", "Administradores", "Colaboradores"]).exists()
         )
         if not es_staff:
             # Si no está publicada o la fecha no llegó
@@ -182,15 +199,95 @@ class NovedadDetailView(DetailView):
         context["portada"] = novedad.imagen_portada
         context["otras_imagenes"] = novedad.imagenes.exclude(id=getattr(novedad.imagen_portada, "id", None))
 
-        # Publicaciones recientes relacionadas (mismo tipo o destacadas)
+        # Determinar el botón de retorno contextual según de dónde vino el usuario (HTTP_REFERER)
+        referer = self.request.META.get("HTTP_REFERER", "")
+        host = self.request.get_host()
+        volver_url = None
+        volver_texto = None
+
+        if referer and host in referer:
+            try:
+                parsed_ref = urlparse(referer)
+                ref_path = parsed_ref.path
+                full_ref = referer
+
+                # 1. Vino de Capacitaciones
+                if ref_path.startswith(reverse("content:capacitaciones_list")):
+                    volver_url = full_ref
+                    volver_texto = "Volver a Capacitaciones"
+                # 2. Vino de Noticias
+                elif ref_path.startswith(reverse("content:novedades_list")):
+                    volver_url = full_ref
+                    volver_texto = "Volver a Noticias"
+                # 3. Vino de Beneficios
+                elif ref_path.startswith(reverse("beneficios")):
+                    volver_url = full_ref
+                    volver_texto = "Volver a Beneficios"
+                # 4. Vino de Bolsa de Trabajo (Convocatorias)
+                elif ref_path.startswith(reverse("convocatorias")):
+                    volver_url = full_ref
+                    volver_texto = "Volver a Bolsa de Trabajo"
+                # 5. Vino del Inicio
+                elif ref_path == reverse("home") or ref_path == "/":
+                    volver_url = reverse("home")
+                    volver_texto = "Volver al Inicio"
+            except Exception:
+                pass
+
+        # Fallback coherente si entró directo (WhatsApp, pestaña nueva, email, etc.)
+        if not volver_url:
+            if novedad.tipo == Contenido.Tipo.CAPACITACION:
+                volver_url = reverse("content:capacitaciones_list")
+                volver_texto = "Volver a Capacitaciones"
+            elif novedad.tipo == Contenido.Tipo.BENEFICIO:
+                volver_url = reverse("beneficios")
+                volver_texto = "Volver a Beneficios"
+            elif novedad.tipo == Contenido.Tipo.CONVOCATORIA:
+                volver_url = reverse("convocatorias")
+                volver_texto = "Volver a Bolsa de Trabajo"
+            else:
+                volver_url = reverse("content:novedades_list")
+                volver_texto = "Volver a Noticias"
+
+        context["volver_url"] = volver_url
+        context["volver_texto"] = volver_texto
+
+        # Publicaciones recientes sugeridas: estrictamente del MISMO tipo que el contenido actual
         now = timezone.now()
-        relacionadas = Contenido.objects.filter(
+        user = self.request.user
+
+        relacionadas_qs = Contenido.objects.filter(
+            tipo=novedad.tipo,
             estado_publicacion=Contenido.EstadoPublicacion.PUBLICADO,
             fecha_publicacion__lte=now,
-            visibilidad=Contenido.Visibilidad.PUBLICO,
-        ).exclude(pk=novedad.pk).order_by("-fecha_publicacion")[:3]
+        ).exclude(pk=novedad.pk)
+
+        # Filtrar por visibilidad según autenticación
+        if not (user.is_authenticated and (user.is_superuser or user.groups.filter(name__in=["administradores", "colaboradores", "Administradores", "Colaboradores"]).exists())):
+            if user.is_authenticated:
+                relacionadas_qs = relacionadas_qs.filter(visibilidad__in=[Contenido.Visibilidad.PUBLICO, Contenido.Visibilidad.MATRICULADOS])
+            else:
+                relacionadas_qs = relacionadas_qs.filter(visibilidad=Contenido.Visibilidad.PUBLICO)
+
+        # Si tiene fecha de evento/inicio, ordenar cronológicamente
+        if novedad.tipo in [Contenido.Tipo.EVENTO, Contenido.Tipo.CAPACITACION]:
+            relacionadas = relacionadas_qs.order_by("-detalle_evento__inicio", "-fecha_publicacion")[:3]
+        else:
+            relacionadas = relacionadas_qs.order_by("-fecha_publicacion")[:3]
+
+        # Título contextual de sugerencias según el tipo exacto
+        titulos_por_tipo = {
+            Contenido.Tipo.NOTICIA: "Otras noticias recientes",
+            Contenido.Tipo.COMUNICADO: "Otros comunicados oficiales",
+            Contenido.Tipo.EVENTO: "Otros eventos",
+            Contenido.Tipo.CAPACITACION: "Otras capacitaciones",
+            Contenido.Tipo.BENEFICIO: "Otros beneficios",
+            Contenido.Tipo.CONVOCATORIA: "Otras convocatorias laborales",
+        }
+        titulo_relacionadas = titulos_por_tipo.get(novedad.tipo, f"Más publicaciones de {novedad.get_tipo_display().lower()}")
 
         context["relacionadas"] = relacionadas
+        context["titulo_relacionadas"] = titulo_relacionadas
         return context
 
 
@@ -220,7 +317,10 @@ class ContenidoCreateView(ContentPermissionRequiredMixin, CreateView):
         context = self.get_context_data()
         evento_form = context["evento_form"]
         tipo = form.cleaned_data.get("tipo")
-        requiere_evento = tipo in [Contenido.Tipo.EVENTO, Contenido.Tipo.CAPACITACION]
+        requiere_evento = tipo in [
+            Contenido.Tipo.EVENTO,
+            Contenido.Tipo.CAPACITACION,
+        ]
 
         if requiere_evento and not evento_form.is_valid():
             return self.form_invalid(form)
@@ -238,12 +338,10 @@ class ContenidoCreateView(ContentPermissionRequiredMixin, CreateView):
             # Guardar imagen de portada si se proporcionó
             imagen_file = form.cleaned_data.get("imagen_portada")
             if imagen_file:
-                texto_alt = form.cleaned_data.get("texto_alt_portada") or contenido.titulo
                 epigrafe = form.cleaned_data.get("epigrafe_portada") or ""
                 ImagenContenido.objects.create(
                     contenido=contenido,
                     imagen=imagen_file,
-                    texto_alt=texto_alt,
                     epigrafe=epigrafe,
                     es_portada=True,
                     orden=0,
@@ -255,7 +353,6 @@ class ContenidoCreateView(ContentPermissionRequiredMixin, CreateView):
                 ImagenContenido.objects.create(
                     contenido=contenido,
                     imagen=img_galeria,
-                    texto_alt=f"Foto {idx} de {contenido.titulo}",
                     epigrafe="",
                     es_portada=False,
                     orden=idx,
@@ -299,7 +396,10 @@ class ContenidoUpdateView(ContentPermissionRequiredMixin, UpdateView):
         context = self.get_context_data()
         evento_form = context["evento_form"]
         tipo = form.cleaned_data.get("tipo")
-        requiere_evento = tipo in [Contenido.Tipo.EVENTO, Contenido.Tipo.CAPACITACION]
+        requiere_evento = tipo in [
+            Contenido.Tipo.EVENTO,
+            Contenido.Tipo.CAPACITACION,
+        ]
 
         if requiere_evento and not evento_form.is_valid():
             return self.form_invalid(form)
@@ -317,28 +417,24 @@ class ContenidoUpdateView(ContentPermissionRequiredMixin, UpdateView):
                 contenido.detalle_evento.delete()
 
             imagen_file = form.cleaned_data.get("imagen_portada")
-            texto_alt = form.cleaned_data.get("texto_alt_portada") or contenido.titulo
             epigrafe = form.cleaned_data.get("epigrafe_portada") or ""
             portada_existente = contenido.imagenes.filter(es_portada=True).first()
 
             if imagen_file:
                 if portada_existente:
                     portada_existente.imagen = imagen_file
-                    portada_existente.texto_alt = texto_alt
                     portada_existente.epigrafe = epigrafe
                     portada_existente.save()
                 else:
                     ImagenContenido.objects.create(
                         contenido=contenido,
                         imagen=imagen_file,
-                        texto_alt=texto_alt,
                         epigrafe=epigrafe,
                         es_portada=True,
                         orden=0,
                     )
             elif portada_existente:
-                # Si no subió una nueva imagen pero editó el texto_alt o epígrafe
-                portada_existente.texto_alt = texto_alt
+                # Si no subió una nueva imagen pero editó el epígrafe
                 portada_existente.epigrafe = epigrafe
                 portada_existente.save()
 
@@ -349,7 +445,6 @@ class ContenidoUpdateView(ContentPermissionRequiredMixin, UpdateView):
                 ImagenContenido.objects.create(
                     contenido=contenido,
                     imagen=img_galeria,
-                    texto_alt=f"Foto {idx} de {contenido.titulo}",
                     epigrafe="",
                     es_portada=False,
                     orden=idx,

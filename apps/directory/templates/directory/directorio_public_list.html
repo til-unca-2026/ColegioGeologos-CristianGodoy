@@ -89,6 +89,11 @@
 
                         <!-- Frase en una sola línea continua -->
                         <div class="flex items-center flex-wrap gap-x-2 gap-y-1 text-sm text-slate-800 leading-relaxed min-w-0">
+                            <!-- Matrícula Profesional -->
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-mono font-bold bg-slate-100 text-slate-800 border border-slate-300 shadow-2xs">
+                                MP {{ mat.numero_matricula }}
+                            </span>
+
                             <!-- Nombre -->
                             <span class="font-bold text-slate-900 group-hover:text-primary-700 transition">
                                 {{ mat.usuario.get_full_name|default:mat.usuario.username }}

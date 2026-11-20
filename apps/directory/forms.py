@@ -136,10 +136,28 @@ class MatriculadoForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # Campos estrictamente obligatorios
+        self.fields["numero_matricula"].required = True
+        self.fields["fecha_matriculacion"].required = True
+        self.fields["libro"].required = True
+        self.fields["folio"].required = True
+        
+        # Campos opcionales
+        self.fields["especialidades"].required = False
+        self.fields["domicilio_profesional_calle"].required = False
+        self.fields["domicilio_profesional_numero"].required = False
+        self.fields["domicilio_profesional_localidad"].required = False
+        self.fields["domicilio_profesional_provincia"].required = False
+        self.fields["domicilio_profesional_cp"].required = False
+
         if self.instance and self.instance.pk:
             self.fields["usuario"].disabled = True
             self.fields["usuario"].help_text = "El usuario vinculado no puede modificarse una vez creada la matrícula."
         else:
+            # En la creación no se usa el campo jubilado (nace False)
+            if "jubilado" in self.fields:
+                self.fields["jubilado"].required = False
+                self.fields["jubilado"].initial = False
             usuarios_ya_matriculados = Matriculado.objects.values_list("usuario_id", flat=True)
             self.fields["usuario"].queryset = User.objects.exclude(id__in=usuarios_ya_matriculados).order_by(
                 "dni", "first_name", "last_name"
@@ -171,6 +189,15 @@ class TituloForm(forms.ModelForm):
             }),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["denominacion"].required = True
+        self.fields["tipo"].required = True
+        self.fields["emitido_por"].required = True
+        self.fields["fecha_egreso"].required = False
+        self.fields["fecha_expedicion"].required = False
+        self.fields["escaneo_diploma"].required = False
+
 
 class HistorialEstadoMatriculaForm(forms.ModelForm):
     """
@@ -195,9 +222,12 @@ class HistorialEstadoMatriculaForm(forms.ModelForm):
             "resolucion_acta": forms.TextInput(attrs={"class": INPUT_CSS, "placeholder": "Ej: Resolución CD N° 15/2026"}),
         }
 
-    def __init__(self, matriculado, *args, **kwargs):
+    def __init__(self, matriculado=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["origen_sancion"].queryset = AntecedenteDisciplinario.objects.filter(matriculado=matriculado)
+        if matriculado:
+            self.fields["origen_sancion"].queryset = AntecedenteDisciplinario.objects.filter(matriculado=matriculado)
+        else:
+            self.fields["origen_sancion"].queryset = AntecedenteDisciplinario.objects.all()
         self.fields["origen_sancion"].required = False
         self.fields["origen_sancion"].empty_label = "Sin antecedente asociado (Opcional)"
 

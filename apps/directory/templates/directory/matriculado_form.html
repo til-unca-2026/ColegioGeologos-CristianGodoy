@@ -4,45 +4,40 @@
 {% block title %}{{ title }} | Colegio de Geólogos de Catamarca{% endblock %}
 
 {% block content %}
-<div class="min-h-[calc(100vh-140px)] bg-slate-100 py-8">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+<section class="min-h-[calc(100vh-105px)] bg-slate-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto space-y-6">
 
-        <!-- Migas de pan / Volver -->
-        <div class="mb-6 flex items-center justify-between">
-            <a href="{% url 'accounts:dashboard' %}?tab=admin_matriculados"
-                class="inline-flex items-center text-sm font-medium text-slate-500 hover:text-slate-800 transition">
-                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                Volver al Padrón de Matriculados
-            </a>
-            {% if is_edit %}
-            <a href="{% url 'directory:matriculado_detail' form.instance.pk %}"
-                class="inline-flex items-center text-xs font-semibold text-primary-700 hover:text-primary-800 bg-primary-50 px-3 py-1.5 rounded-lg border border-primary-200">
-                Ver Ficha Completa
-            </a>
-            {% endif %}
+        <!-- Navegación de migas de pan y encabezado -->
+        <div>
+            <nav class="flex items-center text-xs text-slate-500 mb-2 space-x-2">
+                <a href="{% url 'accounts:dashboard' %}?tab=admin_matriculados" class="hover:text-primary-700 font-medium">Dashboard</a>
+                <span>/</span>
+                <a href="{% url 'accounts:dashboard' %}?tab=admin_matriculados" class="hover:text-primary-700 font-medium">Matriculados</a>
+                <span>/</span>
+                {% if is_edit %}
+                <a href="{% url 'directory:matriculado_detail' form.instance.pk %}" class="hover:text-primary-700 font-medium">Matrícula {{ form.instance.numero_matricula }}</a>
+                <span>/</span>
+                <span class="text-slate-700 font-semibold">Editar</span>
+                {% else %}
+                <span class="text-slate-700 font-semibold">Alta de Matrícula</span>
+                {% endif %}
+            </nav>
+            <h1 class="text-2xl font-bold text-slate-900">{{ title }}</h1>
+            <p class="text-sm text-slate-500 mt-1">
+                {% if is_edit %}
+                Modifique los datos institucionales o el domicilio profesional del matriculado.
+                {% else %}
+                Asigne el número de matrícula y libro/folio institucional a un usuario del sistema.
+                {% endif %}
+            </p>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-            <!-- Cabecera -->
-            <div class="p-6 sm:p-8 bg-slate-50/70 border-b border-slate-200/80">
-                <h1 class="text-2xl font-bold text-slate-900">{{ title }}</h1>
-                <p class="text-sm text-slate-500 mt-1">
-                    {% if is_edit %}
-                    Modifique los datos institucionales o el domicilio profesional del matriculado.
-                    {% else %}
-                    Asigne el número de matrícula y libro/folio institucional a un usuario del sistema.
-                    {% endif %}
-                </p>
-            </div>
-
-            <form method="post" enctype="multipart/form-data" class="p-6 sm:p-8 space-y-8">
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <form method="post" enctype="multipart/form-data" novalidate class="p-6 sm:p-10 divide-y divide-slate-100">
                 {% csrf_token %}
 
                 {% if form.non_field_errors %}
-                <div class="p-4 rounded-xl bg-red-50 border border-red-200 text-sm text-red-700">
+                <div class="p-4 mb-6 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-sm">
                     {{ form.non_field_errors }}
                 </div>
                 {% endif %}
@@ -244,13 +239,16 @@
                                 agregarla haciendo clic en"+ Nueva Especialidad".</p>
                         </div>
 
-                        <!-- Jubilado -->
+                        <!-- Jubilado (Solo visible al editar una matrícula existente) -->
+                        {% if is_edit %}
                         <div class="sm:col-span-2 pt-2">
                             <label class="inline-flex items-center space-x-2 text-sm text-slate-700 cursor-pointer">
                                 {{ form.jubilado }}
                                 <span class="font-medium">Profesional Jubilado</span>
                             </label>
+                            <p class="text-[11px] text-slate-400">Marque esta casilla si el profesional ha pasado a condición de jubilado.</p>
                         </div>
+                        {% endif %}
                     </div>
                 </div>
 
@@ -316,11 +314,12 @@
                 </div>
 
                 <!-- BOTONES DE ACCIÓN -->
-                <div class="flex items-center justify-end space-x-3 pt-6 border-t border-slate-200">
+                <div class="pt-8 flex items-center justify-end gap-3 border-t border-slate-100">
                     <a href="{% url 'accounts:dashboard' %}?tab=admin_matriculados"
                         class="btn-secondary">
                         Cancelar
                     </a>
+                    <button type="submit"
                         class="btn-primary">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -331,7 +330,7 @@
             </form>
         </div>
     </div>
-</div>
+</section>
 
 <!-- MODAL: CREAR NUEVA UNIVERSIDAD (AJAX) -->
 <div id="modal-universidad"

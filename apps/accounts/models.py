@@ -142,16 +142,24 @@ class User(AbstractUser):
 class MembresiaComision(models.Model):
     class Comision(models.TextChoices):
         DIRECTIVA = "DIRECTIVA", "Comisión Directiva"
+        REVISORA_CUENTAS = "REVISORA_CUENTAS", "Comisión Revisora de Cuentas"
 
     class Cargo(models.TextChoices):
-        PRESIDENTE = "PRESIDENTE", "Presidente"
-        VICEPRESIDENTE = "VICEPRESIDENTE", "Vicepresidente"
-        SECRETARIO = "SECRETARIO", "Secretario"
-        PROSECRETARIO = "PROSECRETARIO", "Prosecretario"
-        TESORERO = "TESORERO", "Tesorero"
-        PROTESORERO = "PROTESORERO", "Protesorero"
-        VOCAL_TITULAR = "VOCAL_TITULAR", "Vocal Titular"
-        VOCAL_SUPLENTE = "VOCAL_SUPLENTE", "Vocal Suplente"
+        # Comisión Directiva
+        PRESIDENTE = "PRESIDENTE", "Presidente/a"
+        VICEPRESIDENTE = "VICEPRESIDENTE", "Vicepresidente/a"
+        SECRETARIO = "SECRETARIO", "Secretario/a"
+        TESORERO = "TESORERO", "Tesorero/a"
+        VOCAL_TITULAR_1 = "VOCAL_TITULAR_1", "Vocal Titular 1"
+        VOCAL_TITULAR_2 = "VOCAL_TITULAR_2", "Vocal Titular 2"
+        VOCAL_TITULAR_3 = "VOCAL_TITULAR_3", "Vocal Titular 3"
+        VOCAL_SUPLENTE_1 = "VOCAL_SUPLENTE_1", "Vocal Suplente 1"
+        VOCAL_SUPLENTE_2 = "VOCAL_SUPLENTE_2", "Vocal Suplente 2"
+        # Comisión Revisora de Cuentas
+        REVISOR_TITULAR_1 = "REVISOR_TITULAR_1", "Revisor/a de Cuentas Titular 1"
+        REVISOR_TITULAR_2 = "REVISOR_TITULAR_2", "Revisor/a de Cuentas Titular 2"
+        REVISOR_SUPLENTE_1 = "REVISOR_SUPLENTE_1", "Revisor/a de Cuentas Suplente 1"
+        REVISOR_SUPLENTE_2 = "REVISOR_SUPLENTE_2", "Revisor/a de Cuentas Suplente 2"
 
     usuario = models.ForeignKey(
         User,

@@ -14,8 +14,8 @@ User = get_user_model()
 class DocumentoDashboardAndAdminViewsTests(TestCase):
     def setUp(self):
         # Grupos
-        self.grupo_admin = Group.objects.create(name="Administradores")
-        self.grupo_matriculados = Group.objects.create(name="Matriculados")
+        self.grupo_admin, _ = Group.objects.get_or_create(name="Administradores")
+        self.grupo_matriculados, _ = Group.objects.get_or_create(name="Matriculados")
 
         # Usuarios
         self.admin = User.objects.create_user(
@@ -74,7 +74,7 @@ class DocumentoDashboardAndAdminViewsTests(TestCase):
         url = reverse("documents:documento_create")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Cargar nuevo documento institucional")
+        self.assertContains(response, "Cargar Nuevo Documento Institucional")
 
     @patch("core.storage.SupabaseStorage._save", return_value="documentos/res_12_2024.pdf")
     def test_admin_can_create_documento(self, mock_storage_save):
@@ -108,7 +108,7 @@ class DocumentoDashboardAndAdminViewsTests(TestCase):
         doc = Documento.objects.create(
             numero="Ley 4118",
             titulo="Ley de Creación del Colegio",
-            categoria=Documento.Categoria.NORMATIVA,
+            categoria=Documento.Categoria.LEY,
             descripcion="Ley fundacional",
             archivo_almacenado=SimpleUploadedFile("doc.pdf", b"%PDF-1.4 ..."),
             visibilidad=Documento.Visibilidad.PUBLICO,
@@ -138,7 +138,7 @@ class DocumentoDashboardAndAdminViewsTests(TestCase):
         doc_mat = Documento.objects.create(
             numero="Res. 02/2024",
             titulo="Resolución Arancelaria",
-            categoria=Documento.Categoria.NORMATIVA,
+            categoria=Documento.Categoria.RESOLUCION,
             descripcion="Solo para matriculados",
             archivo_almacenado=SimpleUploadedFile("doc2.pdf", b"%PDF-1.4 ..."),
             visibilidad=Documento.Visibilidad.MATRICULADOS,
@@ -188,7 +188,7 @@ class DocumentoDashboardAndAdminViewsTests(TestCase):
         doc = Documento.objects.create(
             numero="Res. 50/2024",
             titulo="Título Original",
-            categoria=Documento.Categoria.NORMATIVA,
+            categoria=Documento.Categoria.RESOLUCION,
             descripcion="Descripción Original",
             archivo_almacenado=SimpleUploadedFile("doc_orig.pdf", b"%PDF-1.4 ..."),
             visibilidad=Documento.Visibilidad.PUBLICO,
@@ -220,7 +220,7 @@ class DocumentoDashboardAndAdminViewsTests(TestCase):
         doc = Documento.objects.create(
             numero="Res. 60/2024",
             titulo="Resolución de Prueba",
-            categoria=Documento.Categoria.NORMATIVA,
+            categoria=Documento.Categoria.RESOLUCION,
             descripcion="Para alternar vigencia",
             visibilidad=Documento.Visibilidad.PUBLICO,
             vigente=True,
@@ -244,7 +244,7 @@ class DocumentoDashboardAndAdminViewsTests(TestCase):
         doc = Documento.objects.create(
             numero="Res. 70/2024",
             titulo="Resolución para Eliminar",
-            categoria=Documento.Categoria.NORMATIVA,
+            categoria=Documento.Categoria.RESOLUCION,
             descripcion="Para borrar",
             archivo_almacenado=SimpleUploadedFile("doc_del.pdf", b"%PDF-1.4 ..."),
             visibilidad=Documento.Visibilidad.PUBLICO,
@@ -269,7 +269,7 @@ class DocumentoDashboardAndAdminViewsTests(TestCase):
         data = {
             "numero": "",
             "titulo": "Formulario de Solicitud de Trámite",
-            "categoria": Documento.Categoria.MODELO_NOTA,
+            "categoria": Documento.Categoria.MODELO,
             "fecha_documento": "",
             "descripcion": "",
             "archivo_almacenado": pdf_file,

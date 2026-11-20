@@ -96,6 +96,12 @@ class MatriculadoCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateV
                 creado_por=self.request.user,
             )
 
+            # Asignar automáticamente el grupo 'matriculados' al usuario
+            from django.contrib.auth.models import Group
+            grupo_matriculados = Group.objects.filter(name__iexact="matriculados").first()
+            if grupo_matriculados:
+                matriculado.usuario.groups.add(grupo_matriculados)
+
         messages.success(
             self.request,
             f"Matrícula N° {matriculado.numero_matricula} y título '{titulo.denominacion}' registrados exitosamente.",
@@ -170,6 +176,14 @@ class TituloCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     permission_required = "directory.add_titulo"
     model = Titulo
     form_class = TituloForm
+    template_name = "directory/titulo_form.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        matriculado = get_object_or_404(Matriculado, pk=self.kwargs["matriculado_id"])
+        context["matriculado"] = matriculado
+        context["title"] = "Agregar Título Universitario"
+        return context
 
     def form_valid(self, form):
         matriculado = get_object_or_404(Matriculado, pk=self.kwargs["matriculado_id"])
@@ -178,11 +192,14 @@ class TituloCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
         titulo.creado_por = self.request.user
         titulo.save()
         messages.success(self.request, f"Título '{titulo.denominacion}' agregado con éxito.")
+        next_url = self.request.POST.get("next") or self.request.GET.get("next")
+        if next_url:
+            return redirect(next_url)
         return redirect("directory:matriculado_detail", pk=matriculado.pk)
 
     def form_invalid(self, form):
         messages.error(self.request, "Error al registrar el título. Por favor revise los campos.")
-        return redirect("directory:matriculado_detail", pk=self.kwargs["matriculado_id"])
+        return super().form_invalid(form)
 
 
 class TituloUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
@@ -192,6 +209,13 @@ class TituloUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     permission_required = "directory.change_titulo"
     model = Titulo
     form_class = TituloForm
+    template_name = "directory/titulo_form.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["matriculado"] = self.object.matriculado
+        context["title"] = f"Editar Título: {self.object.denominacion}"
+        return context
 
     def form_valid(self, form):
         titulo = form.save(commit=False)
@@ -202,7 +226,7 @@ class TituloUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
 
     def form_invalid(self, form):
         messages.error(self.request, "Error al actualizar el título. Por favor revise los campos.")
-        return redirect("directory:matriculado_detail", pk=self.object.matriculado.pk)
+        return super().form_invalid(form)
 
 
 class HistorialEstadoCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
@@ -212,6 +236,14 @@ class HistorialEstadoCreateView(LoginRequiredMixin, PermissionRequiredMixin, Cre
     permission_required = "directory.add_historialestadomatricula"
     model = HistorialEstadoMatricula
     form_class = HistorialEstadoMatriculaForm
+    template_name = "directory/historialestadomatricula_form.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        matriculado = get_object_or_404(Matriculado, pk=self.kwargs["matriculado_id"])
+        context["matriculado"] = matriculado
+        context["title"] = "Registrar Cambio de Estado"
+        return context
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -229,11 +261,14 @@ class HistorialEstadoCreateView(LoginRequiredMixin, PermissionRequiredMixin, Cre
             self.request,
             f"Nuevo estado '{estado.get_estado_display()}' registrado para la matrícula.",
         )
+        next_url = self.request.POST.get("next") or self.request.GET.get("next")
+        if next_url:
+            return redirect(next_url)
         return redirect("directory:matriculado_detail", pk=matriculado.pk)
 
     def form_invalid(self, form):
         messages.error(self.request, "Error al registrar el cambio de estado. Por favor revise las fechas y campos.")
-        return redirect("directory:matriculado_detail", pk=self.kwargs["matriculado_id"])
+        return super().form_invalid(form)
 
 
 class HistorialEstadoUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
@@ -243,6 +278,13 @@ class HistorialEstadoUpdateView(LoginRequiredMixin, PermissionRequiredMixin, Upd
     permission_required = "directory.change_historialestadomatricula"
     model = HistorialEstadoMatricula
     form_class = HistorialEstadoMatriculaForm
+    template_name = "directory/historialestadomatricula_form.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["matriculado"] = self.object.matriculado
+        context["title"] = f"Editar Estado: {self.object.get_estado_display()}"
+        return context
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -258,7 +300,7 @@ class HistorialEstadoUpdateView(LoginRequiredMixin, PermissionRequiredMixin, Upd
 
     def form_invalid(self, form):
         messages.error(self.request, "Error al actualizar el estado de matrícula.")
-        return redirect("directory:matriculado_detail", pk=self.object.matriculado.pk)
+        return super().form_invalid(form)
 
 
 class AntecedenteDisciplinarioCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
@@ -268,6 +310,14 @@ class AntecedenteDisciplinarioCreateView(LoginRequiredMixin, PermissionRequiredM
     permission_required = "directory.add_antecedentedisciplinario"
     model = AntecedenteDisciplinario
     form_class = AntecedenteDisciplinarioForm
+    template_name = "directory/antecedentedisciplinario_form.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        matriculado = get_object_or_404(Matriculado, pk=self.kwargs["matriculado_id"])
+        context["matriculado"] = matriculado
+        context["title"] = "Registrar Antecedente Disciplinario"
+        return context
 
     def form_valid(self, form):
         matriculado = get_object_or_404(Matriculado, pk=self.kwargs["matriculado_id"])
@@ -279,11 +329,14 @@ class AntecedenteDisciplinarioCreateView(LoginRequiredMixin, PermissionRequiredM
             self.request,
             f"Antecedente disciplinario Exp. {antecedente.numero_expediente} registrado.",
         )
+        next_url = self.request.POST.get("next") or self.request.GET.get("next")
+        if next_url:
+            return redirect(next_url)
         return redirect("directory:matriculado_detail", pk=matriculado.pk)
 
     def form_invalid(self, form):
         messages.error(self.request, "Error al registrar el antecedente disciplinario.")
-        return redirect("directory:matriculado_detail", pk=self.kwargs["matriculado_id"])
+        return super().form_invalid(form)
 
 
 class AntecedenteDisciplinarioUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
@@ -293,6 +346,13 @@ class AntecedenteDisciplinarioUpdateView(LoginRequiredMixin, PermissionRequiredM
     permission_required = "directory.change_antecedentedisciplinario"
     model = AntecedenteDisciplinario
     form_class = AntecedenteDisciplinarioForm
+    template_name = "directory/antecedentedisciplinario_form.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["matriculado"] = self.object.matriculado
+        context["title"] = f"Editar Antecedente Exp. {self.object.numero_expediente}"
+        return context
 
     def form_valid(self, form):
         antecedente = form.save(commit=False)
@@ -303,7 +363,7 @@ class AntecedenteDisciplinarioUpdateView(LoginRequiredMixin, PermissionRequiredM
 
     def form_invalid(self, form):
         messages.error(self.request, "Error al actualizar el antecedente disciplinario.")
-        return redirect("directory:matriculado_detail", pk=self.object.matriculado.pk)
+        return super().form_invalid(form)
 
 
 class EspecialidadCreateAjaxView(LoginRequiredMixin, PermissionRequiredMixin, View):
@@ -446,7 +506,7 @@ class MatriculacionTramitesView(TemplateView):
 
         doc_qs = Documento.objects.filter(
             vigente=True,
-            categoria=Documento.Categoria.MODELO_NOTA
+            categoria=Documento.Categoria.MODELO
         )
 
         if not user.is_authenticated:

@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Convocatorias y Oportunidades Laborales | Colegio de Geólogos de Catamarca{% endblock %}
+
+{% block content %}
+<div class="bg-slate-50 min-h-screen py-10 sm:py-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 sm:space-y-12">
+
+        <!-- Encabezado / Hero -->
+        <div class="text-center max-w-3xl mx-auto space-y-4">
+            <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 tracking-wide uppercase">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                Inserción y Desarrollo Profesional
+            </span>
+            <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">
+                Convocatorias y Oportunidades Laborales
+            </h1>
+            <p class="text-lg text-slate-600 leading-relaxed">
+                Canal oficial de difusión de búsquedas profesionales, pasantías y convocatorias técnicas para geólogos en proyectos de Catamarca y el Noroeste Argentino.
+            </p>
+        </div>
+
+        <!-- Listado de Convocatorias -->
+        <div class="space-y-6">
+            <div class="flex items-center justify-between border-b border-slate-200/80 pb-4">
+                <div>
+                    <span class="text-xs font-semibold uppercase tracking-wider text-blue-700 block mb-0.5">Búsquedas Profesionales</span>
+                    <h2 class="text-xl sm:text-2xl font-bold text-slate-900">Ofertas y Convocatorias Abiertas</h2>
+                </div>
+                <span class="text-xs font-bold text-blue-700 bg-blue-50 px-3 py-1 rounded-full border border-blue-200">
+                    Bolsa de Trabajo
+                </span>
+            </div>
+
+            {% if convocatorias %}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+                {% for conv in convocatorias %}
+                <a href="{% url 'content:novedad_detail' conv.slug %}"
+                    class="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-200/90 flex flex-col justify-between hover:shadow-xl hover:border-blue-400 transition-all duration-300 group block">
+                    <div>
+                        <!-- Imagen de Portada -->
+                        <div class="relative h-48 sm:h-52 bg-slate-100 overflow-hidden">
+                            {% if conv.imagen_portada %}
+                            <img src="{{ conv.imagen_portada.imagen.url }}" alt="{{ conv.imagen_portada.epigrafe|default:conv.titulo }}"
+                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            {% else %}
+                            <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-950 to-slate-900 text-white/40">
+                                <svg class="w-14 h-14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                            {% endif %}
+
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+                        </div>
+
+                        <!-- Contenido de la Tarjeta -->
+                        <div class="p-5 sm:p-6 space-y-3">
+                            <div class="flex items-center space-x-2 text-xs text-slate-500">
+                                <span class="rounded bg-blue-50 px-2 py-0.5 font-semibold text-blue-800 uppercase tracking-wider text-[11px] border border-blue-200/60">{{ conv.get_tipo_display }}</span>
+                                <span>•</span>
+                                <span class="text-slate-400">{{ conv.fecha_publicacion|date:"d/m/Y" }}</span>
+                            </div>
+
+                            <h2 class="text-lg sm:text-xl font-bold text-slate-900 group-hover:text-blue-700 transition line-clamp-2 leading-snug">
+                                {{ conv.titulo }}
+                            </h2>
+
+                            <p class="text-sm text-slate-600 line-clamp-3 leading-relaxed">
+                                {{ conv.resumen }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Footer de Acción con "Ver más" sutil -->
+                    <div class="px-5 sm:px-6 pb-4 pt-3 mt-auto border-t border-slate-100 flex items-center justify-end">
+                        <span class="text-xs font-semibold text-primary-700 transition group-hover:text-primary-800 flex items-center gap-1">
+                            Ver más <span class="transition-transform group-hover:translate-x-0.5">→</span>
+                        </span>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+            {% else %}
+            <!-- Cartelera abierta / Aviso de recepción de búsquedas -->
+            <div class="bg-white rounded-2xl border border-dashed border-slate-300 p-8 sm:p-12 text-center max-w-xl mx-auto space-y-4">
+                <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                </div>
+                <div class="space-y-2">
+                    <h3 class="text-base font-bold text-slate-800">No hay convocatorias laborales abiertas actualmente</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 leading-relaxed max-w-md mx-auto">
+                        ¿Buscás profesionales de la geología para tu empresa o proyecto? El Colegio difunde de forma directa e institucional las convocatorias laborales a toda la comunidad de matriculados.
+                    </p>
+                    <div class="pt-2">
+                        <a href="mailto:colegio.geologos.catamarca@gmail.com?subject=Publicaci%C3%B3n%20de%20B%C3%BAsqueda%20Laboral" class="inline-flex items-center px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold transition gap-2 shadow-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                            <span>Enviar convocatoria a secretaría</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+{% endblock %}

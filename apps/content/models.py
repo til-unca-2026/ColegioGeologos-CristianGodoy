@@ -9,10 +9,10 @@ from .sanitizer import sanitize_html
 class Contenido(models.Model):
     class Tipo(models.TextChoices):
         NOTICIA = "NOTICIA", "Noticia"
-        NOVEDAD = "NOVEDAD", "Novedad"
+        COMUNICADO = "COMUNICADO", "Comunicado Oficial"
         EVENTO = "EVENTO", "Evento"
         CAPACITACION = "CAPACITACION", "Capacitación"
-        CONVENIO = "CONVENIO", "Convenio / Beneficio"
+        BENEFICIO = "BENEFICIO", "Beneficio"
         CONVOCATORIA = "CONVOCATORIA", "Convocatoria Laboral"
         OTRO = "OTRO", "Otro"
 
@@ -45,12 +45,16 @@ class Contenido(models.Model):
     )
     resumen = models.CharField(
         max_length=500,
+        blank=True,
+        default="",
         verbose_name="Resumen",
-        help_text="Texto breve que se muestra en listados y tarjetas.",
+        help_text="Texto breve que se muestra en listados y tarjetas (opcional si es afiche o flyer).",
     )
     cuerpo = models.TextField(
+        blank=True,
+        default="",
         verbose_name="Cuerpo",
-        help_text="Contenido completo de la publicación.",
+        help_text="Contenido completo de la publicación (opcional si la información está en la imagen publicitaria o flyer).",
     )
     estado_publicacion = models.CharField(
         max_length=20,
@@ -69,11 +73,6 @@ class Contenido(models.Model):
         choices=Visibilidad.choices,
         default=Visibilidad.PUBLICO,
         verbose_name="Visibilidad",
-    )
-    destacado = models.BooleanField(
-        default=False,
-        verbose_name="Destacado",
-        help_text="Si está marcado, se resalta en un lugar prioritario del sitio.",
     )
 
     # Auditoría y fechas
@@ -174,11 +173,6 @@ class ImagenContenido(models.Model):
         upload_to="contenidos/",
         storage=SupabaseStorage(),
         verbose_name="Imagen",
-    )
-    texto_alt = models.CharField(
-        max_length=255,
-        verbose_name="Texto alternativo (alt)",
-        help_text="Descripción para accesibilidad y lectores de pantalla.",
     )
     epigrafe = models.CharField(
         max_length=255,

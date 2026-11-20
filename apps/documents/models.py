@@ -1,3 +1,4 @@
+import os
 from django.db import models
 from django.conf import settings
 from core.storage import SupabaseStorage
@@ -6,12 +7,14 @@ from .validators import validate_pdf_file
 
 class Documento(models.Model):
     class Categoria(models.TextChoices):
+        LEY = "LEY", "Ley"
         ESTATUTO = "ESTATUTO", "Estatuto"
         REGLAMENTO = "REGLAMENTO", "Reglamento"
-        NORMATIVA = "NORMATIVA", "Normativa"
-        MODELO_NOTA = "MODELO_NOTA", "Modelo de Nota / Trámite"
-        ARANCEL = "ARANCEL", "Arancel / Honorarios"
-        CONVENIO = "CONVENIO", "Convenio Institucional"
+        RESOLUCION = "RESOLUCION", "Resolución"
+        ACTA = "ACTA", "Acta"
+        CONVENIO = "CONVENIO", "Convenio"
+        ARANCEL = "ARANCEL", "Arancel"
+        MODELO = "MODELO", "Modelo"
         OTRO = "OTRO", "Otro"
 
     class Visibilidad(models.TextChoices):
@@ -33,7 +36,7 @@ class Documento(models.Model):
     categoria = models.CharField(
         max_length=20,
         choices=Categoria.choices,
-        default=Categoria.NORMATIVA,
+        default=Categoria.RESOLUCION,
         verbose_name="Categoría",
     )
     numero = models.CharField(
@@ -59,7 +62,7 @@ class Documento(models.Model):
         storage=SupabaseStorage(),
         validators=[validate_pdf_file],
         verbose_name="Archivo almacenado",
-        help_text="Archivo PDF guardado en Supabase Storage.",
+        help_text="Archivo PDF o Word (.docx/.doc) guardado en Supabase Storage.",
     )
     visibilidad = models.CharField(
         max_length=20,
@@ -103,4 +106,23 @@ class Documento(models.Model):
         if self.numero:
             return f"{self.numero} - {self.titulo}"
         return self.titulo
+
+    @property
+    def extension(self):
+        """Devuelve la extensión en mayúscula (ej: PDF, DOCX) o cadena vacía."""
+        if self.archivo_almacenado and self.archivo_almacenado.name:
+            _, ext = os.path.splitext(self.archivo_almacenado.name)
+            return ext.replace(".", "").upper()
+        return ""
+
+    @property
+    def tipo_archivo_display(self):
+        ext = self.extension
+        if ext == "PDF":
+            return "Documento PDF"
+        elif ext in ["DOCX", "DOC"]:
+            return "Documento Word"
+        elif ext:
+            return f"Archivo {ext}"
+        return "Documento"
 

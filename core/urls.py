@@ -22,6 +22,8 @@ from .views import (
     HomeView,
     QuienesSomosView,
     ServiciosProfesionalesView,
+    ConveniosView,
+    ConvocatoriasLaboralesView,
     BeneficiosMatriculadosView,
     site_under_construction,
 )
@@ -36,6 +38,8 @@ urlpatterns = [
     path('quienes-somos/', QuienesSomosView.as_view(), name='quienes_somos'),
     path('servicios-profesionales/', ServiciosProfesionalesView.as_view(), name='servicios_profesionales'),
     path('beneficios/', BeneficiosMatriculadosView.as_view(), name='beneficios'),
+    path('beneficios/convenios/', ConveniosView.as_view(), name='convenios'),
+    path('beneficios/convocatorias/', ConvocatoriasLaboralesView.as_view(), name='convocatorias'),
     path('site-under-construction/', site_under_construction, name='site_under_construction'),
 ]
 

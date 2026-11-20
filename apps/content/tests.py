@@ -115,9 +115,9 @@ class ContentModelTests(TestCase):
 
 class ContentViewPermissionsAndAccessTests(TestCase):
     def setUp(self):
-        # Crear grupos
-        self.grupo_colaboradores = Group.objects.create(name="colaboradores")
-        self.grupo_matriculados = Group.objects.create(name="matriculados")
+        # Crear o recuperar grupos
+        self.grupo_colaboradores, _ = Group.objects.get_or_create(name="Colaboradores")
+        self.grupo_matriculados, _ = Group.objects.get_or_create(name="Matriculados")
 
         # Usuarios
         self.colaborador = User.objects.create_user(
