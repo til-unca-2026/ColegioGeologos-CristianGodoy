@@ -28,6 +28,12 @@ Describe, modelo por modelo, qué información guarda el sistema y para qué sir
 
 * **Archivos**: foto\_perfil, escaneo\_diploma, imagen y archivo\_almacenado se guardan en Supabase Storage.
 
+* **Normalización y validación a nivel de modelo**: todos los modelos implementan métodos `clean()` y `save()` que garantizan la integridad de los datos antes de persistir:
+  * *Textos y espacios*: se eliminan espacios en blanco en los extremos (`strip()`) y se colapsan espacios múltiples internos (`" ".join(texto.split())`). Los campos de texto vacíos se estandarizan como cadena vacía `""` o `None` según corresponda para no violar restricciones de unicidad.
+  * *Capitalización y mayúsculas*: los nombres de personas, calles y localidades se normalizan en formato título (`.title()`). Los códigos, siglas, números de expedientes, resoluciones y códigos postales se normalizan en mayúsculas sostenidas (`.upper()`).
+  * *Identidad legal y documentos*: el DNI se normaliza exclusivamente a dígitos numéricos (entre 7 y 9 dígitos). El CUIL/CUIT se valida numéricamente (11 dígitos) y se formatea con guiones (`XX-XXXXXXXX-X`), validando que su bloque central coincida con el DNI.
+  * *Lógica cronológica*: ninguna fecha de nacimiento, graduación, expedición de diploma o matriculación puede ser futura. Las fechas de finalización (de mandatos, suspensiones o eventos) no pueden ser anteriores a sus fechas de inicio. Las sanciones o estados definitivos limpian automáticamente campos no aplicables.
+
 # 
 
 # Modelos
@@ -42,9 +48,9 @@ Toda persona con acceso al sistema: matriculados, colaboradores y administradore
 | first\_name | String | Nombre de pila. Lo aporta AbstractUser. (Público) |
 | last\_name | String | Apellido. Lo aporta AbstractUser. (Público) |
 | email | String, único | Correo electrónico. Obligatorio. Se guarda normalizado en minúsculas. Lo aporta AbstractUser. |
-| dni | String, único | Número de documento de identidad. (Ley 25.326) |
-| cuil\_cuit | String, único | Clave única de identificación laboral o tributaria (CUIL o CUIT). (Ley 25.326) |
-| fecha\_nacimiento | Date | Fecha de nacimiento. (Ley 25.326) |
+| dni | String, único | Número de documento de identidad (entre 7 y 9 dígitos, se normaliza extrayendo solo números). (Ley 25.326) |
+| cuil\_cuit | String, único | Clave única de identificación laboral o tributaria (CUIL o CUIT). Se valida formato de 11 dígitos, coherencia con DNI y se formatea XX-XXXXXXXX-X. (Ley 25.326) |
+| fecha\_nacimiento | Date | Fecha de nacimiento. No puede ser futura y el usuario debe tener al menos 18 años. (Ley 25.326) |
 | lugar\_nacimiento | String | Lugar de nacimiento en texto libre, por ejemplo «Localidad, Provincia, País». (Ley 25.326) |
 | nacionalidad | Country, opcional | País de nacionalidad. Sin valor por defecto. |
 | telefono | Phone | Teléfono de contacto, guardado en formato internacional (E.164). |
@@ -74,7 +80,7 @@ Cargo que ocupa una persona en una comisión del Colegio durante un período, po
 | comision | Choice | Comisión a la que pertenece el cargo: DIRECTIVA (Comisión Directiva), REVISORA_CUENTAS (Comisión Revisora de Cuentas). Es obligatoria y se selecciona explícitamente sin valor por defecto. |
 | cargo | Choice | Puesto dentro de la comisión. Para Comisión Directiva: PRESIDENTE (Presidente/a), VICEPRESIDENTE (Vicepresidente/a), SECRETARIO (Secretario/a), TESORERO (Tesorero/a), VOCAL_TITULAR_1 (Vocal Titular 1), VOCAL_TITULAR_2 (Vocal Titular 2), VOCAL_TITULAR_3 (Vocal Titular 3), VOCAL_SUPLENTE_1 (Vocal Suplente 1), VOCAL_SUPLENTE_2 (Vocal Suplente 2). Para Comisión Revisora de Cuentas: REVISOR_TITULAR_1 (Revisor/a de Cuentas Titular 1), REVISOR_TITULAR_2 (Revisor/a de Cuentas Titular 2), REVISOR_SUPLENTE_1 (Revisor/a de Cuentas Suplente 1), REVISOR_SUPLENTE_2 (Revisor/a de Cuentas Suplente 2). Obligatorio sin valor por defecto. |
 | fecha\_desde | Date | Fecha en que la persona asume el cargo. Obligatoria. |
-| fecha\_hasta | Date | Fecha en que la persona finaliza su mandato. Obligatoria. |
+| fecha\_hasta | Date | Fecha en que la persona finaliza su mandato. Obligatoria, debe ser posterior o igual a fecha_desde. |
 | fecha\_creacion | DateTime | Fecha y hora en que se creó. |
 | fecha\_modificacion | DateTime | Fecha y hora de la última modificación. |
 | creado\_por | Relación → Usuario | Quien creo. |
@@ -88,9 +94,9 @@ Registro matricular de un profesional habilitado por el Colegio. Amplía a Usuar
 | :---- | :---- | :---- |
 | usuario | Relación → Usuario, uno a uno, clave primaria | Vincula el registro matricular con la cuenta base. Es la clave primaria: una persona no puede tener dos registros matriculares. |
 | numero\_matricula | String, único | Número de matrícula asignado por el Colegio. (Público) |
-| fecha\_matriculacion | Date, opcional | Fecha formal de alta en el registro del Colegio. |
-| libro | String, opcional | Referencia física del libro institucional donde se asentó la matrícula. |
-| folio | Integer, opcional | Número de folio (página) del libro donde consta la matrícula. |
+| fecha\_matriculacion | Date, opcional | Fecha formal de alta en el registro del Colegio. No puede ser futura. |
+| libro | String, opcional | Referencia física del libro institucional donde se asentó la matrícula. Se normaliza a mayúsculas. |
+| folio | Integer, opcional | Número de folio (página) del libro donde consta la matrícula. Entero mayor a 0. |
 | especialidades | Relación muchos a muchos → Especialidad | Áreas de especialización del matriculado. Puede tener varias o ninguna. |
 | jubilado | Boolean | Indica si el matriculado está jubilado. Por defecto falso. |
 | domicilio\_profesional\_calle | String, opcional | Domicilio donde ejerce el profesional. (Público) |
@@ -115,8 +121,8 @@ Título universitario con el que un matriculado ejerce o acredita su formación.
 | denominacion | String | Nombre del título, por ejemplo «Licenciado en Geología». Obligatorio al registrar un título. |
 | tipo | Choice | Nivel del título: PREGRADO, GRADO, POSGRADO. Es obligatorio y se selecciona explícitamente sin valor por defecto al registrar un título. |
 | emitido\_por | Relación → Universidad | Institución que emitió el título. Obligatoria al registrar un título. |
-| fecha\_egreso | Date, opcional | Fecha en que la persona terminó la carrera. |
-| fecha\_expedicion | Date, opcional | Fecha en que la universidad expidió el diploma. |
+| fecha\_egreso | Date, opcional | Fecha en que la persona terminó la carrera. No puede ser futura. |
+| fecha\_expedicion | Date, opcional | Fecha en que la universidad expidió el diploma. No puede ser futura ni anterior a la fecha de egreso. |
 | escaneo\_diploma | File, opcional | Copia digital del diploma. (Sensible) |
 | fecha\_creacion | DateTime, automático | Cuándo se cargó el título en el sistema. |
 | fecha\_modificacion | DateTime, automático | Cuándo se modificó por última vez. |
@@ -169,10 +175,10 @@ Expediente disciplinario y sanción aplicada a un matriculado por el Tribunal de
 | matriculado | Relación → Matriculado | Matriculado al que se le aplicó la sanción. Obligatorio. |
 | numero\_expediente | String, único | Identificador único del expediente en el Tribunal de Ética o Disciplina. Obligatorio. |
 | tipo\_sancion | Choice | Sanción aplicada: APERCIBIMIENTO, AMONESTACION, MULTA, SUSPENSION, CANCELACION. Obligatorio sin valor por defecto. |
-| fecha\_firmeza | Date | Fecha desde la que la resolución quedó firme y habilitada para su publicación o ejecución. Obligatorio. |
-| monto\_multa | Decimal, opcional | Importe de la multa. Habilitado cuando la sanción es MULTA. Opcional. |
-| fecha\_inicio\_suspension | Date, opcional | Fecha de inicio del período de suspensión. Habilitado cuando la sanción es SUSPENSION. Opcional. |
-| fecha\_fin\_suspension | Date, opcional | Fecha en que finaliza la suspensión. Habilitado cuando la sanción es SUSPENSION. Opcional. |
+| fecha\_firmeza | Date | Fecha desde la que la resolución quedó firme y habilitada para su publicación o ejecución. Obligatorio, no puede ser futura. |
+| monto\_multa | Decimal, opcional | Importe de la multa. Obligatorio y mayor a 0 cuando la sanción es MULTA. |
+| fecha\_inicio\_suspension | Date, opcional | Fecha de inicio del período de suspensión. Obligatorio cuando la sanción es SUSPENSION. |
+| fecha\_fin\_suspension | Date, opcional | Fecha en que finaliza la suspensión. Opcional cuando la sanción es SUSPENSION (admite suspensiones indeterminadas); si se especifica, debe ser posterior o igual al inicio. |
 | descripcion | String, opcional | Detalle explicativo de los hechos o la sanción aplicada. Opcional. |
 | fecha\_creacion | DateTime, automático | Cuándo se registró el antecedente en el sistema. |
 | fecha\_modificacion | DateTime, automático | Cuándo se modificó por última vez. |
@@ -258,10 +264,10 @@ Datos adicionales de los contenidos que tratan sobre una actividad con fecha (ev
 | :---- | :---- | :---- |
 | contenido | Relación → Contenido, uno a uno | Contenido al que pertenecen estos datos. |
 | inicio | DateTime | Fecha y hora de inicio del evento, capacitación, etc. Obligatorio. |
-| fin | DateTime, opcional | Fecha y hora de finalización del evento, capacitación, etc. |
+| fin | DateTime, opcional | Fecha y hora de finalización del evento, capacitación, etc. Si se especifica, no puede ser anterior al inicio. |
 | modalidad | Choice | Forma de participar: PRESENCIAL, VIRTUAL, HIBRIDA. Es obligatoria y se selecciona explícitamente sin valor por defecto. |
 | lugar | String | Lugar físico donde se realiza o enlace de la plataforma. Obligatorio para eventos o capacitaciones. |
-| cupo | Integer, opcional | Cantidad máxima de participantes. Vacío significa sin límite. |
+| cupo | Integer, opcional | Cantidad máxima de participantes (debe ser mayor a 0). Vacío significa sin límite. |
 | link\_inscripcion | URL, opcional | Enlace externo donde la persona se inscribe. |
 
 # **Documento**
@@ -274,7 +280,7 @@ Archivo institucional del Colegio, como estatutos, reglamentos y normativas. Lo 
 | descripcion | Text, opcional | Explicación breve de qué contiene y para qué sirve (opcional). |
 | categoria | Choice | Clase de documento: LEY, ESTATUTO, REGLAMENTO, RESOLUCION, ACTA, CONVENIO, ARANCEL, MODELO, OTRO. Es obligatoria y se selecciona explícitamente sin valor por defecto. |
 | numero | String, opcional | Número o identificación oficial del documento (por ejemplo «Resolución 12/2024», opcional si no posee). |
-| fecha\_documento | Date, opcional | Fecha del documento (sanción, firma o emisión). |
+| fecha\_documento | Date, opcional | Fecha del documento (sanción, firma o emisión). No puede ser futura. |
 | vigente | Boolean | Indica si el documento está en vigor. Los reemplazados se conservan marcados como no vigentes. |
 | archivo\_almacenado | File | Archivo digital (formatos admitidos: PDF o Word .docx/.doc) en Supabase Storage. La base de datos solo guarda su referencia. |
 | visibilidad | Choice | Quién puede verlo: PUBLICO, MATRICULADOS, INTERNO (ver Reglas generales). Es obligatoria y se selecciona explícitamente sin valor por defecto. |

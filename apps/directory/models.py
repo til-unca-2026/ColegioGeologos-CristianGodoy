@@ -1,5 +1,7 @@
+from datetime import date
 from django.db import models
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django_countries.fields import CountryField
 from core.storage import SupabaseStorage
 
@@ -28,6 +30,38 @@ class Universidad(models.Model):
         verbose_name_plural = "Universidades"
         ordering = ["nombre"]
 
+    def clean(self):
+        super().clean()
+        self.normalizar_datos()
+        self.validar_datos()
+
+    def normalizar_datos(self):
+        """
+        Normaliza nombre, sigla y país de la universidad.
+        """
+        if self.nombre:
+            self.nombre = " ".join(self.nombre.split())
+        if self.sigla:
+            self.sigla = " ".join(self.sigla.split())
+        if self.pais:
+            self.pais = str(self.pais).strip().upper()
+
+    def validar_datos(self):
+        """
+        Valida que el nombre y la sigla cumplan longitudes mínimas/máximas.
+        """
+        errores = {}
+        if not self.nombre or len(self.nombre) < 3:
+            errores["nombre"] = "El nombre de la universidad debe contener al menos 3 caracteres."
+        if self.sigla and not (2 <= len(self.sigla) <= 15):
+            errores["sigla"] = "La sigla debe tener entre 2 y 15 caracteres."
+        if errores:
+            raise ValidationError(errores)
+
+    def save(self, *args, **kwargs):
+        self.normalizar_datos()
+        super().save(*args, **kwargs)
+
     def __str__(self):
         if self.sigla:
             return f"{self.nombre} ({self.sigla})"
@@ -51,6 +85,36 @@ class Especialidad(models.Model):
         verbose_name = "Especialidad"
         verbose_name_plural = "Especialidades"
         ordering = ["nombre"]
+
+    def clean(self):
+        super().clean()
+        self.normalizar_datos()
+        self.validar_datos()
+
+    def normalizar_datos(self):
+        """
+        Normaliza nombre y descripción de la especialidad.
+        """
+        if self.nombre:
+            self.nombre = " ".join(self.nombre.split()).title()
+        if self.descripcion:
+            self.descripcion = self.descripcion.strip()
+        else:
+            self.descripcion = ""
+
+    def validar_datos(self):
+        """
+        Valida que el nombre de la especialidad sea adecuado.
+        """
+        errores = {}
+        if not self.nombre or len(self.nombre) < 3:
+            errores["nombre"] = "El nombre de la especialidad debe contener al menos 3 caracteres."
+        if errores:
+            raise ValidationError(errores)
+
+    def save(self, *args, **kwargs):
+        self.normalizar_datos()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.nombre
@@ -171,6 +235,82 @@ class Matriculado(models.Model):
         verbose_name_plural = "Matriculados"
         ordering = ["numero_matricula"]
 
+    def clean(self):
+        super().clean()
+        self.normalizar_datos()
+        self.validar_datos()
+
+    def normalizar_datos(self):
+        """
+        Normaliza datos profesionales y domicilio profesional del matriculado.
+        """
+        if self.numero_matricula:
+            self.numero_matricula = self.numero_matricula.strip().upper()
+
+        if self.libro:
+            self.libro = self.libro.strip().upper()
+        else:
+            self.libro = ""
+
+        # Domicilio profesional
+        if self.domicilio_profesional_calle:
+            self.domicilio_profesional_calle = " ".join(self.domicilio_profesional_calle.split()).title()
+        else:
+            self.domicilio_profesional_calle = ""
+
+        if self.domicilio_profesional_numero:
+            self.domicilio_profesional_numero = " ".join(self.domicilio_profesional_numero.split()).upper()
+        else:
+            self.domicilio_profesional_numero = ""
+
+        if self.domicilio_profesional_piso_depto:
+            self.domicilio_profesional_piso_depto = " ".join(self.domicilio_profesional_piso_depto.split()).upper()
+        else:
+            self.domicilio_profesional_piso_depto = ""
+
+        if self.domicilio_profesional_localidad:
+            self.domicilio_profesional_localidad = " ".join(self.domicilio_profesional_localidad.split()).title()
+        else:
+            self.domicilio_profesional_localidad = ""
+
+        if self.domicilio_profesional_provincia:
+            self.domicilio_profesional_provincia = " ".join(self.domicilio_profesional_provincia.split()).title()
+        else:
+            self.domicilio_profesional_provincia = ""
+
+        if self.domicilio_profesional_pais:
+            self.domicilio_profesional_pais = str(self.domicilio_profesional_pais).strip().upper()
+
+        if self.domicilio_profesional_cp:
+            self.domicilio_profesional_cp = " ".join(self.domicilio_profesional_cp.split()).upper()
+        else:
+            self.domicilio_profesional_cp = ""
+
+    def validar_datos(self):
+        """
+        Valida integridad de número de matrícula, folio, fechas y código postal.
+        """
+        errores = {}
+
+        if not self.numero_matricula:
+            errores["numero_matricula"] = "El número de matrícula es obligatorio."
+
+        if self.fecha_matriculacion and self.fecha_matriculacion > date.today():
+            errores["fecha_matriculacion"] = "La fecha de matriculación no puede ser futura."
+
+        if self.folio is not None and self.folio <= 0:
+            errores["folio"] = "El folio debe ser un número entero positivo mayor a 0."
+
+        if self.domicilio_profesional_cp and not (4 <= len(self.domicilio_profesional_cp) <= 8):
+            errores["domicilio_profesional_cp"] = "El código postal profesional debe contener entre 4 y 8 caracteres."
+
+        if errores:
+            raise ValidationError(errores)
+
+    def save(self, *args, **kwargs):
+        self.normalizar_datos()
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f"Mat. {self.numero_matricula} - {self.usuario.get_full_name() or self.usuario.username}"
 
@@ -284,6 +424,47 @@ class Titulo(models.Model):
         verbose_name_plural = "Títulos"
         ordering = ["-fecha_expedicion"]
 
+    def clean(self):
+        super().clean()
+        self.normalizar_datos()
+        self.validar_datos()
+
+    def normalizar_datos(self):
+        """
+        Normaliza denominación y tipo de título.
+        """
+        if self.denominacion:
+            self.denominacion = " ".join(self.denominacion.split())
+        if self.tipo:
+            self.tipo = str(self.tipo).strip().upper()
+
+    def validar_datos(self):
+        """
+        Valida que la denominación sea consistente y coherencia cronológica de fechas.
+        """
+        errores = {}
+        hoy = date.today()
+
+        if not self.denominacion or len(self.denominacion) < 3:
+            errores["denominacion"] = "La denominación del título debe contener al menos 3 caracteres."
+
+        if self.fecha_egreso and self.fecha_egreso > hoy:
+            errores["fecha_egreso"] = "La fecha de egreso no puede ser futura."
+
+        if self.fecha_expedicion and self.fecha_expedicion > hoy:
+            errores["fecha_expedicion"] = "La fecha de expedición no puede ser futura."
+
+        if self.fecha_egreso and self.fecha_expedicion:
+            if self.fecha_expedicion < self.fecha_egreso:
+                errores["fecha_expedicion"] = "La fecha de expedición no puede ser anterior a la fecha de egreso."
+
+        if errores:
+            raise ValidationError(errores)
+
+    def save(self, *args, **kwargs):
+        self.normalizar_datos()
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f"{self.denominacion} - {self.matriculado}"
 
@@ -370,6 +551,66 @@ class AntecedenteDisciplinario(models.Model):
         verbose_name_plural = "Antecedentes Disciplinarios"
         ordering = ["-fecha_firmeza"]
 
+    def clean(self):
+        super().clean()
+        self.normalizar_datos()
+        self.validar_datos()
+
+    def normalizar_datos(self):
+        """
+        Normaliza número de expediente, tipo de sanción y descripción.
+        Limpia campos no aplicables según el tipo de sanción.
+        """
+        if self.numero_expediente:
+            self.numero_expediente = self.numero_expediente.strip().upper()
+        if self.tipo_sancion:
+            self.tipo_sancion = str(self.tipo_sancion).strip().upper()
+        if self.descripcion:
+            self.descripcion = self.descripcion.strip()
+        else:
+            self.descripcion = ""
+
+        # Limpieza de campos no pertinentes al tipo de sanción
+        if self.tipo_sancion != self.TipoSancion.MULTA:
+            self.monto_multa = None
+
+        if self.tipo_sancion != self.TipoSancion.SUSPENSION:
+            self.fecha_inicio_suspension = None
+            self.fecha_fin_suspension = None
+
+    def validar_datos(self):
+        """
+        Valida expediente, fecha de firmeza, y coherencia de sanciones de multa y suspensión.
+        """
+        errores = {}
+        hoy = date.today()
+
+        if not self.numero_expediente or not self.numero_expediente.strip():
+            errores["numero_expediente"] = "El número de expediente es obligatorio."
+
+        if self.fecha_firmeza and self.fecha_firmeza > hoy:
+            errores["fecha_firmeza"] = "La fecha de firmeza no puede ser futura."
+
+        # Validación específica para MULTA
+        if self.tipo_sancion == self.TipoSancion.MULTA:
+            if self.monto_multa is None or self.monto_multa <= 0:
+                errores["monto_multa"] = "Debe especificar un monto de multa mayor a 0."
+
+        # Validación específica para SUSPENSIÓN
+        if self.tipo_sancion == self.TipoSancion.SUSPENSION:
+            if not self.fecha_inicio_suspension:
+                errores["fecha_inicio_suspension"] = "Debe indicar la fecha de inicio de la suspensión."
+            if self.fecha_inicio_suspension and self.fecha_fin_suspension:
+                if self.fecha_fin_suspension < self.fecha_inicio_suspension:
+                    errores["fecha_fin_suspension"] = "La fecha de finalización no puede ser anterior a la fecha de inicio de suspensión."
+
+        if errores:
+            raise ValidationError(errores)
+
+    def save(self, *args, **kwargs):
+        self.normalizar_datos()
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f"Exp. {self.numero_expediente} ({self.get_tipo_sancion_display()}) - {self.matriculado}"
 
@@ -450,6 +691,54 @@ class HistorialEstadoMatricula(models.Model):
         verbose_name = "Historial de Estado de Matrícula"
         verbose_name_plural = "Historiales de Estados de Matrícula"
         ordering = ["-fecha_desde", "-fecha_creacion"]
+
+    def clean(self):
+        super().clean()
+        self.normalizar_datos()
+        self.validar_datos()
+
+    def normalizar_datos(self):
+        """
+        Normaliza estado, motivo y resolución/acta.
+        Limpia fecha_hasta si el estado es definitivo (ACTIVA o BAJA).
+        """
+        if self.estado:
+            self.estado = str(self.estado).strip().upper()
+        if self.motivo:
+            self.motivo = " ".join(self.motivo.split())
+        if self.resolucion_acta:
+            self.resolucion_acta = " ".join(self.resolucion_acta.split()).upper()
+        else:
+            self.resolucion_acta = ""
+
+        # Limpieza de fecha_hasta para estados definitivos
+        if self.estado in [self.Estado.ACTIVA, self.Estado.BAJA]:
+            self.fecha_hasta = None
+
+    def validar_datos(self):
+        """
+        Valida que motivo no esté vacío, coherencia de rango de fechas
+        y pertenencia del antecedente disciplinario al mismo matriculado.
+        """
+        errores = {}
+
+        if not self.motivo or not self.motivo.strip():
+            errores["motivo"] = "El motivo del cambio de estado es obligatorio."
+
+        if self.fecha_desde and self.fecha_hasta:
+            if self.fecha_hasta < self.fecha_desde:
+                errores["fecha_hasta"] = "La fecha de finalización no puede ser anterior a la fecha de inicio del estado."
+
+        if self.origen_sancion and self.matriculado_id:
+            if self.origen_sancion.matriculado_id != self.matriculado_id:
+                errores["origen_sancion"] = "El antecedente disciplinario vinculado debe corresponder al mismo matriculado."
+
+        if errores:
+            raise ValidationError(errores)
+
+    def save(self, *args, **kwargs):
+        self.normalizar_datos()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.get_estado_display()} desde {self.fecha_desde} - {self.matriculado}"
