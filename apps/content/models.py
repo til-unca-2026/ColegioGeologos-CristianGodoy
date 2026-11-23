@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.templatetags.static import static
 from django.utils.text import slugify
 from django.utils import timezone
@@ -104,6 +105,55 @@ class Contenido(models.Model):
         verbose_name_plural = "Contenidos"
         ordering = ["-fecha_publicacion", "-fecha_creacion"]
 
+    def clean(self):
+        super().clean()
+        self.normalizar_datos()
+        self.validar_datos()
+
+    def normalizar_datos(self):
+        """
+        Normaliza campos de texto, selección y sanitiza el cuerpo.
+        """
+        if self.tipo:
+            self.tipo = str(self.tipo).strip().upper()
+
+        if self.titulo:
+            self.titulo = " ".join(self.titulo.split()).strip()
+
+        if self.slug:
+            self.slug = slugify(self.slug).lower()
+
+        if self.resumen:
+            self.resumen = " ".join(self.resumen.split()).strip()
+        else:
+            self.resumen = ""
+
+        if self.cuerpo:
+            self.cuerpo = sanitize_html(self.cuerpo.strip())
+        else:
+            self.cuerpo = ""
+
+        if self.visibilidad:
+            self.visibilidad = str(self.visibilidad).strip().upper()
+
+    def validar_datos(self):
+        """
+        Valida que el título tenga longitud adecuada y que los campos requeridos no estén vacíos.
+        """
+        errores = {}
+
+        if not self.titulo or len(self.titulo) < 3:
+            errores["titulo"] = "El título del contenido debe contener al menos 3 caracteres."
+
+        if not self.tipo:
+            errores["tipo"] = "Debe seleccionar el tipo de contenido."
+
+        if not self.visibilidad:
+            errores["visibilidad"] = "Debe indicar la visibilidad del contenido."
+
+        if errores:
+            raise ValidationError(errores)
+
     def __str__(self):
         return f"{self.get_tipo_display()}: {self.titulo}"
 
@@ -132,7 +182,9 @@ class Contenido(models.Model):
         return self.EstadoPublicacion.PUBLICADO
 
     def save(self, *args, **kwargs):
-        if not self.slug:
+        self.normalizar_datos()
+
+        if not self.slug and self.titulo:
             base_slug = slugify(self.titulo)
             slug = base_slug
             counter = 1
@@ -143,10 +195,6 @@ class Contenido(models.Model):
 
         # Calcular automáticamente el estado de publicación
         self.estado_publicacion = self.determinar_estado_automatico()
-
-        # Sanitizar cuerpo HTML contra XSS
-        if self.cuerpo:
-            self.cuerpo = sanitize_html(self.cuerpo)
 
         super().save(*args, **kwargs)
 
@@ -212,10 +260,24 @@ class ImagenContenido(models.Model):
         verbose_name_plural = "Imágenes de Contenido"
         ordering = ["orden", "id"]
 
+    def clean(self):
+        super().clean()
+        self.normalizar_datos()
+
+    def normalizar_datos(self):
+        """
+        Normaliza epígrafe de la imagen.
+        """
+        if self.epigrafe:
+            self.epigrafe = " ".join(self.epigrafe.split()).strip()
+        else:
+            self.epigrafe = ""
+
     def __str__(self):
         return f"Imagen ({self.id}) de {self.contenido.titulo}"
 
     def save(self, *args, **kwargs):
+        self.normalizar_datos()
         # Si se marca como portada, desmarcar cualquier otra imagen del mismo contenido
         if self.es_portada and self.contenido_id:
             ImagenContenido.objects.filter(
@@ -272,6 +334,55 @@ class DetalleEvento(models.Model):
         db_table = "detalles_evento"
         verbose_name = "Detalle de Evento"
         verbose_name_plural = "Detalles de Eventos"
+
+    def clean(self):
+        super().clean()
+        self.normalizar_datos()
+        self.validar_datos()
+
+    def normalizar_datos(self):
+        """
+        Normaliza lugar, modalidad, link de inscripción y cupo.
+        """
+        if self.lugar:
+            self.lugar = " ".join(self.lugar.split()).strip()
+        else:
+            self.lugar = ""
+
+        if self.modalidad:
+            self.modalidad = str(self.modalidad).strip().upper()
+
+        if self.link_inscripcion:
+            link = self.link_inscripcion.strip()
+            self.link_inscripcion = link if link else None
+        else:
+            self.link_inscripcion = None
+
+        if self.cupo is not None and str(self.cupo).strip() == "":
+            self.cupo = None
+
+    def validar_datos(self):
+        """
+        Valida que el lugar sea obligatorio, la coherencia de fechas de inicio/fin y cupo mayor a 0.
+        """
+        errores = {}
+
+        if not self.lugar or not self.lugar.strip():
+            errores["lugar"] = "El lugar o plataforma del evento es obligatorio."
+
+        if self.inicio and self.fin:
+            if self.fin < self.inicio:
+                errores["fin"] = "La fecha y hora de finalización no puede ser anterior a la de inicio."
+
+        if self.cupo is not None and self.cupo <= 0:
+            errores["cupo"] = "El cupo máximo debe ser un número entero mayor a 0."
+
+        if errores:
+            raise ValidationError(errores)
+
+    def save(self, *args, **kwargs):
+        self.normalizar_datos()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"Detalle de evento: {self.contenido.titulo} ({self.inicio.strftime('%d/%m/%Y %H:%M')})"

@@ -1,6 +1,8 @@
 import os
+from datetime import date
 from django.db import models
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from core.storage import SupabaseStorage
 from .validators import validate_pdf_file
 
@@ -99,6 +101,49 @@ class Documento(models.Model):
         verbose_name = "Documento"
         verbose_name_plural = "Documentos"
         ordering = ["-fecha_documento", "-fecha_creacion"]
+
+    def clean(self):
+        super().clean()
+        self.normalizar_datos()
+        self.validar_datos()
+
+    def normalizar_datos(self):
+        """
+        Normaliza título, número, categoría, visibilidad y descripción del documento.
+        """
+        if self.titulo:
+            self.titulo = " ".join(self.titulo.split())
+        if self.numero:
+            self.numero = " ".join(self.numero.split())
+        else:
+            self.numero = ""
+        if self.categoria:
+            self.categoria = str(self.categoria).strip().upper()
+        if self.visibilidad:
+            self.visibilidad = str(self.visibilidad).strip().upper()
+        if self.descripcion:
+            self.descripcion = self.descripcion.strip()
+        else:
+            self.descripcion = ""
+
+    def validar_datos(self):
+        """
+        Valida que el título tenga longitud adecuada y que la fecha no sea futura.
+        """
+        errores = {}
+
+        if not self.titulo or len(self.titulo) < 3:
+            errores["titulo"] = "El título del documento debe contener al menos 3 caracteres."
+
+        if self.fecha_documento and self.fecha_documento > date.today():
+            errores["fecha_documento"] = "La fecha del documento no puede ser una fecha futura."
+
+        if errores:
+            raise ValidationError(errores)
+
+    def save(self, *args, **kwargs):
+        self.normalizar_datos()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         if self.numero:

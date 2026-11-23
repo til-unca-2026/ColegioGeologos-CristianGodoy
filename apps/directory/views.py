@@ -578,15 +578,19 @@ class DirectorioPublicListView(ListView):
     paginate_by = 12
 
     def get_queryset(self):
+        from django.db.models import IntegerField, Case, When, Value
         from django.db.models.functions import Cast
-        from django.db.models import IntegerField
 
         qs = (
             Matriculado.objects.select_related("usuario")
             .prefetch_related("especialidades", "titulos__emitido_por", "estados")
             .annotate(
-                # Si el número de matrícula es numérico lo ordena como entero, si no mantiene el orden texto descendente
-                num_mat_int=Cast("numero_matricula", output_field=IntegerField())
+                # Si el número de matrícula es puramente numérico lo ordena como entero, si no mantiene 0
+                num_mat_int=Case(
+                    When(numero_matricula__regex=r"^\d+$", then=Cast("numero_matricula", output_field=IntegerField())),
+                    default=Value(0),
+                    output_field=IntegerField(),
+                )
             )
             .order_by("-num_mat_int", "-numero_matricula")
         )
