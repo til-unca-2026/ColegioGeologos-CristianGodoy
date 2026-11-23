@@ -251,7 +251,7 @@ class MatriculadoCreateViewTests(TestCase):
             dni="99888777",
             password="Password123!",
         )
-        self.universidad = Universidad.objects.create(nombre="Universidad de Buenos Aires", sigla="UBA")
+        self.universidad = Universidad.objects.create(nombre="Universidad de Buenos Aires", sigla="UBA", pais="AR")
         self.especialidad = Especialidad.objects.create(nombre="Medio Ambiente")
 
     def test_creacion_atomica_matriculado_con_titulo_y_estado(self):
@@ -287,4 +287,312 @@ class MatriculadoCreateViewTests(TestCase):
         self.assertEqual(mat.titulos.first().denominacion, "Licenciado en Ciencias Geológicas")
         self.assertEqual(mat.estados.count(), 1)
         self.assertEqual(mat.estado_actual.estado, HistorialEstadoMatricula.Estado.ACTIVA)
+
+
+class AntecedenteDisciplinarioTests(TestCase):
+    def setUp(self):
+        self.admin = User.objects.create_superuser(
+            username="admin_tribunal",
+            password="AdminPassword123!",
+            email="tribunal@geologos.com",
+            must_change_password=False,
+        )
+        self.user = User.objects.create_user(
+            username="geologo_sancionado",
+            first_name="Pedro",
+            last_name="Sancionado",
+            dni="11223344",
+            password="Password123!",
+        )
+        self.matriculado = Matriculado.objects.create(
+            usuario=self.user,
+            numero_matricula="MP-888",
+            libro="1",
+            folio="88",
+            fecha_matriculacion=date(2022, 5, 10),
+        )
+
+    def test_creacion_antecedente_con_fecha_firmeza_obligatoria(self):
+        hoy = timezone.now().date()
+        antecedente = AntecedenteDisciplinario.objects.create(
+            matriculado=self.matriculado,
+            numero_expediente="EXP-2026-001",
+            tipo_sancion=AntecedenteDisciplinario.TipoSancion.MULTA,
+            monto_multa=50000.00,
+            fecha_firmeza=hoy,
+            descripcion="Incumplimiento del código de ética",
+            creado_por=self.admin,
+        )
+        self.assertEqual(antecedente.matriculado, self.matriculado)
+        self.assertEqual(antecedente.fecha_firmeza, hoy)
+        self.assertEqual(antecedente.tipo_sancion, "MULTA")
+        self.assertEqual(self.matriculado.antecedentes.count(), 1)
+
+    def test_creacion_antecedente_desde_vista_dashboard(self):
+        self.client.force_login(self.admin)
+        url = reverse("directory:antecedente_create", kwargs={"matriculado_id": self.matriculado.pk})
+        hoy = timezone.now().date()
+        post_data = {
+            "numero_expediente": "EXP-2026-002",
+            "tipo_sancion": "SUSPENSION",
+            "fecha_firmeza": hoy.strftime("%Y-%m-%d"),
+            "fecha_inicio_suspension": hoy.strftime("%Y-%m-%d"),
+            "fecha_fin_suspension": (hoy + timedelta(days=90)).strftime("%Y-%m-%d"),
+            "descripcion": "Suspensión de matrícula por 90 días",
+        }
+        response = self.client.post(url, post_data)
+        self.assertRedirects(response, reverse("directory:matriculado_detail", kwargs={"pk": self.matriculado.pk}))
+
+        ant = AntecedenteDisciplinario.objects.get(numero_expediente="EXP-2026-002")
+        self.assertEqual(ant.matriculado, self.matriculado)
+        self.assertEqual(ant.fecha_firmeza, hoy)
+        self.assertEqual(ant.creado_por, self.admin)
+
+    def test_formulario_falla_sin_fecha_firmeza(self):
+        from apps.directory.forms import AntecedenteDisciplinarioForm
+        form = AntecedenteDisciplinarioForm(data={
+            "numero_expediente": "EXP-2026-003",
+            "tipo_sancion": "APERCIBIMIENTO",
+            "fecha_firmeza": "",
+        })
+        self.assertFalse(form.is_valid())
+        self.assertIn("fecha_firmeza", form.errors)
+
+
+class HistorialEstadoTransitionTests(TestCase):
+    def setUp(self):
+        self.admin = User.objects.create_superuser(
+            username="admin_estados",
+            password="AdminPassword123!",
+            must_change_password=False,
+        )
+        self.user = User.objects.create_user(
+            username="geologo_estados",
+            password="GeoPassword123!",
+            must_change_password=False,
+        )
+        self.matriculado = Matriculado.objects.create(
+            usuario=self.user,
+            numero_matricula="MP-777",
+            libro="1",
+            folio="77",
+            fecha_matriculacion=date(2020, 1, 1),
+        )
+        # Estado inicial: ACTIVA
+        HistorialEstadoMatricula.objects.create(
+            matriculado=self.matriculado,
+            estado=HistorialEstadoMatricula.Estado.ACTIVA,
+            fecha_desde=date(2020, 1, 1),
+            motivo="Alta original",
+        )
+        self.antecedente = AntecedenteDisciplinario.objects.create(
+            matriculado=self.matriculado,
+            numero_expediente="EXP-ETH-2026",
+            tipo_sancion=AntecedenteDisciplinario.TipoSancion.SUSPENSION,
+            fecha_firmeza=timezone.now().date(),
+        )
+
+    def test_transicion_a_suspendida_vinculada_a_antecedente_bloquea_login(self):
+        self.client.force_login(self.admin)
+        hoy = timezone.now().date()
+        url = reverse("directory:estado_create", kwargs={"matriculado_id": self.matriculado.pk})
+        post_data = {
+            "estado": HistorialEstadoMatricula.Estado.SUSPENDIDA,
+            "fecha_desde": hoy.strftime("%Y-%m-%d"),
+            "fecha_hasta": (hoy + timedelta(days=45)).strftime("%Y-%m-%d"),
+            "motivo": "Resolución Tribunal de Disciplina",
+            "origen_sancion": self.antecedente.pk,
+            "resolucion_acta": "Acta 102/2026",
+        }
+        response = self.client.post(url, post_data)
+        self.assertRedirects(response, reverse("directory:matriculado_detail", kwargs={"pk": self.matriculado.pk}))
+
+        self.assertEqual(self.matriculado.estado_actual.estado, HistorialEstadoMatricula.Estado.SUSPENDIDA)
+        self.assertEqual(self.matriculado.estado_actual.origen_sancion, self.antecedente)
+
+        # Verificar bloqueo de inicio de sesión
+        self.client.logout()
+        res_login = self.client.post(
+            reverse("accounts:login"),
+            {"username": "geologo_estados", "password": "GeoPassword123!"},
+        )
+        self.assertEqual(res_login.status_code, 200)
+        self.assertContains(res_login, "suspendida hasta el")
+
+    def test_transicion_a_baja_bloquea_login(self):
+        self.client.force_login(self.admin)
+        hoy = timezone.now().date()
+        url = reverse("directory:estado_create", kwargs={"matriculado_id": self.matriculado.pk})
+        post_data = {
+            "estado": HistorialEstadoMatricula.Estado.BAJA,
+            "fecha_desde": hoy.strftime("%Y-%m-%d"),
+            "motivo": "Cancelación definitiva de matrícula",
+        }
+        response = self.client.post(url, post_data)
+        self.assertRedirects(response, reverse("directory:matriculado_detail", kwargs={"pk": self.matriculado.pk}))
+
+        self.assertEqual(self.matriculado.estado_actual.estado, HistorialEstadoMatricula.Estado.BAJA)
+
+        self.client.logout()
+        res_login = self.client.post(
+            reverse("accounts:login"),
+            {"username": "geologo_estados", "password": "GeoPassword123!"},
+        )
+        self.assertEqual(res_login.status_code, 200)
+        self.assertContains(res_login, "dada de baja")
+
+
+class TituloManagementTests(TestCase):
+    def setUp(self):
+        self.admin = User.objects.create_superuser(
+            username="admin_titulos",
+            password="AdminPassword123!",
+            must_change_password=False,
+        )
+        self.user = User.objects.create_user(
+            username="geologo_titulos",
+            password="GeoPassword123!",
+            must_change_password=False,
+        )
+        self.matriculado = Matriculado.objects.create(
+            usuario=self.user,
+            numero_matricula="MP-555",
+            libro="1",
+            folio="55",
+            fecha_matriculacion=date(2022, 1, 1),
+        )
+        self.universidad = Universidad.objects.create(nombre="Universidad Nacional de Tucumán", sigla="UNT", pais="AR")
+
+    def test_crear_titulo_para_matriculado(self):
+        self.client.force_login(self.admin)
+        url = reverse("directory:titulo_create", kwargs={"matriculado_id": self.matriculado.pk})
+        post_data = {
+            "denominacion": "Doctor en Ciencias Geológicas",
+            "tipo": Titulo.TipoTitulo.POSGRADO,
+            "emitido_por": self.universidad.pk,
+            "fecha_egreso": "2024-03-15",
+            "fecha_expedicion": "2024-09-20",
+        }
+        response = self.client.post(url, post_data)
+        self.assertRedirects(response, reverse("directory:matriculado_detail", kwargs={"pk": self.matriculado.pk}))
+        self.assertEqual(self.matriculado.titulos.count(), 1)
+        tit = self.matriculado.titulos.first()
+        self.assertEqual(tit.denominacion, "Doctor en Ciencias Geológicas")
+        self.assertEqual(tit.emitido_por, self.universidad)
+
+    def test_editar_titulo_existente(self):
+        self.client.force_login(self.admin)
+        titulo = Titulo.objects.create(
+            matriculado=self.matriculado,
+            denominacion="Licenciatura en Geología",
+            tipo=Titulo.TipoTitulo.GRADO,
+            emitido_por=self.universidad,
+        )
+        url = reverse("directory:titulo_edit", kwargs={"pk": titulo.pk})
+        post_data = {
+            "denominacion": "Licenciado en Geología (Corregido)",
+            "tipo": Titulo.TipoTitulo.GRADO,
+            "emitido_por": self.universidad.pk,
+        }
+        response = self.client.post(url, post_data)
+        self.assertRedirects(response, reverse("directory:matriculado_detail", kwargs={"pk": self.matriculado.pk}))
+        titulo.refresh_from_db()
+        self.assertEqual(titulo.denominacion, "Licenciado en Geología (Corregido)")
+
+
+class AjaxCreationEndpointsTests(TestCase):
+    def setUp(self):
+        self.admin = User.objects.create_superuser(
+            username="admin_ajax",
+            password="AdminPassword123!",
+            must_change_password=False,
+        )
+
+    def test_crear_especialidad_ajax_exitoso(self):
+        self.client.force_login(self.admin)
+        url = reverse("directory:especialidad_create_ajax")
+        response = self.client.post(url, {"nombre": "Geofísica Aplicada"})
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertTrue(data.get("success"))
+        self.assertEqual(data.get("nombre"), "Geofísica Aplicada")
+        self.assertTrue(Especialidad.objects.filter(nombre="Geofísica Aplicada").exists())
+
+    def test_crear_especialidad_ajax_duplicada_retorna_400(self):
+        self.client.force_login(self.admin)
+        Especialidad.objects.create(nombre="Vulcanología")
+        url = reverse("directory:especialidad_create_ajax")
+        response = self.client.post(url, {"nombre": "Vulcanología"})
+        self.assertEqual(response.status_code, 400)
+        data = response.json()
+        self.assertFalse(data.get("success"))
+
+    def test_crear_universidad_ajax_exitoso(self):
+        self.client.force_login(self.admin)
+        url = reverse("directory:universidad_create_ajax")
+        response = self.client.post(url, {
+            "nombre": "Universidad Nacional de Cuyo",
+            "sigla": "UNCuyo",
+            "pais": "AR",
+        })
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertTrue(data.get("success"))
+        self.assertIn("UNCuyo", data.get("nombre"))
+        self.assertTrue(Universidad.objects.filter(sigla="UNCuyo").exists())
+
+
+class MatriculadoUpdateViewTests(TestCase):
+    def setUp(self):
+        self.admin = User.objects.create_superuser(
+            username="admin_update",
+            password="AdminPassword123!",
+            must_change_password=False,
+        )
+        self.regular_user = User.objects.create_user(
+            username="regular_user",
+            password="UserPassword123!",
+            must_change_password=False,
+        )
+        self.matriculado = Matriculado.objects.create(
+            usuario=self.regular_user,
+            numero_matricula="MP-321",
+            libro="1",
+            folio="32",
+            fecha_matriculacion=date(2021, 6, 15),
+            domicilio_profesional_calle="Calle Falsa",
+            domicilio_profesional_numero="123",
+            domicilio_profesional_localidad="Capital",
+            domicilio_profesional_provincia="Catamarca",
+            domicilio_profesional_pais="AR",
+        )
+
+    def test_admin_puede_editar_matriculado(self):
+        self.client.force_login(self.admin)
+        url = reverse("directory:matriculado_edit", kwargs={"pk": self.matriculado.pk})
+        post_data = {
+            "usuario": self.regular_user.pk,
+            "numero_matricula": "MP-321",
+            "libro": "1",
+            "folio": "32",
+            "fecha_matriculacion": "2021-06-15",
+            "domicilio_profesional_calle": "Av. Presidente Castillo",
+            "domicilio_profesional_numero": "500",
+            "domicilio_profesional_localidad": "San Fernando",
+            "domicilio_profesional_provincia": "Catamarca",
+            "domicilio_profesional_pais": "AR",
+        }
+        response = self.client.post(url, post_data)
+        self.assertRedirects(response, reverse("directory:matriculado_detail", kwargs={"pk": self.matriculado.pk}))
+        self.matriculado.refresh_from_db()
+        self.assertEqual(self.matriculado.domicilio_profesional_calle, "Av. Presidente Castillo")
+
+    def test_usuario_sin_permisos_no_puede_editar_matriculado(self):
+        self.client.force_login(self.regular_user)
+        url = reverse("directory:matriculado_edit", kwargs={"pk": self.matriculado.pk})
+        response = self.client.get(url)
+        # PermissionRequiredMixin returns 403 Forbidden
+        self.assertEqual(response.status_code, 403)
+
+
 

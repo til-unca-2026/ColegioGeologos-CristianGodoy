@@ -74,12 +74,13 @@ class EspecialidadForm(forms.ModelForm):
 
 class UsuarioDniChoiceField(forms.ModelChoiceField):
     """
-    ModelChoiceField personalizado para mostrar al usuario por su DNI en las opciones
-    y permitir al frontend conocer el nombre completo correspondiente.
+    ModelChoiceField personalizado para mostrar al usuario por su DNI y Nombre Completo en las opciones:
+    Ejemplo: 'DNI: 28995123 - Cristian Godoy'
     """
     def label_from_instance(self, obj):
         dni_texto = obj.dni if obj.dni else f"Sin DNI ({obj.username})"
-        return f"DNI: {dni_texto}"
+        nombre_completo = obj.get_full_name() or obj.username
+        return f"DNI: {dni_texto} - {nombre_completo}"
 
 
 class MatriculadoForm(forms.ModelForm):
@@ -90,12 +91,12 @@ class MatriculadoForm(forms.ModelForm):
         queryset=User.objects.all().order_by("dni", "first_name", "last_name"),
         label="Usuario del sistema",
         required=True,
-        empty_label="Seleccione un DNI...",
+        empty_label="---------",
         widget=forms.Select(attrs={"class": SELECT_CSS}),
         help_text="Seleccione el DNI del usuario a matricular.",
     )
     domicilio_profesional_provincia = forms.ChoiceField(
-        choices=[("", "Seleccione una provincia...")] + [(p, p) for p in PROVINCIAS_ARGENTINAS],
+        choices=[("", "---------")] + [(p, p) for p in PROVINCIAS_ARGENTINAS],
         label="Provincia profesional",
         required=False,
         widget=forms.Select(attrs={"class": SELECT_CSS}),
@@ -138,11 +139,11 @@ class MatriculadoForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         # Campos estrictamente obligatorios
         self.fields["numero_matricula"].required = True
-        self.fields["fecha_matriculacion"].required = True
-        self.fields["libro"].required = True
-        self.fields["folio"].required = True
         
         # Campos opcionales
+        self.fields["fecha_matriculacion"].required = False
+        self.fields["libro"].required = False
+        self.fields["folio"].required = False
         self.fields["especialidades"].required = False
         self.fields["domicilio_profesional_calle"].required = False
         self.fields["domicilio_profesional_numero"].required = False
@@ -191,9 +192,11 @@ class TituloForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["denominacion"].required = True
-        self.fields["tipo"].required = True
-        self.fields["emitido_por"].required = True
+        self.fields["tipo"].empty_label = "---------"
+        self.fields["emitido_por"].empty_label = "---------"
+        self.fields["denominacion"].required = False
+        self.fields["emitido_por"].required = False
+        self.fields["tipo"].required = False
         self.fields["fecha_egreso"].required = False
         self.fields["fecha_expedicion"].required = False
         self.fields["escaneo_diploma"].required = False
@@ -224,12 +227,19 @@ class HistorialEstadoMatriculaForm(forms.ModelForm):
 
     def __init__(self, matriculado=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields["estado"].empty_label = "---------"
+        self.fields["estado"].required = True
+        self.fields["fecha_desde"].required = True
+        self.fields["fecha_hasta"].required = False
+        self.fields["motivo"].required = True
+        self.fields["resolucion_acta"].required = False
+
         if matriculado:
             self.fields["origen_sancion"].queryset = AntecedenteDisciplinario.objects.filter(matriculado=matriculado)
         else:
             self.fields["origen_sancion"].queryset = AntecedenteDisciplinario.objects.all()
         self.fields["origen_sancion"].required = False
-        self.fields["origen_sancion"].empty_label = "Sin antecedente asociado (Opcional)"
+        self.fields["origen_sancion"].empty_label = "---------"
 
 
 class AntecedenteDisciplinarioForm(forms.ModelForm):
@@ -240,23 +250,30 @@ class AntecedenteDisciplinarioForm(forms.ModelForm):
         model = AntecedenteDisciplinario
         fields = [
             "numero_expediente",
-            "estado_expediente",
             "tipo_sancion",
-            "monto_multa",
-            "fecha_inicio_sancion",
-            "fecha_fin_sancion",
-            "fecha_resolucion",
             "fecha_firmeza",
+            "monto_multa",
+            "fecha_inicio_suspension",
+            "fecha_fin_suspension",
             "descripcion",
         ]
         widgets = {
             "numero_expediente": forms.TextInput(attrs={"class": INPUT_CSS, "placeholder": "Ej: EXP-2026-004"}),
-            "estado_expediente": forms.Select(attrs={"class": SELECT_CSS}),
             "tipo_sancion": forms.Select(attrs={"class": SELECT_CSS}),
-            "monto_multa": forms.NumberInput(attrs={"class": INPUT_CSS, "placeholder": "0.00", "step": "0.01"}),
-            "fecha_inicio_sancion": forms.DateInput(format="%Y-%m-%d", attrs={"class": INPUT_CSS, "type": "date"}),
-            "fecha_fin_sancion": forms.DateInput(format="%Y-%m-%d", attrs={"class": INPUT_CSS, "type": "date"}),
-            "fecha_resolucion": forms.DateInput(format="%Y-%m-%d", attrs={"class": INPUT_CSS, "type": "date"}),
             "fecha_firmeza": forms.DateInput(format="%Y-%m-%d", attrs={"class": INPUT_CSS, "type": "date"}),
+            "monto_multa": forms.NumberInput(attrs={"class": INPUT_CSS, "placeholder": "0.00", "step": "0.01"}),
+            "fecha_inicio_suspension": forms.DateInput(format="%Y-%m-%d", attrs={"class": INPUT_CSS, "type": "date"}),
+            "fecha_fin_suspension": forms.DateInput(format="%Y-%m-%d", attrs={"class": INPUT_CSS, "type": "date"}),
             "descripcion": forms.Textarea(attrs={"class": TEXTAREA_CSS, "rows": 3, "placeholder": "Detalle explicativo de los hechos..."}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["tipo_sancion"].empty_label = "---------"
+        self.fields["numero_expediente"].required = True
+        self.fields["tipo_sancion"].required = True
+        self.fields["fecha_firmeza"].required = True
+        self.fields["monto_multa"].required = False
+        self.fields["fecha_inicio_suspension"].required = False
+        self.fields["fecha_fin_suspension"].required = False
+        self.fields["descripcion"].required = False

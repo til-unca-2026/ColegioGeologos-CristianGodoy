@@ -105,10 +105,16 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             search_mat = self.request.GET.get("q_mat", "").strip()
             especialidad_filtro = self.request.GET.get("especialidad", "")
             
+            from django.db.models.functions import Cast
+            from django.db.models import IntegerField
+
             mat_qs = (
                 Matriculado.objects.select_related("usuario")
                 .prefetch_related("especialidades", "estados", "titulos")
-                .order_by("-fecha_matriculacion")
+                .annotate(
+                    num_mat_int=Cast("numero_matricula", output_field=IntegerField())
+                )
+                .order_by("-num_mat_int", "-numero_matricula")
             )
             if search_mat:
                 from django.db.models import Q
@@ -194,7 +200,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             q_doc = self.request.GET.get("q_doc", "").strip()
             vigente_filtro = self.request.GET.get("vigente_doc", "")
 
-            doc_qs = Documento.objects.select_related("creado_por").order_by("-fecha_documento", "-fecha_creacion")
+            doc_qs = Documento.objects.select_related("creado_por").order_by("-fecha_creacion")
             if cat_filtro:
                 doc_qs = doc_qs.filter(categoria=cat_filtro)
             if vigente_filtro == "si":
@@ -430,7 +436,7 @@ class AutoridadesView(ListView):
                 comision=MembresiaComision.Comision.DIRECTIVA,
                 fecha_desde__lte=hoy,
             )
-            .filter(Q(fecha_hasta__isnull=True) | Q(fecha_hasta__gte=hoy))
+            .filter(Q(fecha_hasta__isnull=True) | Q(fecha_hasta__gt=hoy))
             .select_related("usuario")
             .annotate(cargo_priority=Case(*whens, default=Value(99), output_field=IntegerField()))
             .order_by("cargo_priority", "-fecha_desde", "usuario__last_name", "usuario__first_name")
@@ -456,7 +462,7 @@ class AutoridadesView(ListView):
                 comision=MembresiaComision.Comision.REVISORA_CUENTAS,
                 fecha_desde__lte=hoy,
             )
-            .filter(Q(fecha_hasta__isnull=True) | Q(fecha_hasta__gte=hoy))
+            .filter(Q(fecha_hasta__isnull=True) | Q(fecha_hasta__gt=hoy))
             .select_related("usuario")
             .annotate(cargo_priority=Case(*whens_revisora, default=Value(99), output_field=IntegerField()))
             .order_by("cargo_priority", "-fecha_desde", "usuario__last_name", "usuario__first_name")

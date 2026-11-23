@@ -80,7 +80,7 @@
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-100 mb-6">
                     <!-- Etiquetas dinámicas del contenido -->
                     <div class="flex items-center flex-wrap gap-2 text-xs">
-                        <span class="inline-flex items-center px-2.5 py-1 rounded-md font-semibold bg-blue-50 text-blue-800 border border-blue-200/60">
+                        <span class="badge-contenido">
                             {{ novedad.get_tipo_display }}
                         </span>
                         {% if novedad.detalle_evento %}
@@ -280,20 +280,11 @@
             <h2 class="text-xl font-bold text-slate-900 mb-6">{{ titulo_relacionadas|default:"Otras publicaciones recientes" }}</h2>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
                 {% for r in relacionadas %}
-                <a href="{% url 'content:novedad_detail' r.slug %}"
-                    class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md hover:border-primary-300 transition flex flex-col justify-between group block">
-                    <div>
-                        <div class="relative h-32 bg-slate-100 overflow-hidden">
-                            {% if r.imagen_portada %}
-                            <img src="{{ r.imagen_portada.imagen.url }}" alt="{{ r.titulo }}"
+                <article class="flex flex-col justify-between group">
+                    <a href="{% url 'content:novedad_detail' r.slug %}" class="block">
+                        <div class="relative h-36 bg-slate-100 overflow-hidden mb-3">
+                            <img src="{{ r.imagen_portada_url }}" alt="{{ r.titulo }}"
                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                            {% else %}
-                            <div class="w-full h-full flex items-center justify-center bg-slate-100 text-slate-400">
-                                <svg class="w-8 h-8 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                                </svg>
-                            </div>
-                            {% endif %}
 
                             {% if r.detalle_evento and r.detalle_evento.inicio %}
                             <div class="absolute top-2 left-2 min-w-[40px] rounded border border-white/30 bg-white/95 p-1 text-center text-primary-800 shadow-sm backdrop-blur-xs">
@@ -303,9 +294,9 @@
                             {% endif %}
                         </div>
 
-                        <div class="p-4">
+                        <div>
                             <div class="flex items-center space-x-2 text-[11px] text-slate-500 mb-1.5">
-                                <span class="rounded bg-blue-50 px-1.5 py-0.5 font-semibold text-blue-800 uppercase tracking-wider text-[10px] border border-blue-200/60">{{ r.get_tipo_display }}</span>
+                                <span class="badge-contenido">{{ r.get_tipo_display }}</span>
                                 <span>•</span>
                                 <span class="text-slate-400">
                                     {% if r.detalle_evento and r.detalle_evento.inicio %}
@@ -315,18 +306,12 @@
                                     {% endif %}
                                 </span>
                             </div>
-                            <h3 class="font-bold text-slate-900 text-xs sm:text-sm line-clamp-2 mt-1 group-hover:text-primary-800 transition leading-snug">
+                            <h3 class="font-bold text-slate-900 text-xs sm:text-sm line-clamp-2 mt-1 group-hover:text-primary-800 group-hover:underline decoration-primary-700 decoration-1 underline-offset-2 transition leading-snug">
                                 {{ r.titulo }}
                             </h3>
                         </div>
-                    </div>
-
-                    <div class="px-4 pb-3 pt-2 border-t border-slate-100 flex items-center justify-end">
-                        <span class="text-[11px] font-semibold text-primary-700 transition group-hover:text-primary-800 flex items-center gap-1">
-                            Ver más <span class="transition-transform group-hover:translate-x-0.5">→</span>
-                        </span>
-                    </div>
-                </a>
+                    </a>
+                </article>
                 {% endfor %}
             </div>
         </div>

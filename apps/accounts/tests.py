@@ -3,6 +3,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core import mail
 from django.test import TestCase, override_settings
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 
@@ -355,7 +356,7 @@ class MembresiaComisionDashboardViewsTests(TestCase):
             "comision": "DIRECTIVA",
             "cargo": "TESORERO",
             "fecha_desde": "2026-01-01",
-            "fecha_hasta": "",
+            "fecha_hasta": "2028-01-01",
         }
         response = self.client.post(reverse("accounts:comision_create"), data)
         self.assertRedirects(response, f"{reverse('accounts:dashboard')}?tab=admin_comision")
@@ -373,14 +374,14 @@ class MembresiaComisionDashboardViewsTests(TestCase):
             comision="DIRECTIVA",
             cargo="SECRETARIO",
             fecha_desde=date(2025, 1, 1),
-            fecha_hasta=None,
+            fecha_hasta=date(2027, 1, 1),
         )
         self.client.force_login(self.admin)
         response = self.client.post(reverse("accounts:comision_finalizar", args=[membresia.pk]))
         self.assertRedirects(response, f"{reverse('accounts:dashboard')}?tab=admin_comision")
 
         membresia.refresh_from_db()
-        self.assertIsNotNone(membresia.fecha_hasta)
+        self.assertEqual(membresia.fecha_hasta, timezone.now().date())
         self.assertEqual(membresia.modificado_por, self.admin)
 
     def test_usuario_puede_actualizar_su_propio_perfil_desde_dashboard(self):
@@ -447,7 +448,7 @@ class AutoridadesPublicViewTests(TestCase):
             comision=MembresiaComision.Comision.DIRECTIVA,
             cargo=MembresiaComision.Cargo.PRESIDENTE,
             fecha_desde=self.hoy - datetime.timedelta(days=100),
-            fecha_hasta=None,
+            fecha_hasta=self.hoy + datetime.timedelta(days=365),
         )
         # Miembro vigente secretario
         MembresiaComision.objects.create(
@@ -479,7 +480,7 @@ class AutoridadesPublicViewTests(TestCase):
             comision=MembresiaComision.Comision.REVISORA_CUENTAS,
             cargo=MembresiaComision.Cargo.REVISOR_TITULAR_1,
             fecha_desde=self.hoy - datetime.timedelta(days=50),
-            fecha_hasta=None,
+            fecha_hasta=self.hoy + datetime.timedelta(days=365),
         )
 
     def test_autoridades_page_status_and_template(self):
@@ -505,5 +506,77 @@ class AutoridadesPublicViewTests(TestCase):
         content = response.content.decode()
         self.assertIn(reverse("accounts:autoridades"), content)
         self.assertIn("Autoridades", content)
+
+
+class CanonicalGroupsAndPermissionsTests(TestCase):
+    def test_grupos_canonicos_existen_y_configuran_permisos(self):
+        from django.apps import apps
+        from django.contrib.auth.models import Group
+        import importlib
+        migration_0011 = importlib.import_module("apps.accounts.migrations.0011_setup_groups_and_permissions")
+        # Ejecutamos la función de configuración de roles sobre los permisos ya poblados
+        migration_0011.setup_roles_and_permissions(apps, None)
+
+        grupo_admin = Group.objects.filter(name="Administradores").first()
+        grupo_colab = Group.objects.filter(name="Colaboradores").first()
+        grupo_mat = Group.objects.filter(name="Matriculados").first()
+
+        self.assertIsNotNone(grupo_admin, "El grupo Administradores debe existir")
+        self.assertIsNotNone(grupo_colab, "El grupo Colaboradores debe existir")
+        self.assertIsNotNone(grupo_mat, "El grupo Matriculados debe existir")
+
+        # Colaborador debe poder gestionar contenidos pero no usuarios ni matrículas
+        colab_perm_codenames = set(grupo_colab.permissions.values_list("codename", flat=True))
+        self.assertIn("add_contenido", colab_perm_codenames)
+        self.assertIn("view_documento", colab_perm_codenames)
+        self.assertNotIn("add_user", colab_perm_codenames)
+        self.assertNotIn("add_matriculado", colab_perm_codenames)
+
+        # Administrador debe poseer permisos de gestión integral
+        admin_perm_codenames = set(grupo_admin.permissions.values_list("codename", flat=True))
+        self.assertIn("add_user", admin_perm_codenames)
+        self.assertIn("add_matriculado", admin_perm_codenames)
+        self.assertIn("add_documento", admin_perm_codenames)
+        self.assertIn("add_membresiacomision", admin_perm_codenames)
+
+        # Matriculados no posee permisos de administración global
+        self.assertEqual(grupo_mat.permissions.count(), 0)
+
+
+class AuthenticationEdgeCasesTests(TestCase):
+    def setUp(self):
+        user_model = get_user_model()
+        self.active_user = user_model.objects.create_user(
+            username="usuario_activo",
+            password="PasswordSegura123!",
+            must_change_password=False,
+        )
+        self.inactive_user = user_model.objects.create_user(
+            username="usuario_inactivo",
+            password="PasswordSegura123!",
+            is_active=False,
+            must_change_password=False,
+        )
+
+    def test_usuario_inactivo_no_puede_iniciar_sesion(self):
+        response = self.client.post(
+            reverse("accounts:login"),
+            {"username": "usuario_inactivo", "password": "PasswordSegura123!"},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.context["user"].is_authenticated)
+        # Verifica mensaje de error de autenticación
+        form = response.context["form"]
+        self.assertTrue(form.errors)
+
+    def test_login_con_espacios_en_blanco_al_inicio_o_final(self):
+        # El formulario recorta o valida credenciales
+        response = self.client.post(
+            reverse("accounts:login"),
+            {"username": " usuario_activo ", "password": "PasswordSegura123!"},
+        )
+        self.assertRedirects(response, reverse("home"))
+
+
 
 

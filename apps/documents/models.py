@@ -31,12 +31,11 @@ class Documento(models.Model):
         blank=True,
         default="",
         verbose_name="Descripción",
-        help_text="Explicación breve de qué contiene y para qué sirve (opcional).",
+        help_text="Explicación breve de qué contiene y para qué sirve.",
     )
     categoria = models.CharField(
         max_length=20,
         choices=Categoria.choices,
-        default=Categoria.RESOLUCION,
         verbose_name="Categoría",
     )
     numero = models.CharField(
@@ -44,7 +43,7 @@ class Documento(models.Model):
         blank=True,
         default="",
         verbose_name="Número o identificación oficial",
-        help_text="Número oficial del documento, por ejemplo «Resolución 12/2024» (opcional si no aplica).",
+        help_text="Número oficial del documento, por ejemplo «Resolución 12/2024».",
     )
     fecha_documento = models.DateField(
         null=True,
@@ -62,12 +61,11 @@ class Documento(models.Model):
         storage=SupabaseStorage(),
         validators=[validate_pdf_file],
         verbose_name="Archivo almacenado",
-        help_text="Archivo PDF o Word (.docx/.doc) guardado en Supabase Storage.",
+        help_text="Archivo PDF o Word (.docx/.doc).",
     )
     visibilidad = models.CharField(
         max_length=20,
         choices=Visibilidad.choices,
-        default=Visibilidad.PUBLICO,
         verbose_name="Visibilidad",
         help_text="PUBLICO: visible por cualquier visitante. MATRICULADOS: solo matriculados. INTERNO: colaboradores y administradores.",
     )

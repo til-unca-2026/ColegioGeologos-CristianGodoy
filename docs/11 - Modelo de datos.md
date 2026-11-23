@@ -46,7 +46,7 @@ Toda persona con acceso al sistema: matriculados, colaboradores y administradore
 | cuil\_cuit | String, único | Clave única de identificación laboral o tributaria (CUIL o CUIT). (Ley 25.326) |
 | fecha\_nacimiento | Date | Fecha de nacimiento. (Ley 25.326) |
 | lugar\_nacimiento | String | Lugar de nacimiento en texto libre, por ejemplo «Localidad, Provincia, País». (Ley 25.326) |
-| nacionalidad | Country | País de nacionalidad. Por defecto Argentina («AR»). |
+| nacionalidad | Country, opcional | País de nacionalidad. Sin valor por defecto. |
 | telefono | Phone | Teléfono de contacto, guardado en formato internacional (E.164). |
 | publicar\_email | Boolean | Si es verdadero, el correo puede mostrarse públicamente. Por defecto falso. |
 | publicar\_telefono | Boolean | Si es verdadero, el teléfono puede mostrarse públicamente. Por defecto falso. |
@@ -57,7 +57,7 @@ Toda persona con acceso al sistema: matriculados, colaboradores y administradore
 | domicilio\_real\_piso\_depto | String, opcional | Domicilio donde vive la persona. (Ley 25.326) |
 | domicilio\_real\_localidad | String | Domicilio donde vive la persona. (Ley 25.326) |
 | domicilio\_real\_provincia | String | Domicilio donde vive la persona. (Ley 25.326) |
-| domicilio\_real\_pais | Country | Domicilio donde vive la persona. (Ley 25.326) |
+| domicilio\_real\_pais | Country, opcional | Domicilio donde vive la persona. Sin valor por defecto. (Ley 25.326) |
 | domicilio\_real\_cp | String | Domicilio donde vive la persona. (Ley 25.326) |
 | date\_joined | DateTime, automático | Fecha y hora en que se creó la cuenta. Lo aporta AbstractUser. |
 | fecha\_modificacion | DateTime, automático | Fecha y hora de la última modificación de la cuenta. |
@@ -70,11 +70,11 @@ Cargo que ocupa una persona en una comisión del Colegio durante un período, po
 
 | Campo | Tipo | Descripción |
 | :---- | :---- | :---- |
-| usuario | Relación → Usuario | Persona que ocupa el cargo. |
-| comision | Choice | Comisión a la que pertenece el cargo: DIRECTIVA (Comisión Directiva), REVISORA_CUENTAS (Comisión Revisora de Cuentas). |
-| cargo | Choice | Puesto dentro de la comisión. Para Comisión Directiva: PRESIDENTE (Presidente/a), VICEPRESIDENTE (Vicepresidente/a), SECRETARIO (Secretario/a), TESORERO (Tesorero/a), VOCAL_TITULAR_1 (Vocal Titular 1), VOCAL_TITULAR_2 (Vocal Titular 2), VOCAL_TITULAR_3 (Vocal Titular 3), VOCAL_SUPLENTE_1 (Vocal Suplente 1), VOCAL_SUPLENTE_2 (Vocal Suplente 2). Para Comisión Revisora de Cuentas: REVISOR_TITULAR_1 (Revisor/a de Cuentas Titular 1), REVISOR_TITULAR_2 (Revisor/a de Cuentas Titular 2), REVISOR_SUPLENTE_1 (Revisor/a de Cuentas Suplente 1), REVISOR_SUPLENTE_2 (Revisor/a de Cuentas Suplente 2). |
-| fecha\_desde | Date | Fecha en que la persona asume el cargo. |
-| fecha\_hasta | Date, opcional | Fecha en que la persona deja el cargo. |
+| usuario | Relación → Usuario | Persona que ocupa el cargo. Obligatorio. |
+| comision | Choice | Comisión a la que pertenece el cargo: DIRECTIVA (Comisión Directiva), REVISORA_CUENTAS (Comisión Revisora de Cuentas). Es obligatoria y se selecciona explícitamente sin valor por defecto. |
+| cargo | Choice | Puesto dentro de la comisión. Para Comisión Directiva: PRESIDENTE (Presidente/a), VICEPRESIDENTE (Vicepresidente/a), SECRETARIO (Secretario/a), TESORERO (Tesorero/a), VOCAL_TITULAR_1 (Vocal Titular 1), VOCAL_TITULAR_2 (Vocal Titular 2), VOCAL_TITULAR_3 (Vocal Titular 3), VOCAL_SUPLENTE_1 (Vocal Suplente 1), VOCAL_SUPLENTE_2 (Vocal Suplente 2). Para Comisión Revisora de Cuentas: REVISOR_TITULAR_1 (Revisor/a de Cuentas Titular 1), REVISOR_TITULAR_2 (Revisor/a de Cuentas Titular 2), REVISOR_SUPLENTE_1 (Revisor/a de Cuentas Suplente 1), REVISOR_SUPLENTE_2 (Revisor/a de Cuentas Suplente 2). Obligatorio sin valor por defecto. |
+| fecha\_desde | Date | Fecha en que la persona asume el cargo. Obligatoria. |
+| fecha\_hasta | Date | Fecha en que la persona finaliza su mandato. Obligatoria. |
 | fecha\_creacion | DateTime | Fecha y hora en que se creó. |
 | fecha\_modificacion | DateTime | Fecha y hora de la última modificación. |
 | creado\_por | Relación → Usuario | Quien creo. |
@@ -82,24 +82,24 @@ Cargo que ocupa una persona en una comisión del Colegio durante un período, po
 
 # **Matriculado**
 
-Registro matricular de un profesional habilitado por el Colegio. Amplía a Usuario: toda persona matriculada es primero un usuario, pero no todo usuario es matriculado (por ejemplo, un colaborador). Debe tener al menos un título y al menos un registro de estado.
+Registro matricular de un profesional habilitado por el Colegio. Amplía a Usuario: toda persona matriculada es primero un usuario, pero no todo usuario es matriculado (por ejemplo, un colaborador). Para asegurar flexibilidad y compatibilidad con registros históricos y migraciones de padrones previos, los únicos datos estrictamente obligatorios a nivel de sistema son el `usuario` vinculado y el `numero_matricula`. Debe tener al menos un registro de estado (que se inicializa automáticamente en ACTIVA al darse de alta).
 
 | Campo | Tipo | Descripción |
 | :---- | :---- | :---- |
 | usuario | Relación → Usuario, uno a uno, clave primaria | Vincula el registro matricular con la cuenta base. Es la clave primaria: una persona no puede tener dos registros matriculares. |
 | numero\_matricula | String, único | Número de matrícula asignado por el Colegio. (Público) |
-| fecha\_matriculacion | Date | Fecha formal de alta en el registro del Colegio. |
-| libro | String | Referencia física del libro institucional donde se asentó la matrícula. |
-| folio | Integer | Número de folio (página) del libro donde consta la matrícula. |
+| fecha\_matriculacion | Date, opcional | Fecha formal de alta en el registro del Colegio. |
+| libro | String, opcional | Referencia física del libro institucional donde se asentó la matrícula. |
+| folio | Integer, opcional | Número de folio (página) del libro donde consta la matrícula. |
 | especialidades | Relación muchos a muchos → Especialidad | Áreas de especialización del matriculado. Puede tener varias o ninguna. |
 | jubilado | Boolean | Indica si el matriculado está jubilado. Por defecto falso. |
-| domicilio\_profesional\_calle | String | Domicilio donde ejerce el profesional. (Público) |
-| domicilio\_profesional\_numero | String | Domicilio donde ejerce el profesional. (Público) |
+| domicilio\_profesional\_calle | String, opcional | Domicilio donde ejerce el profesional. (Público) |
+| domicilio\_profesional\_numero | String, opcional | Domicilio donde ejerce el profesional. (Público) |
 | domicilio\_profesional\_piso\_depto | String, opcional | Domicilio donde ejerce el profesional. (Público) |
-| domicilio\_profesional\_localidad | String | Domicilio donde ejerce el profesional. (Público) |
-| domicilio\_profesional\_provincia | String | Domicilio donde ejerce el profesional. (Público) |
-| domicilio\_profesional\_pais | Country | Domicilio donde ejerce el profesional. (Público) |
-| domicilio\_profesional\_cp | String | Domicilio donde ejerce el profesional. (Público) |
+| domicilio\_profesional\_localidad | String, opcional | Domicilio donde ejerce el profesional. (Público) |
+| domicilio\_profesional\_provincia | String, opcional | Domicilio donde ejerce el profesional. (Público) |
+| domicilio\_profesional\_pais | Country, opcional | Domicilio donde ejerce el profesional. (Público) |
+| domicilio\_profesional\_cp | String, opcional | Domicilio donde ejerce el profesional. (Público) |
 | fecha\_creacion | DateTime, automático | Cuándo se creó la matrícula en el sistema. |
 | fecha\_modificacion | DateTime, automático | Cuándo se modificó por última vez la matrícula. |
 | creado\_por | Relación → Usuario | Usuario que cargó la matrícula. |
@@ -107,17 +107,17 @@ Registro matricular de un profesional habilitado por el Colegio. Amplía a Usuar
 
 # **Titulo**
 
-Título universitario con el que un matriculado accede a la matrícula. Cada matriculado tiene al menos uno.
+Título universitario con el que un matriculado ejerce o acredita su formación. Su carga es opcional al momento del alta inicial (permitiendo migrar o asentar matriculaciones donde aún no se dispone del diploma o datos universitarios completos).
 
 | Campo | Tipo | Descripción |
 | :---- | :---- | :---- |
 | matriculado | Relación → Matriculado | Titular del título. |
-| denominacion | String | Nombre del título, por ejemplo «Licenciado en Geología». |
-| tipo | Choice | Nivel del título: PREGRADO, GRADO, POSGRADO. |
-| emitido\_por | Relación → Universidad | Institución que emitió el título. |
-| fecha\_egreso | Date | Fecha en que la persona terminó la carrera. |
-| fecha\_expedicion | Date | Fecha en que la universidad expidió el diploma. |
-| escaneo\_diploma | File | Copia digital del diploma. (Sensible) |
+| denominacion | String | Nombre del título, por ejemplo «Licenciado en Geología». Obligatorio al registrar un título. |
+| tipo | Choice | Nivel del título: PREGRADO, GRADO, POSGRADO. Es obligatorio y se selecciona explícitamente sin valor por defecto al registrar un título. |
+| emitido\_por | Relación → Universidad | Institución que emitió el título. Obligatoria al registrar un título. |
+| fecha\_egreso | Date, opcional | Fecha en que la persona terminó la carrera. |
+| fecha\_expedicion | Date, opcional | Fecha en que la universidad expidió el diploma. |
+| escaneo\_diploma | File, opcional | Copia digital del diploma. (Sensible) |
 | fecha\_creacion | DateTime, automático | Cuándo se cargó el título en el sistema. |
 | fecha\_modificacion | DateTime, automático | Cuándo se modificó por última vez. |
 | creado\_por | Relación → Usuario | Usuario que cargó el título. |
@@ -129,9 +129,9 @@ Catálogo de instituciones que emiten títulos. Se elige al cargar un título.
 
 | Campo | Tipo | Descripción |
 | :---- | :---- | :---- |
-| nombre | String, único | Nombre completo de la universidad. |
-| sigla | String | Sigla de la universidad, por ejemplo «UNCa». |
-| pais | Country | País de la universidad. Por defecto Argentina («AR»). |
+| nombre | String, único | Nombre completo de la universidad. Obligatorio. |
+| sigla | String, opcional | Sigla de la universidad, por ejemplo «UNCa». |
+| pais | Country, opcional | País de la universidad. Opcional, sin valor por defecto. |
 
 # **Especialidad**
 
@@ -148,13 +148,13 @@ Historial cronológico del estado de la matrícula (activa, suspendida o de baja
 
 | Campo | Tipo | Descripción |
 | :---- | :---- | :---- |
-| matriculado | Relación → Matriculado | Matriculado al que corresponde el estado. |
-| estado | Choice | Estado del ejercicio profesional: ACTIVA, SUSPENDIDA, BAJA. (Público) |
-| fecha\_desde | Date | Fecha desde la que rige el estado. |
+| matriculado | Relación → Matriculado | Matriculado al que corresponde el estado. Obligatorio. |
+| estado | Choice | Estado del ejercicio profesional: ACTIVA, SUSPENDIDA, BAJA. Obligatorio sin valor por defecto. (Público) |
+| fecha\_desde | Date | Fecha desde la que rige el estado. Obligatorio sin valor por defecto. |
 | fecha\_hasta | Date, opcional | Solo se completa en SUSPENDIDA: es la fecha en que termina la suspensión, según el antecedente disciplinario. En los demás estados queda vacía. |
-| motivo | String | Razón del cambio de estado, por ejemplo una sanción o un pedido del propio matriculado. |
-| origen\_sancion | Relación → AntecedenteDisciplinario, opcional | Antecedente que originó el cambio de estado, si lo hubo. Varias filas pueden apuntar al mismo antecedente. |
-| resolucion\_acta | String | Referencia de la resolución o del acta que dispuso el cambio. |
+| motivo | String | Razón del cambio de estado, por ejemplo una sanción o un pedido del propio matriculado. Obligatorio. |
+| origen\_sancion | Relación → AntecedenteDisciplinario, opcional | Antecedente que originó el cambio de estado, si lo hubo. Opcional, sin valor por defecto. Varias filas pueden apuntar al mismo antecedente. |
+| resolucion\_acta | String, opcional | Referencia de la resolución o del acta que dispuso el cambio. Opcional. |
 | fecha\_creacion | DateTime, automático | Cuándo se registró el estado en el sistema. |
 | fecha\_modificacion | DateTime, automático | Cuándo se modificó por última vez. |
 | creado\_por | Relación → Usuario | Usuario que registró el estado. |
@@ -162,20 +162,18 @@ Historial cronológico del estado de la matrícula (activa, suspendida o de baja
 
 # **AntecedenteDisciplinario**
 
-Expediente disciplinario de un matriculado, tramitado ante el Tribunal de Ética o Disciplina, junto con la sanción aplicada. Un matriculado puede tener varios.
+Expediente disciplinario y sanción aplicada a un matriculado por el Tribunal de Ética o Disciplina. Un matriculado puede tener varios.
 
 | Campo | Tipo | Descripción |
 | :---- | :---- | :---- |
-| matriculado | Relación → Matriculado | Matriculado al que se le abrió el expediente. |
-| numero\_expediente | String, único | Identificador único del expediente en el Tribunal de Ética o Disciplina. |
-| estado\_expediente | Choice | Etapa del trámite del expediente (por ejemplo, en trámite o resuelto). Valores por definir. |
-| descripcion | String | Detalle explicativo de los hechos, la tramitación o la sanción aplicada. |
-| tipo\_sancion | Choice | Sanción aplicada: APERCIBIMIENTO, AMONESTACION, MULTA, SUSPENSION, CANCELACION. |
-| monto\_multa | Decimal, opcional | Importe de la multa. Solo aplica cuando la sanción es MULTA. |
-| fecha\_inicio\_sancion | Date | Fecha desde la que rige la sanción. |
-| fecha\_fin\_sancion | Date, opcional | Fecha en que termina la sanción. Aplica a las que tienen duración, como la suspensión. |
-| fecha\_resolucion | Date | Fecha en que se dictó la resolución del expediente. |
-| fecha\_firmeza | Date | Fecha desde la que la resolución quedó firme, es decir, ya no puede apelarse. |
+| matriculado | Relación → Matriculado | Matriculado al que se le aplicó la sanción. Obligatorio. |
+| numero\_expediente | String, único | Identificador único del expediente en el Tribunal de Ética o Disciplina. Obligatorio. |
+| tipo\_sancion | Choice | Sanción aplicada: APERCIBIMIENTO, AMONESTACION, MULTA, SUSPENSION, CANCELACION. Obligatorio sin valor por defecto. |
+| fecha\_firmeza | Date | Fecha desde la que la resolución quedó firme y habilitada para su publicación o ejecución. Obligatorio. |
+| monto\_multa | Decimal, opcional | Importe de la multa. Habilitado cuando la sanción es MULTA. Opcional. |
+| fecha\_inicio\_suspension | Date, opcional | Fecha de inicio del período de suspensión. Habilitado cuando la sanción es SUSPENSION. Opcional. |
+| fecha\_fin\_suspension | Date, opcional | Fecha en que finaliza la suspensión. Habilitado cuando la sanción es SUSPENSION. Opcional. |
+| descripcion | String, opcional | Detalle explicativo de los hechos o la sanción aplicada. Opcional. |
 | fecha\_creacion | DateTime, automático | Cuándo se registró el antecedente en el sistema. |
 | fecha\_modificacion | DateTime, automático | Cuándo se modificó por última vez. |
 | creado\_por | Relación → Usuario | Usuario que registró el antecedente. |
@@ -227,14 +225,14 @@ Publicación del sitio: noticias, novedades, eventos, capacitaciones, etc. Los c
 
 | Campo | Tipo | Descripción |
 | :---- | :---- | :---- |
-| tipo | Choice | Clase de contenido: NOTICIA, COMUNICADO, EVENTO, CAPACITACION, BENEFICIO, CONVOCATORIA, OTRO. |
+| tipo | Choice | Clase de contenido: NOTICIA, COMUNICADO, EVENTO, CAPACITACION, BENEFICIO, CONVOCATORIA, OTRO. Es obligatorio y se selecciona explícitamente sin valor por defecto. |
 | titulo | String | Título de la publicación. |
 | slug | String, único | Versión del título apta para direcciones web: minúsculas, sin acentos ni espacios, con guiones (por ejemplo jornada-de-geologia-minera-2026). Se genera a partir del título. |
-| resumen | String | Texto breve que se muestra en listados y tarjetas. |
-| cuerpo | Text | Texto completo. Se escribe con un editor rico (negrita, títulos, listas, enlaces) y se guarda con formato, por lo que conviene limpiar el HTML al guardar. |
+| resumen | String, opcional | Texto breve que se muestra en listados y tarjetas (opcional si es afiche o flyer). |
+| cuerpo | Text, opcional | Texto completo. Se escribe con un editor rico (negrita, títulos, listas, enlaces) y se guarda con formato, por lo que conviene limpiar el HTML al guardar (opcional si la información está en el flyer). |
 | estado\_publicacion | Choice | Situación del contenido: BORRADOR (en preparación / sin fecha), PROGRAMADO (con fecha futura), PUBLICADO (con fecha actual o pasada), ARCHIVADO (dado de baja / pausado). El estado se calcula automáticamente a partir de la fecha de publicación, o se puede forzar a ARCHIVADO. |
 | fecha\_publicacion | DateTime, opcional | Fecha y hora en que se publica o programa el contenido. Vacía por defecto: contenido en borrador. Con fecha futura: queda programado. Con fecha actual o pasada: queda publicado inmediatamente. |
-| visibilidad | Choice | Quién puede verlo: PUBLICO, MATRICULADOS, INTERNO (ver Reglas generales). |
+| visibilidad | Choice | Quién puede verlo: PUBLICO, MATRICULADOS, INTERNO (ver Reglas generales). Es obligatoria y se selecciona explícitamente sin valor por defecto. |
 | fecha\_creacion | DateTime, automático | Cuándo se creó el contenido. |
 | fecha\_modificacion | DateTime, automático | Cuándo se modificó por última vez. |
 | creado\_por | Relación → Usuario, protegida | Colaborador o administrador que creó el contenido. No se puede eliminar un usuario que haya generado contenido (on\_delete: PROTECT). |
@@ -259,12 +257,12 @@ Datos adicionales de los contenidos que tratan sobre una actividad con fecha (ev
 | Campo | Tipo | Descripción |
 | :---- | :---- | :---- |
 | contenido | Relación → Contenido, uno a uno | Contenido al que pertenecen estos datos. |
-| inicio | DateTime | Fecha y hora de inicio del evento, capacitación, etc. |
+| inicio | DateTime | Fecha y hora de inicio del evento, capacitación, etc. Obligatorio. |
 | fin | DateTime, opcional | Fecha y hora de finalización del evento, capacitación, etc. |
-| lugar | String | Lugar donde se realiza la actividad (nombre o dirección). |
-| modalidad | Choice | Forma de participar: PRESENCIAL, VIRTUAL, HIBRIDA. |
-| link\_inscripcion | URL | Enlace externo donde la persona se inscribe. Las inscripciones no se gestionan dentro del sistema por ahora. |
-| cupo | Integer, opcional | Cantidad máxima de participantes. Vacío significa sin límite. Es informativo por ahora. |
+| modalidad | Choice | Forma de participar: PRESENCIAL, VIRTUAL, HIBRIDA. Es obligatoria y se selecciona explícitamente sin valor por defecto. |
+| lugar | String | Lugar físico donde se realiza o enlace de la plataforma. Obligatorio para eventos o capacitaciones. |
+| cupo | Integer, opcional | Cantidad máxima de participantes. Vacío significa sin límite. |
+| link\_inscripcion | URL, opcional | Enlace externo donde la persona se inscribe. |
 
 # **Documento**
 
@@ -274,12 +272,12 @@ Archivo institucional del Colegio, como estatutos, reglamentos y normativas. Lo 
 | :---- | :---- | :---- |
 | titulo | String | Nombre del documento. |
 | descripcion | Text, opcional | Explicación breve de qué contiene y para qué sirve (opcional). |
-| categoria | Choice | Clase de documento: LEY, ESTATUTO, REGLAMENTO, RESOLUCION, ACTA, CONVENIO, ARANCEL, MODELO, OTRO. |
+| categoria | Choice | Clase de documento: LEY, ESTATUTO, REGLAMENTO, RESOLUCION, ACTA, CONVENIO, ARANCEL, MODELO, OTRO. Es obligatoria y se selecciona explícitamente sin valor por defecto. |
 | numero | String, opcional | Número o identificación oficial del documento (por ejemplo «Resolución 12/2024», opcional si no posee). |
 | fecha\_documento | Date, opcional | Fecha del documento (sanción, firma o emisión). |
 | vigente | Boolean | Indica si el documento está en vigor. Los reemplazados se conservan marcados como no vigentes. |
-| archivo\_almacenado | File | Archivo en Supabase Storage. La base de datos solo guarda su referencia. |
-| visibilidad | Choice | Quién puede verlo: PUBLICO, MATRICULADOS, INTERNO (ver Reglas generales). |
+| archivo\_almacenado | File | Archivo digital (formatos admitidos: PDF o Word .docx/.doc) en Supabase Storage. La base de datos solo guarda su referencia. |
+| visibilidad | Choice | Quién puede verlo: PUBLICO, MATRICULADOS, INTERNO (ver Reglas generales). Es obligatoria y se selecciona explícitamente sin valor por defecto. |
 | fecha\_creacion | DateTime, automático | Cuándo se cargó el documento. |
 | fecha\_modificacion | DateTime, automático | Cuándo se modificó por última vez. |
 | creado\_por | Relación → Usuario | Administrador que subió el documento. |
@@ -324,7 +322,7 @@ class Usuario {
     +cuil_cuit: String unique
     +fecha_nacimiento: Date
     +lugar_nacimiento: String
-    +nacionalidad: Country
+    +nacionalidad: Country nullable
     +telefono: Phone
     +publicar_email: Boolean
     +publicar_telefono: Boolean
@@ -335,7 +333,7 @@ class Usuario {
     +domicilio_real_piso_depto: String nullable
     +domicilio_real_localidad: String
     +domicilio_real_provincia: String
-    +domicilio_real_pais: Country
+    +domicilio_real_pais: Country nullable
     +domicilio_real_cp: String
     +date_joined: DateTime
     +fecha_modificacion: DateTime
@@ -425,14 +423,12 @@ class HistorialEstadoMatricula {
 class AntecedenteDisciplinario {
     +matriculado: Matriculado
     +numero_expediente: String unique
-    +estado_expediente: Choice
-    +descripcion: String
     +tipo_sancion: Choice
-    +monto_multa: Decimal nullable
-    +fecha_inicio_sancion: Date
-    +fecha_fin_sancion: Date nullable
-    +fecha_resolucion: Date
     +fecha_firmeza: Date
+    +monto_multa: Decimal nullable
+    +fecha_inicio_suspension: Date nullable
+    +fecha_fin_suspension: Date nullable
+    +descripcion: String
     +fecha_creacion: DateTime
     +fecha_modificacion: DateTime
     +creado_por: Usuario
@@ -535,7 +531,7 @@ Usuario "0..*" -- "0..*" Group: groups
 Usuario "1" --> "0..*" MembresiaComision: cargos
 Usuario "1" --> "0..1" Matriculado: matricula
 
-Matriculado "1" --> "1..*" Titulo: titulos
+Matriculado "1" --> "0..*" Titulo: titulos
 Titulo "0..*" --> "1" Universidad: emitido_por
 Matriculado "0..*" -- "0..*" Especialidad: especialidades
 

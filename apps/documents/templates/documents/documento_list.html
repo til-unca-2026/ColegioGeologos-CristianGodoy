@@ -71,13 +71,13 @@
 
                 <!-- Botón Buscar -->
                 <button type="submit"
-                    class="w-full sm:w-auto px-5 py-2.5 bg-slate-800 hover:bg-slate-900 text-white text-sm font-semibold rounded-xl shadow-sm transition">
+                    class="btn-primary w-full sm:w-auto">
                     Buscar
                 </button>
 
                 {% if q or categoria_actual or vigencia_actual != 'vigentes' %}
                 <a href="{% url 'documents:documento_list' %}"
-                    class="w-full sm:w-auto text-center px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-sm font-medium transition">
+                    class="btn-secondary w-full sm:w-auto text-center">
                     Limpiar
                 </a>
                 {% endif %}
@@ -132,19 +132,27 @@
                             </span>
                             {% endif %}
 
-                            <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-50 text-purple-800 border border-purple-200">
+                            <span class="badge-documento">
                                 {{ doc.get_categoria_display }}
                             </span>
 
                             {% if not doc.vigente %}
-                            <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-rose-100 text-rose-800">
+                            <span class="badge-semaforo-rojo">
                                 No vigente
                             </span>
                             {% endif %}
 
-                            {% if doc.visibilidad == 'MATRICULADOS' %}
-                            <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800" title="Exclusivo matriculados">
-                                🔒 Matriculados
+                            {% if doc.visibilidad == 'PUBLICO' %}
+                            <span class="badge-semaforo-rojo" title="Documento de acceso público">
+                                Público
+                            </span>
+                            {% elif doc.visibilidad == 'MATRICULADOS' %}
+                            <span class="badge-semaforo-amarillo" title="Exclusivo matriculados">
+                                Matriculados
+                            </span>
+                            {% elif doc.visibilidad == 'INTERNO' %}
+                            <span class="badge-semaforo-verde" title="Uso interno institucional">
+                                Interno
                             </span>
                             {% endif %}
                         </div>

@@ -3,3 +3,67 @@
     background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
     color: #f8fafc;
 }
+
+/* Estilos para contenido enriquecido (HTML generado por Quill / wysiwyg) */
+.prose ul,
+.prose ol {
+    padding-left: 1.5rem !important;
+    margin-top: 0.75rem !important;
+    margin-bottom: 0.75rem !important;
+}
+
+.prose ul {
+    list-style-type: disc !important;
+}
+
+.prose ol {
+    list-style-type: decimal !important;
+}
+
+/* Quill 2.0 genera etiquetas <ol> con <li data-list="bullet"> o <li data-list="ordered"> */
+.prose ol > li[data-list="bullet"],
+.prose ul > li[data-list="bullet"],
+.prose li[data-list="bullet"] {
+    list-style-type: disc !important;
+}
+
+.prose ol > li[data-list="ordered"],
+.prose ul > li[data-list="ordered"],
+.prose li[data-list="ordered"] {
+    list-style-type: decimal !important;
+}
+
+.prose li {
+    margin-top: 0.25rem !important;
+    margin-bottom: 0.25rem !important;
+    padding-left: 0.25rem !important;
+    display: list-item !important;
+}
+
+.prose h1, .prose h2, .prose h3, .prose h4 {
+    color: #0f172a;
+    font-weight: 700;
+    margin-top: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.prose h1 { font-size: 1.5rem; line-height: 2rem; }
+.prose h2 { font-size: 1.25rem; line-height: 1.75rem; }
+.prose h3 { font-size: 1.125rem; line-height: 1.5rem; }
+
+.prose a {
+    color: #047857;
+    text-decoration: underline;
+    font-weight: 500;
+}
+.prose a:hover {
+    color: #065f46;
+}
+
+.prose blockquote {
+    border-left: 4px solid #cbd5e1;
+    padding-left: 1rem;
+    color: #64748b;
+    font-style: italic;
+    margin: 1rem 0;
+}

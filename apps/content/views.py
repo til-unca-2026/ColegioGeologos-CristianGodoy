@@ -219,14 +219,14 @@ class NovedadDetailView(DetailView):
                 elif ref_path.startswith(reverse("content:novedades_list")):
                     volver_url = full_ref
                     volver_texto = "Volver a Noticias"
-                # 3. Vino de Beneficios
-                elif ref_path.startswith(reverse("beneficios")):
-                    volver_url = full_ref
-                    volver_texto = "Volver a Beneficios"
-                # 4. Vino de Bolsa de Trabajo (Convocatorias)
+                # 3. Vino de Bolsa de Trabajo (Convocatorias: /beneficios/convocatorias/)
                 elif ref_path.startswith(reverse("convocatorias")):
                     volver_url = full_ref
                     volver_texto = "Volver a Bolsa de Trabajo"
+                # 4. Vino de Beneficios (/beneficios/)
+                elif ref_path.startswith(reverse("beneficios")):
+                    volver_url = full_ref
+                    volver_texto = "Volver a Beneficios"
                 # 5. Vino del Inicio
                 elif ref_path == reverse("home") or ref_path == "/":
                     volver_url = reverse("home")
@@ -328,6 +328,12 @@ class ContenidoCreateView(ContentPermissionRequiredMixin, CreateView):
         with transaction.atomic():
             contenido = form.save(commit=False)
             contenido.creado_por = self.request.user
+
+            # Si el usuario eligió publicación inmediata en el formulario, asegurar fecha actual del servidor
+            modo_pub = self.request.POST.get("modo_publicacion", "")
+            if modo_pub == "INMEDIATA":
+                contenido.fecha_publicacion = timezone.now()
+
             contenido.save()
 
             if requiere_evento:
@@ -407,6 +413,12 @@ class ContenidoUpdateView(ContentPermissionRequiredMixin, UpdateView):
         with transaction.atomic():
             contenido = form.save(commit=False)
             contenido.modificado_por = self.request.user
+
+            # Si el usuario eligió publicación inmediata en el formulario, asegurar fecha actual del servidor
+            modo_pub = self.request.POST.get("modo_publicacion", "")
+            if modo_pub == "INMEDIATA":
+                contenido.fecha_publicacion = timezone.now()
+
             contenido.save()
 
             if requiere_evento:

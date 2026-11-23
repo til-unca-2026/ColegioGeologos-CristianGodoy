@@ -33,8 +33,8 @@ class User(AbstractUser):
         verbose_name="Lugar de nacimiento",
     )
     nacionalidad = CountryField(
-        default="AR",
         blank=True,
+        null=True,
         verbose_name="Nacionalidad",
     )
 
@@ -100,8 +100,8 @@ class User(AbstractUser):
         verbose_name="Domicilio real: Provincia",
     )
     domicilio_real_pais = CountryField(
-        default="AR",
         blank=True,
+        null=True,
         verbose_name="Domicilio real: País",
     )
     domicilio_real_cp = models.CharField(
@@ -170,7 +170,6 @@ class MembresiaComision(models.Model):
     comision = models.CharField(
         max_length=20,
         choices=Comision.choices,
-        default=Comision.DIRECTIVA,
         verbose_name="Comisión",
     )
     cargo = models.CharField(
@@ -182,10 +181,7 @@ class MembresiaComision(models.Model):
         verbose_name="Fecha de asunción",
     )
     fecha_hasta = models.DateField(
-        null=True,
-        blank=True,
         verbose_name="Fecha de finalización de mandato",
-        help_text="Dejar vacío si el cargo continúa vigente.",
     )
 
     # Auditoría y fechas
@@ -229,4 +225,4 @@ class MembresiaComision(models.Model):
         hoy = timezone.now().date()
         if self.fecha_desde > hoy:
             return False
-        return self.fecha_hasta is None or self.fecha_hasta >= hoy
+        return self.fecha_hasta is None or self.fecha_hasta > hoy

@@ -20,7 +20,7 @@
 | RF-16 | El sistema deberá permitir al matriculado consultar sus propios datos personales y profesionales. |
 | RF-17 | El sistema deberá permitir al matriculado modificar su correo electrónico y teléfono. |
 | RF-18 | El sistema deberá permitir al matriculado configurar independientemente la visibilidad pública de su correo y teléfono. |
-| RF-19 | El sistema deberá permitir al administrador registrar matriculados y asociarlos obligatoriamente con una cuenta de usuario. |
+| RF-19 | El sistema deberá permitir al administrador registrar matriculados vinculándolos obligatoriamente a una cuenta de usuario y asignándoles su matrícula única (siendo opcionales el libro, folio, fechas y títulos habilitantes para facilitar migraciones y necesidades administrativas). |
 | RF-20 | El sistema deberá permitir al administrador modificar los datos profesionales de los matriculados. |
 | RF-21 | El sistema deberá permitir al administrador gestionar los estados de matrícula: activo, suspendido y dado de baja. |
 | RF-22 | El sistema deberá permitir al administrador gestionar las especialidades. |

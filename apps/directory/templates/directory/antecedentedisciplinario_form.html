@@ -34,32 +34,20 @@
                 </div>
                 {% endif %}
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label for="{{ form.numero_expediente.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                            N° Expediente <span class="text-rose-600">*</span>
-                        </label>
-                        {{ form.numero_expediente }}
-                        {% if form.numero_expediente.errors %}
-                        <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.numero_expediente.errors.0 }}</p>
-                        {% endif %}
-                    </div>
-
-                    <div>
-                        <label for="{{ form.estado_expediente.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                            Estado del Expediente <span class="text-rose-600">*</span>
-                        </label>
-                        {{ form.estado_expediente }}
-                        {% if form.estado_expediente.errors %}
-                        <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.estado_expediente.errors.0 }}</p>
-                        {% endif %}
-                    </div>
+                <div class="mb-4">
+                    <label for="{{ form.numero_expediente.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                        N° Expediente <span class="text-red-600 font-bold">(OBLIGATORIO)</span>
+                    </label>
+                    {{ form.numero_expediente }}
+                    {% if form.numero_expediente.errors %}
+                    <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.numero_expediente.errors.0 }}</p>
+                    {% endif %}
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label for="{{ form.tipo_sancion.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                            Tipo de Sanción <span class="text-rose-600">*</span>
+                            Tipo de Sanción <span class="text-red-600 font-bold">(OBLIGATORIO)</span>
                         </label>
                         {{ form.tipo_sancion }}
                         {% if form.tipo_sancion.errors %}
@@ -68,56 +56,44 @@
                     </div>
 
                     <div>
-                        <label for="{{ form.monto_multa.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                            Monto Multa (Opcional)
-                        </label>
-                        {{ form.monto_multa }}
-                        {% if form.monto_multa.errors %}
-                        <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.monto_multa.errors.0 }}</p>
-                        {% endif %}
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label for="{{ form.fecha_inicio_sancion.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                            Inicio de Sanción
-                        </label>
-                        {{ form.fecha_inicio_sancion }}
-                        {% if form.fecha_inicio_sancion.errors %}
-                        <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.fecha_inicio_sancion.errors.0 }}</p>
-                        {% endif %}
-                    </div>
-
-                    <div>
-                        <label for="{{ form.fecha_fin_sancion.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                            Fin de Sanción
-                        </label>
-                        {{ form.fecha_fin_sancion }}
-                        {% if form.fecha_fin_sancion.errors %}
-                        <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.fecha_fin_sancion.errors.0 }}</p>
-                        {% endif %}
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label for="{{ form.fecha_resolucion.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                            Fecha de Resolución
-                        </label>
-                        {{ form.fecha_resolucion }}
-                        {% if form.fecha_resolucion.errors %}
-                        <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.fecha_resolucion.errors.0 }}</p>
-                        {% endif %}
-                    </div>
-
-                    <div>
                         <label for="{{ form.fecha_firmeza.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                            Fecha de Firmeza
+                            Fecha de Firmeza <span class="text-red-600 font-bold">(OBLIGATORIO)</span>
                         </label>
                         {{ form.fecha_firmeza }}
                         {% if form.fecha_firmeza.errors %}
                         <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.fecha_firmeza.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div id="form-antecedente-monto-container">
+                    <label for="{{ form.monto_multa.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                        Monto Multa
+                    </label>
+                    {{ form.monto_multa }}
+                    {% if form.monto_multa.errors %}
+                    <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.monto_multa.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div id="form-antecedente-suspension-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="{{ form.fecha_inicio_suspension.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                            Inicio de Suspensión
+                        </label>
+                        {{ form.fecha_inicio_suspension }}
+                        {% if form.fecha_inicio_suspension.errors %}
+                        <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.fecha_inicio_suspension.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.fecha_fin_suspension.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                            Fin de Suspensión
+                        </label>
+                        {{ form.fecha_fin_suspension }}
+                        {% if form.fecha_fin_suspension.errors %}
+                        <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.fecha_fin_suspension.errors.0 }}</p>
                         {% endif %}
                     </div>
                 </div>
@@ -149,4 +125,54 @@
         </div>
     </div>
 </section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tipoSelect = document.getElementById('id_tipo_sancion');
+    const inputMonto = document.getElementById('id_monto_multa');
+    const containerMonto = document.getElementById('form-antecedente-monto-container');
+    const inputInicio = document.getElementById('id_fecha_inicio_suspension');
+    const inputFin = document.getElementById('id_fecha_fin_suspension');
+    const containerSusp = document.getElementById('form-antecedente-suspension-container');
+
+    function actualizarCondicionales() {
+        const tipo = tipoSelect ? tipoSelect.value : '';
+
+        const esMulta = (tipo === 'MULTA');
+        if (inputMonto) {
+            inputMonto.disabled = !esMulta;
+            if (!esMulta) inputMonto.value = '';
+        }
+        if (containerMonto) {
+            if (esMulta) {
+                containerMonto.classList.remove('opacity-40', 'pointer-events-none');
+            } else {
+                containerMonto.classList.add('opacity-40', 'pointer-events-none');
+            }
+        }
+
+        const esSuspension = (tipo === 'SUSPENSION');
+        if (inputInicio) {
+            inputInicio.disabled = !esSuspension;
+            if (!esSuspension) inputInicio.value = '';
+        }
+        if (inputFin) {
+            inputFin.disabled = !esSuspension;
+            if (!esSuspension) inputFin.value = '';
+        }
+        if (containerSusp) {
+            if (esSuspension) {
+                containerSusp.classList.remove('opacity-40', 'pointer-events-none');
+            } else {
+                containerSusp.classList.add('opacity-40', 'pointer-events-none');
+            }
+        }
+    }
+
+    if (tipoSelect) {
+        tipoSelect.addEventListener('change', actualizarCondicionales);
+        actualizarCondicionales();
+    }
+});
+</script>
 {% endblock %}

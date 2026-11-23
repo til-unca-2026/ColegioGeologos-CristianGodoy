@@ -8,6 +8,14 @@ TEXTAREA_CSS = "w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm fo
 
 
 class DocumentoForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Asegurar opción en blanco inicial para requerir selección explícita
+        self.fields["categoria"].empty_label = "---------"
+        self.fields["visibilidad"].empty_label = "---------"
+        self.fields["categoria"].required = True
+        self.fields["visibilidad"].required = True
+
     class Meta:
         model = Documento
         fields = [
@@ -27,7 +35,7 @@ class DocumentoForm(forms.ModelForm):
             }),
             "numero": forms.TextInput(attrs={
                 "class": INPUT_CSS,
-                "placeholder": "Ej: Ley Prov. N° 4118 / Res. N° 05/2024 (opcional)",
+                "placeholder": "Ej: Ley Prov. N° 4118 / Res. N° 05/2024",
             }),
             "categoria": forms.Select(attrs={"class": SELECT_CSS}),
             "fecha_documento": forms.DateInput(
@@ -39,7 +47,7 @@ class DocumentoForm(forms.ModelForm):
             "descripcion": forms.Textarea(attrs={
                 "class": TEXTAREA_CSS,
                 "rows": 3,
-                "placeholder": "Explicación breve de qué contiene y para qué sirve este documento (opcional)...",
+                "placeholder": "Explicación breve de qué contiene y para qué sirve este documento...",
             }),
             "archivo_almacenado": forms.ClearableFileInput(attrs={
                 "class": "block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer border border-slate-300 rounded-lg p-1",

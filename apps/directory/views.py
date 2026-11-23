@@ -68,31 +68,57 @@ class MatriculadoCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateV
         form = self.get_form()
         titulo_form = TituloForm(request.POST, request.FILES, prefix="titulo")
 
-        if form.is_valid() and titulo_form.is_valid():
-            return self.form_valid(form, titulo_form)
+        # El título es opcional. Si se cargó denominación o universidad, se valida; si vino vacío, es válido no guardar título.
+        tiene_datos_titulo = any([
+            request.POST.get("titulo-denominacion"),
+            request.POST.get("titulo-emitido_por"),
+            request.POST.get("titulo-fecha_egreso"),
+            request.POST.get("titulo-fecha_expedicion"),
+            request.FILES.get("titulo-escaneo_diploma"),
+        ])
+
+        if tiene_datos_titulo:
+            # Si se intentó cargar título, requerimos denominación, universidad emisora y nivel/tipo
+            if not request.POST.get("titulo-denominacion"):
+                titulo_form.add_error("denominacion", "Si carga un título, debe especificar la denominación.")
+            if not request.POST.get("titulo-emitido_por"):
+                titulo_form.add_error("emitido_por", "Si carga un título, debe indicar la universidad emisora.")
+            if not request.POST.get("titulo-tipo"):
+                titulo_form.add_error("tipo", "Si carga un título, debe indicar el nivel.")
+
+        titulo_valido = not tiene_datos_titulo or titulo_form.is_valid()
+
+        if form.is_valid() and titulo_valido:
+            return self.form_valid(form, titulo_form if tiene_datos_titulo else None)
         else:
             return self.form_invalid(form, titulo_form)
 
-    def form_valid(self, form, titulo_form):
+    def form_valid(self, form, titulo_form=None):
         with transaction.atomic():
             matriculado = form.save(commit=False)
             matriculado.creado_por = self.request.user
             matriculado.save()
             form.save_m2m()
 
-            # Guardar el título universitario vinculado al nuevo matriculado
-            titulo = titulo_form.save(commit=False)
-            titulo.matriculado = matriculado
-            titulo.creado_por = self.request.user
-            titulo.save()
+            # Guardar el título universitario vinculado al nuevo matriculado si fue provisto
+            titulo = None
+            if titulo_form:
+                titulo = titulo_form.save(commit=False)
+                titulo.matriculado = matriculado
+                titulo.creado_por = self.request.user
+                titulo.save()
 
             # Generar estado inicial ACTIVA automáticamente
+            from django.utils import timezone
+            fecha_inicio = matriculado.fecha_matriculacion or timezone.localdate()
+            folio_txt = matriculado.folio if matriculado.folio is not None else '-'
+            libro_txt = matriculado.libro or '-'
             HistorialEstadoMatricula.objects.create(
                 matriculado=matriculado,
                 estado=HistorialEstadoMatricula.Estado.ACTIVA,
-                fecha_desde=matriculado.fecha_matriculacion,
+                fecha_desde=fecha_inicio,
                 motivo="Alta inicial en el padrón de matriculados",
-                resolucion_acta=f"Libro {matriculado.libro} Folio {matriculado.folio}",
+                resolucion_acta=f"Libro {libro_txt} Folio {folio_txt}",
                 creado_por=self.request.user,
             )
 
@@ -102,10 +128,11 @@ class MatriculadoCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateV
             if grupo_matriculados:
                 matriculado.usuario.groups.add(grupo_matriculados)
 
-        messages.success(
-            self.request,
-            f"Matrícula N° {matriculado.numero_matricula} y título '{titulo.denominacion}' registrados exitosamente.",
-        )
+        if titulo:
+            msg = f"Matrícula N° {matriculado.numero_matricula} y título '{titulo.denominacion}' registrados exitosamente."
+        else:
+            msg = f"Matrícula N° {matriculado.numero_matricula} registrada exitosamente."
+        messages.success(self.request, msg)
         self.object = matriculado
         return redirect(self.get_success_url())
 
@@ -161,7 +188,7 @@ class MatriculadoDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailV
         matriculado = self.object
         context["titulos"] = matriculado.titulos.select_related("emitido_por").all()
         context["estados"] = matriculado.estados.select_related("origen_sancion").order_by("-fecha_desde", "-fecha_creacion")
-        context["antecedentes"] = matriculado.antecedentes.all().order_by("-fecha_resolucion")
+        context["antecedentes"] = matriculado.antecedentes.all().order_by("-fecha_firmeza")
         context["titulo_form"] = TituloForm()
         context["estado_form"] = HistorialEstadoMatriculaForm(matriculado=matriculado)
         context["antecedente_form"] = AntecedenteDisciplinarioForm()
@@ -177,6 +204,13 @@ class TituloCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Titulo
     form_class = TituloForm
     template_name = "directory/titulo_form.html"
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.fields["denominacion"].required = True
+        form.fields["tipo"].required = True
+        form.fields["emitido_por"].required = True
+        return form
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -210,6 +244,13 @@ class TituloUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Titulo
     form_class = TituloForm
     template_name = "directory/titulo_form.html"
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.fields["denominacion"].required = True
+        form.fields["tipo"].required = True
+        form.fields["emitido_por"].required = True
+        return form
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -537,10 +578,17 @@ class DirectorioPublicListView(ListView):
     paginate_by = 12
 
     def get_queryset(self):
+        from django.db.models.functions import Cast
+        from django.db.models import IntegerField
+
         qs = (
             Matriculado.objects.select_related("usuario")
             .prefetch_related("especialidades", "titulos__emitido_por", "estados")
-            .order_by("usuario__last_name", "usuario__first_name")
+            .annotate(
+                # Si el número de matrícula es numérico lo ordena como entero, si no mantiene el orden texto descendente
+                num_mat_int=Cast("numero_matricula", output_field=IntegerField())
+            )
+            .order_by("-num_mat_int", "-numero_matricula")
         )
 
         query = self.request.GET.get("q", "").strip()

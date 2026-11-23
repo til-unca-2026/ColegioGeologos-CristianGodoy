@@ -36,7 +36,7 @@
 
                 <div>
                     <label for="{{ form.denominacion.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                        Denominación del Título <span class="text-rose-600">*</span>
+                        Denominación del Título <span class="text-red-600 font-bold">(OBLIGATORIO)</span>
                     </label>
                     {{ form.denominacion }}
                     {% if form.denominacion.errors %}
@@ -47,7 +47,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label for="{{ form.tipo.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                            Nivel / Tipo de Título <span class="text-rose-600">*</span>
+                            Nivel / Tipo de Título <span class="text-red-600 font-bold">(OBLIGATORIO)</span>
                         </label>
                         {{ form.tipo }}
                         {% if form.tipo.errors %}
@@ -57,7 +57,7 @@
 
                     <div>
                         <label for="{{ form.emitido_por.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                            Universidad Emisora <span class="text-rose-600">*</span>
+                            Universidad Emisora <span class="text-red-600 font-bold">(OBLIGATORIO)</span>
                         </label>
                         {{ form.emitido_por }}
                         {% if form.emitido_por.errors %}

@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.shortcuts import render
 from django.utils import timezone
 from django.views.generic import TemplateView
@@ -106,12 +107,12 @@ class ServiciosProfesionalesView(TemplateView):
         return context
 
 
-class ConveniosView(TemplateView):
+class BeneficiosMatriculadosView(TemplateView):
     """
     Vista dedicada para Beneficios para matriculados (RF-06).
     Muestra publicaciones vigentes de acuerdos comerciales, descuentos y beneficios.
     """
-    template_name = "convenios.html"
+    template_name = "beneficios.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -136,8 +137,25 @@ class ConveniosView(TemplateView):
                     visibilidad__in=[Contenido.Visibilidad.PUBLICO, Contenido.Visibilidad.MATRICULADOS]
                 )
 
-        context["convenios"] = base_qs.order_by("-fecha_publicacion")
+        q = self.request.GET.get("q", "").strip()
+        if q:
+            base_qs = base_qs.filter(
+                Q(titulo__icontains=q) | Q(resumen__icontains=q) | Q(cuerpo__icontains=q)
+            )
+
+        beneficios_list = base_qs.order_by("-fecha_publicacion")
+        context["beneficios"] = beneficios_list
+        context["convenios"] = beneficios_list
+        context["q"] = q
+        context["total_beneficios"] = beneficios_list.count()
         return context
+
+
+class ConveniosView(BeneficiosMatriculadosView):
+    """
+    Alias retrocompatible por si algún enlace o vista aún referencia ConveniosView.
+    """
+    pass
 
 
 class ConvocatoriasLaboralesView(TemplateView):
@@ -169,19 +187,20 @@ class ConvocatoriasLaboralesView(TemplateView):
                     visibilidad__in=[Contenido.Visibilidad.PUBLICO, Contenido.Visibilidad.MATRICULADOS]
                 )
 
-        context["convocatorias"] = base_qs.order_by("-fecha_publicacion")
+        q = self.request.GET.get("q", "").strip()
+        if q:
+            base_qs = base_qs.filter(
+                Q(titulo__icontains=q) | Q(resumen__icontains=q) | Q(cuerpo__icontains=q)
+            )
+
+        convocatorias_list = base_qs.order_by("-fecha_publicacion")
+        context["convocatorias"] = convocatorias_list
+        context["q"] = q
+        context["total_convocatorias"] = convocatorias_list.count()
         return context
 
 
-class BeneficiosMatriculadosView(TemplateView):
-    """
-    Vista retrocompatible para /beneficios/, redirige o renderiza convenios por defecto.
-    """
-    template_name = "convenios.html"
 
-    def get(self, request, *args, **kwargs):
-        from django.shortcuts import redirect
-        return redirect("convenios")
 
 
 

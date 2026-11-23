@@ -17,8 +17,8 @@ class Universidad(models.Model):
         verbose_name="Sigla",
     )
     pais = CountryField(
-        default="AR",
         blank=True,
+        null=True,
         verbose_name="País",
     )
 
@@ -70,13 +70,19 @@ class Matriculado(models.Model):
         verbose_name="Número de matrícula",
     )
     fecha_matriculacion = models.DateField(
+        null=True,
+        blank=True,
         verbose_name="Fecha de matriculación",
     )
     libro = models.CharField(
         max_length=50,
+        blank=True,
+        default="",
         verbose_name="Libro",
     )
     folio = models.PositiveIntegerField(
+        null=True,
+        blank=True,
         verbose_name="Folio",
     )
     especialidades = models.ManyToManyField(
@@ -122,8 +128,8 @@ class Matriculado(models.Model):
         verbose_name="Domicilio profesional: Provincia",
     )
     domicilio_profesional_pais = CountryField(
-        default="AR",
         blank=True,
+        null=True,
         verbose_name="Domicilio profesional: País",
     )
     domicilio_profesional_cp = models.CharField(
@@ -220,7 +226,6 @@ class Titulo(models.Model):
     tipo = models.CharField(
         max_length=20,
         choices=TipoTitulo.choices,
-        default=TipoTitulo.GRADO,
         verbose_name="Tipo de título",
     )
     emitido_por = models.ForeignKey(
@@ -230,9 +235,13 @@ class Titulo(models.Model):
         verbose_name="Universidad emisora",
     )
     fecha_egreso = models.DateField(
+        null=True,
+        blank=True,
         verbose_name="Fecha de egreso",
     )
     fecha_expedicion = models.DateField(
+        null=True,
+        blank=True,
         verbose_name="Fecha de expedición del diploma",
     )
     escaneo_diploma = models.FileField(
@@ -280,11 +289,6 @@ class Titulo(models.Model):
 
 
 class AntecedenteDisciplinario(models.Model):
-    class EstadoExpediente(models.TextChoices):
-        EN_TRAMITE = "EN_TRAMITE", "En trámite"
-        RESUELTO = "RESUELTO", "Resuelto"
-        ARCHIVADO = "ARCHIVADO", "Archivado"
-
     class TipoSancion(models.TextChoices):
         APERCIBIMIENTO = "APERCIBIMIENTO", "Apercibimiento"
         AMONESTACION = "AMONESTACION", "Amonestación"
@@ -303,13 +307,9 @@ class AntecedenteDisciplinario(models.Model):
         unique=True,
         verbose_name="Número de expediente",
     )
-    estado_expediente = models.CharField(
-        max_length=30,
-        choices=EstadoExpediente.choices,
-        default=EstadoExpediente.EN_TRAMITE,
-        verbose_name="Estado del expediente",
-    )
     descripcion = models.TextField(
+        blank=True,
+        default="",
         verbose_name="Descripción de los hechos o tramitación",
     )
     tipo_sancion = models.CharField(
@@ -324,19 +324,18 @@ class AntecedenteDisciplinario(models.Model):
         blank=True,
         verbose_name="Monto de la multa",
     )
-    fecha_inicio_sancion = models.DateField(
-        verbose_name="Fecha de inicio de sanción",
-    )
-    fecha_fin_sancion = models.DateField(
-        null=True,
-        blank=True,
-        verbose_name="Fecha de fin de sanción",
-    )
-    fecha_resolucion = models.DateField(
-        verbose_name="Fecha de resolución",
-    )
     fecha_firmeza = models.DateField(
         verbose_name="Fecha de firmeza",
+    )
+    fecha_inicio_suspension = models.DateField(
+        null=True,
+        blank=True,
+        verbose_name="Fecha de inicio de suspensión",
+    )
+    fecha_fin_suspension = models.DateField(
+        null=True,
+        blank=True,
+        verbose_name="Fecha de fin de suspensión",
     )
 
     # Auditoría
@@ -369,7 +368,7 @@ class AntecedenteDisciplinario(models.Model):
         db_table = "antecedentes_disciplinarios"
         verbose_name = "Antecedente Disciplinario"
         verbose_name_plural = "Antecedentes Disciplinarios"
-        ordering = ["-fecha_resolucion"]
+        ordering = ["-fecha_firmeza"]
 
     def __str__(self):
         return f"Exp. {self.numero_expediente} ({self.get_tipo_sancion_display()}) - {self.matriculado}"
@@ -390,7 +389,6 @@ class HistorialEstadoMatricula(models.Model):
     estado = models.CharField(
         max_length=20,
         choices=Estado.choices,
-        default=Estado.ACTIVA,
         verbose_name="Estado",
     )
     fecha_desde = models.DateField(
@@ -416,6 +414,8 @@ class HistorialEstadoMatricula(models.Model):
     )
     resolucion_acta = models.CharField(
         max_length=150,
+        blank=True,
+        default="",
         verbose_name="Resolución o acta",
     )
 

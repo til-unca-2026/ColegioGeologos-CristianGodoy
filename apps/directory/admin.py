@@ -55,13 +55,11 @@ class AntecedenteDisciplinarioInline(admin.StackedInline):
     extra = 0
     fields = (
         'numero_expediente',
-        'estado_expediente',
         'tipo_sancion',
-        'monto_multa',
-        'fecha_inicio_sancion',
-        'fecha_fin_sancion',
-        'fecha_resolucion',
         'fecha_firmeza',
+        'monto_multa',
+        'fecha_inicio_suspension',
+        'fecha_fin_suspension',
         'descripcion',
     )
 
@@ -187,11 +185,11 @@ class AntecedenteDisciplinarioAdmin(admin.ModelAdmin):
         'numero_expediente',
         'matriculado',
         'tipo_sancion',
-        'estado_expediente',
-        'fecha_resolucion',
         'fecha_firmeza',
+        'fecha_inicio_suspension',
+        'fecha_fin_suspension',
     )
-    list_filter = ('estado_expediente', 'tipo_sancion', 'fecha_resolucion')
+    list_filter = ('tipo_sancion', 'fecha_firmeza')
     search_fields = (
         'numero_expediente',
         'matriculado__numero_matricula',

@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.templatetags.static import static
 from django.utils.text import slugify
 from django.utils import timezone
 from core.storage import SupabaseStorage
@@ -30,7 +31,6 @@ class Contenido(models.Model):
     tipo = models.CharField(
         max_length=20,
         choices=Tipo.choices,
-        default=Tipo.NOTICIA,
         verbose_name="Tipo de contenido",
     )
     titulo = models.CharField(
@@ -71,7 +71,6 @@ class Contenido(models.Model):
     visibilidad = models.CharField(
         max_length=20,
         choices=Visibilidad.choices,
-        default=Visibilidad.PUBLICO,
         verbose_name="Visibilidad",
     )
 
@@ -115,6 +114,10 @@ class Contenido(models.Model):
         - fecha_publicacion vacía -> BORRADOR.
         - fecha_publicacion futura -> PROGRAMADO.
         - fecha_publicacion actual o pasada -> PUBLICADO.
+
+        Se incluye un margen de tolerancia (ej. 2 minutos) para evitar que una
+        publicación instantánea quede como PROGRAMADO debido a diferencias de
+        segundos o desincronización de reloj entre el navegador y el servidor.
         """
         if self.estado_publicacion == self.EstadoPublicacion.ARCHIVADO:
             return self.EstadoPublicacion.ARCHIVADO
@@ -122,7 +125,8 @@ class Contenido(models.Model):
         if not self.fecha_publicacion:
             return self.EstadoPublicacion.BORRADOR
 
-        if self.fecha_publicacion > timezone.now():
+        # Margen de 2 minutos para compensar desfases de reloj y latencia
+        if self.fecha_publicacion > (timezone.now() + timezone.timedelta(minutes=2)):
             return self.EstadoPublicacion.PROGRAMADO
 
         return self.EstadoPublicacion.PUBLICADO
@@ -160,6 +164,17 @@ class Contenido(models.Model):
         if not portada:
             portada = self.imagenes.order_by("orden", "id").first()
         return portada
+
+    @property
+    def imagen_portada_url(self):
+        """
+        Retorna la URL de la imagen de portada o la imagen institucional por defecto
+        si la publicación no cuenta con imágenes propias.
+        """
+        portada = self.imagen_portada
+        if portada and portada.imagen:
+            return portada.imagen.url
+        return static("img/contenido/portada_contenido_defecto.jpg")
 
 
 class ImagenContenido(models.Model):
@@ -238,7 +253,6 @@ class DetalleEvento(models.Model):
     modalidad = models.CharField(
         max_length=20,
         choices=Modalidad.choices,
-        default=Modalidad.PRESENCIAL,
         verbose_name="Modalidad",
     )
     link_inscripcion = models.URLField(

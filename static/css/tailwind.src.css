@@ -4,60 +4,82 @@
 
 @layer components {
   /* ==========================================================================
-     BOTONES ESTÁNDAR DEL SISTEMA
+     BOTONES ESTÁNDAR DEL SISTEMA (Consistencia total en forma, fuente y acción)
      ========================================================================== */
 
-  /* Botón Principal (Guardar, Crear, Enviar, Confirmar) */
+  /* Clase base común para TODOS los botones del proyecto */
+  .btn-base {
+    @apply inline-flex items-center justify-center font-medium rounded-btn
+           transition-all duration-150 ease-in-out cursor-pointer select-none
+           focus:outline-none focus:ring-2 focus:ring-offset-2
+           disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98];
+  }
+
+  /* 1. Botón Principal (Guardar, Confirmar, Crear, Enviar) */
   .btn-primary {
-    @apply inline-flex items-center justify-center px-6 py-2.5 
-           rounded-btn text-sm font-semibold text-white 
-           bg-primary-700 hover:bg-primary-800 
-           shadow-sm transition-all duration-150 ease-in-out
-           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2
-           disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply btn-base px-5 py-2.5 text-sm font-semibold text-white
+           bg-primary hover:bg-primary-hover shadow-sm
+           focus:ring-primary;
   }
 
-  /* Botón Principal Pequeño / Compacto */
+  /* Botón Principal Pequeño / Compacto (Tablas, barras de acción) */
   .btn-primary-sm {
-    @apply inline-flex items-center justify-center px-3.5 py-1.5 
-           rounded-btn text-xs font-semibold text-white 
-           bg-primary-700 hover:bg-primary-800 
-           shadow-sm transition-all duration-150 ease-in-out
-           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1;
+    @apply btn-base px-3.5 py-1.5 text-xs font-semibold text-white
+           bg-primary hover:bg-primary-hover shadow-sm
+           focus:ring-primary;
   }
 
-  /* Botón Secundario (Cancelar, Volver, Acciones secundarias) */
+  /* 2. Botón Secundario (Cancelar, Volver, Acciones de apoyo) */
   .btn-secondary {
-    @apply inline-flex items-center justify-center px-5 py-2.5 
-           rounded-btn text-sm font-semibold text-slate-700 
-           bg-white hover:bg-slate-50 border border-slate-300 
-           shadow-sm transition-all duration-150 ease-in-out
-           focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2;
+    @apply btn-base px-5 py-2.5 text-sm font-semibold text-secondary-hover
+           bg-white hover:bg-secondary-light border border-secondary-border shadow-sm
+           focus:ring-secondary;
   }
 
   /* Botón Secundario Pequeño */
   .btn-secondary-sm {
-    @apply inline-flex items-center justify-center px-3.5 py-1.5 
-           rounded-btn text-xs font-semibold text-slate-700 
-           bg-white hover:bg-slate-50 border border-slate-300 
-           shadow-sm transition-all duration-150 ease-in-out;
+    @apply btn-base px-3.5 py-1.5 text-xs font-semibold text-secondary-hover
+           bg-white hover:bg-secondary-light border border-secondary-border shadow-sm
+           focus:ring-secondary;
   }
 
-  /* Botón de Peligro (Eliminar, Dar de baja) */
+  /* 3. Botón Terciario (Llamadas a la acción alternativa, Acentos) */
+  .btn-tertiary {
+    @apply btn-base px-5 py-2.5 text-sm font-semibold text-white
+           bg-tertiary hover:bg-tertiary-hover shadow-sm
+           focus:ring-tertiary;
+  }
+
+  .btn-tertiary-sm {
+    @apply btn-base px-3.5 py-1.5 text-xs font-semibold text-white
+           bg-tertiary hover:bg-tertiary-hover shadow-sm
+           focus:ring-tertiary;
+  }
+
+  /* 4. Botón de Peligro / Semáforo Rojo (Eliminar, Dar de baja, Finalizar) */
   .btn-danger {
-    @apply inline-flex items-center justify-center px-5 py-2.5 
-           rounded-btn text-sm font-semibold text-white 
-           bg-red-600 hover:bg-red-700 
-           shadow-sm transition-all duration-150 ease-in-out
-           focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2;
+    @apply btn-base px-5 py-2.5 text-sm font-semibold text-white
+           bg-badge-semaforo-red-dot hover:bg-badge-semaforo-red-text shadow-sm
+           focus:ring-badge-semaforo-red-dot;
   }
 
-  /* Botón Outline / Borde Primario */
+  .btn-danger-sm {
+    @apply btn-base px-3.5 py-1.5 text-xs font-semibold text-white
+           bg-badge-semaforo-red-dot hover:bg-badge-semaforo-red-text shadow-sm
+           focus:ring-badge-semaforo-red-dot;
+  }
+
+  /* 5. Botón Outline / Sutil */
   .btn-outline {
-    @apply inline-flex items-center justify-center px-4 py-2 
-           rounded-btn text-sm font-semibold text-primary-700 
-           border border-primary-700 hover:bg-primary-50 
-           transition-all duration-150 ease-in-out;
+    @apply btn-base px-4 py-2 text-sm font-semibold text-primary
+           border border-primary hover:bg-primary-light/40
+           focus:ring-primary;
+  }
+
+  .btn-outline-sm {
+    @apply btn-base px-3 py-1 text-xs font-semibold text-primary
+           border border-primary hover:bg-primary-light/40
+           focus:ring-primary;
   }
 
   /* ==========================================================================
@@ -68,18 +90,80 @@
   }
 
   /* ==========================================================================
-     INSIGNIAS / BADGES
+     INSIGNIAS / ETIQUETAS (BADGES INDEPENDIENTES)
      ========================================================================== */
-  .badge-primary {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-badge text-xs font-semibold bg-primary-100 text-primary-800;
+
+  /* Base compartida de toda etiqueta para garantizar misma forma, tipografía y tamaño */
+  .badge-base {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-badge text-xs font-semibold tracking-wide transition-colors;
   }
 
-  .badge-secondary {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-badge text-xs font-semibold bg-slate-100 text-slate-700;
+  /* --- 1. ETIQUETAS SEMÁFORO --- */
+  .badge-semaforo-verde {
+    @apply badge-base bg-badge-semaforo-green-bg text-badge-semaforo-green-text border border-badge-semaforo-green-border;
+  }
+  .badge-semaforo-verde::before {
+    content: "";
+    @apply inline-block w-1.5 h-1.5 rounded-full mr-1.5 shrink-0 bg-badge-semaforo-green-dot;
   }
 
-  .badge-accent {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-badge text-xs font-semibold bg-amber-100 text-amber-800;
+  .badge-semaforo-amarillo {
+    @apply badge-base bg-badge-semaforo-yellow-bg text-badge-semaforo-yellow-text border border-badge-semaforo-yellow-border;
+  }
+  .badge-semaforo-amarillo::before {
+    content: "";
+    @apply inline-block w-1.5 h-1.5 rounded-full mr-1.5 shrink-0 bg-badge-semaforo-yellow-dot;
+  }
+
+  .badge-semaforo-rojo {
+    @apply badge-base bg-badge-semaforo-red-bg text-badge-semaforo-red-text border border-badge-semaforo-red-border;
+  }
+  .badge-semaforo-rojo::before {
+    content: "";
+    @apply inline-block w-1.5 h-1.5 rounded-full mr-1.5 shrink-0 bg-badge-semaforo-red-dot;
+  }
+
+  /* --- 2. ETIQUETAS ESTÁNDAR / INFORMATIVAS (Azul: Documentos, Contenidos, Títulos y Comisiones) --- */
+  .badge-info,
+  .badge-documento,
+  .badge-contenido {
+    @apply badge-base bg-badge-info-bg text-badge-info-text border border-badge-info-border text-[11px];
+  }
+
+  /* ==========================================================================
+     TIPOGRAFÍA Y ENCABEZADOS ESTÁNDAR
+     ========================================================================== */
+  .heading-1 {
+    @apply text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 font-heading;
+  }
+
+  .heading-2 {
+    @apply text-xl sm:text-2xl font-bold tracking-tight text-slate-900 font-heading;
+  }
+
+  .heading-3 {
+    @apply text-base sm:text-lg font-bold text-slate-900 font-heading;
+  }
+
+  /* Subtítulos o bajadas explicativas */
+  .subheading {
+    @apply text-xs sm:text-sm text-slate-500 font-normal leading-relaxed;
+  }
+
+  /* ==========================================================================
+     TARJETAS Y PANELES ESTÁNDAR
+     ========================================================================== */
+  .card-panel {
+    @apply bg-surface-card rounded-card border border-surface-border p-5 sm:p-6 shadow-card;
+  }
+
+  /* ==========================================================================
+     CONTROLES DE ENTRADA / FORMULARIOS
+     ========================================================================== */
+  .input-base {
+    @apply w-full px-3.5 py-2 text-sm rounded-btn border border-surface-border bg-white text-slate-800
+           transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary
+           disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed;
   }
 }
 
