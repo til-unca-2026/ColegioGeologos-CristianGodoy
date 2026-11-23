@@ -55,18 +55,15 @@
                 <!-- Estado del Profesional -->
                 <div class="self-start sm:self-center">
                     {% if estado_actual.estado == 'ACTIVA' %}
-                    <span class="inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-bold bg-primary-100 text-primary-800 border border-primary-200">
-                        <span class="w-2 h-2 rounded-full bg-primary-500 mr-2"></span>
+                    <span class="badge-semaforo-verde">
                         Habilitado para el ejercicio profesional
                     </span>
                     {% elif estado_actual.estado == 'SUSPENDIDA' %}
-                    <span class="inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200">
-                        <span class="w-2 h-2 rounded-full bg-amber-500 mr-2"></span>
+                    <span class="badge-semaforo-amarillo">
                         Matrícula Suspendida
                     </span>
                     {% else %}
-                    <span class="inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800 border border-rose-200">
-                        <span class="w-2 h-2 rounded-full bg-rose-500 mr-2"></span>
+                    <span class="badge-semaforo-rojo">
                         Matrícula en Baja
                     </span>
                     {% endif %}
@@ -106,12 +103,12 @@
                             <div>
                                 <div class="flex items-center space-x-2">
                                     <h4 class="font-bold text-slate-900 text-sm">{{ tit.denominacion }}</h4>
-                                    <span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-100 text-slate-700">
+                                    <span class="badge-documento">
                                         {{ tit.get_tipo_display }}
                                     </span>
                                 </div>
                                 <p class="text-xs text-slate-600 mt-1">
-                                    Institución: <strong class="text-slate-800">{{ tit.emitido_por.nombre }}</strong> ({{ tit.emitido_por.sigla|default:tit.emitido_por.pais.name }})
+                                    Institución: <strong class="text-slate-800">{{ tit.emitido_por.nombre }}</strong>{% if tit.emitido_por.sigla %} ({{ tit.emitido_por.sigla }}){% elif tit.emitido_por.pais %} ({{ tit.emitido_por.pais.name }}){% endif %}
                                 </p>
                             </div>
                             <div class="text-xs text-slate-400 sm:text-right">

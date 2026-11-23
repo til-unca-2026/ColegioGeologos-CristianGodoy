@@ -76,7 +76,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label for="{{ form.tipo.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
-                                Tipo de contenido *
+                                Tipo de contenido <span class="text-red-600 font-bold">(OBLIGATORIO)</span>
                             </label>
                             {{ form.tipo }}
                             {% if form.tipo.errors %}
@@ -86,7 +86,7 @@
 
                         <div>
                             <label for="{{ form.visibilidad.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
-                                Visibilidad *
+                                Visibilidad <span class="text-red-600 font-bold">(OBLIGATORIO)</span>
                             </label>
                             {{ form.visibilidad }}
                             {% if form.visibilidad.errors %}
@@ -98,7 +98,7 @@
                     <!-- Título -->
                     <div>
                         <label for="{{ form.titulo.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
-                            Título *
+                            Título <span class="text-red-600 font-bold">(OBLIGATORIO)</span>
                         </label>
                         {{ form.titulo }}
                         {% if form.titulo.errors %}
@@ -109,7 +109,7 @@
                     <!-- Resumen -->
                     <div>
                         <label for="{{ form.resumen.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
-                            Resumen / Bajada <span class="text-slate-400 font-normal">(Opcional si es afiche o flyer)</span>
+                            Resumen / Bajada
                         </label>
                         {{ form.resumen }}
                         <p class="text-[11px] text-slate-400 mt-1">{{ form.resumen.help_text }}</p>
@@ -121,7 +121,7 @@
                     <!-- Cuerpo con Editor Rico (Quill) -->
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">
-                            Cuerpo del contenido <span class="text-slate-400 font-normal">(Opcional si la información está contenida en la imagen publicitaria)</span>
+                            Cuerpo del contenido
                         </label>
                         <!-- Campo oculto donde se sincroniza el HTML de Quill -->
                         {{ form.cuerpo }}
@@ -138,9 +138,9 @@
                             <!-- Selector del modo de publicación -->
                             <div>
                                 <label for="select-modo-publicacion" class="block text-xs font-semibold text-slate-700 mb-1">
-                                    Modo de publicación *
+                                    Modo de publicación <span class="text-red-600 font-bold">(OBLIGATORIO)</span>
                                 </label>
-                                <select id="select-modo-publicacion"
+                                <select id="select-modo-publicacion" name="modo_publicacion"
                                     class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600 bg-white">
                                     <option value="INMEDIATA">Publicación instantánea</option>
                                     <option value="PROGRAMADA">Programada para fecha/hora futura</option>
@@ -208,7 +208,7 @@
 
                     <div>
                         <label for="{{ form.epigrafe_portada.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
-                            Epígrafe / Pie de foto (Opcional)
+                            Epígrafe / Pie de foto
                         </label>
                         {{ form.epigrafe_portada }}
                         {% if form.epigrafe_portada.errors %}
@@ -219,7 +219,7 @@
                     <!-- Galería de imágenes adicionales -->
                     <div class="pt-3 border-t border-slate-100">
                         <label class="block text-xs font-semibold text-slate-700 mb-1">
-                            Imágenes adicionales para la galería (Opcional)
+                            Imágenes adicionales para la galería
                         </label>
                         {{ form.imagenes_galeria }}
                         <p class="text-[11px] text-slate-400 mt-1">{{ form.imagenes_galeria.help_text }}</p>
@@ -271,7 +271,7 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label for="{{ evento_form.inicio.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
-                                    Fecha y hora de inicio <span class="text-red-500">*</span>
+                                    Fecha y hora de inicio <span class="text-red-600 font-bold">(OBLIGATORIO)</span>
                                 </label>
                                 {{ evento_form.inicio }}
                                 {% if evento_form.inicio.errors %}
@@ -280,7 +280,7 @@
                             </div>
                             <div>
                                 <label for="{{ evento_form.fin.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
-                                    Fecha y hora de finalización (opcional)
+                                    Fecha y hora de finalización
                                 </label>
                                 {{ evento_form.fin }}
                                 {% if evento_form.fin.errors %}
@@ -289,44 +289,46 @@
                             </div>
                         </div>
 
+                        <!-- Intercambio: Modalidad primero, Lugar segundo -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label for="{{ evento_form.lugar.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
-                                    Lugar o plataforma <span class="text-red-500">*</span>
-                                </label>
-                                {{ evento_form.lugar }}
-                                {% if evento_form.lugar.errors %}
-                                <p class="text-xs text-red-600 mt-1">{{ evento_form.lugar.errors.0 }}</p>
-                                {% endif %}
-                            </div>
-                            <div>
                                 <label for="{{ evento_form.modalidad.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
-                                    Modalidad <span class="text-red-500">*</span>
+                                    Modalidad <span class="text-red-600 font-bold">(OBLIGATORIO)</span>
                                 </label>
                                 {{ evento_form.modalidad }}
                                 {% if evento_form.modalidad.errors %}
                                 <p class="text-xs text-red-600 mt-1">{{ evento_form.modalidad.errors.0 }}</p>
                                 {% endif %}
                             </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label for="{{ evento_form.link_inscripcion.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
-                                    Enlace de inscripción (opcional)
+                                <label for="{{ evento_form.lugar.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
+                                    Lugar o plataforma <span class="text-red-600 font-bold">(OBLIGATORIO)</span>
                                 </label>
-                                {{ evento_form.link_inscripcion }}
-                                {% if evento_form.link_inscripcion.errors %}
-                                <p class="text-xs text-red-600 mt-1">{{ evento_form.link_inscripcion.errors.0 }}</p>
+                                {{ evento_form.lugar }}
+                                {% if evento_form.lugar.errors %}
+                                <p class="text-xs text-red-600 mt-1">{{ evento_form.lugar.errors.0 }}</p>
                                 {% endif %}
                             </div>
+                        </div>
+
+                        <!-- Intercambio: Cupo primero, Enlace de inscripción segundo -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label for="{{ evento_form.cupo.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
-                                    Cupo de participantes (opcional)
+                                    Cupo de participantes
                                 </label>
                                 {{ evento_form.cupo }}
                                 {% if evento_form.cupo.errors %}
                                 <p class="text-xs text-red-600 mt-1">{{ evento_form.cupo.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <label for="{{ evento_form.link_inscripcion.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
+                                    Enlace de inscripción
+                                </label>
+                                {{ evento_form.link_inscripcion }}
+                                {% if evento_form.link_inscripcion.errors %}
+                                <p class="text-xs text-red-600 mt-1">{{ evento_form.link_inscripcion.errors.0 }}</p>
                                 {% endif %}
                             </div>
                         </div>
@@ -411,7 +413,7 @@
                 if (puntoEvento) puntoEvento.className = 'w-2.5 h-2.5 rounded-full bg-amber-500 transition-colors animate-pulse';
                 if (tituloEvento) tituloEvento.className = 'text-sm font-bold uppercase tracking-wider text-amber-900 transition-colors';
                 if (badgeEvento) {
-                    badgeEvento.className = 'text-[11px] px-2.5 py-0.5 rounded-full font-semibold transition-all bg-amber-100 text-amber-800 border border-amber-200';
+                    badgeEvento.className = 'badge-semaforo-amarillo text-[11px]';
                     badgeEvento.textContent = 'Activo (Requerido para ' + (val === 'CAPACITACION' ? 'Capacitaciones' : 'Eventos') + ')';
                 }
                 if (avisoEvento) avisoEvento.classList.add('hidden');
@@ -471,15 +473,13 @@
                 // Card Roja / Rosada
                 boxPublicacion.className = 'p-3.5 rounded-xl border text-xs transition-all duration-300 flex items-start gap-3 bg-rose-50 border-rose-200 text-rose-900';
                 if (labelPublicacion) labelPublicacion.className = 'font-bold uppercase tracking-wider text-[11px] text-rose-800';
-                badgePublicacion.className = 'px-2 py-0.5 rounded-full font-semibold text-[11px] bg-rose-100 text-rose-800 border border-rose-200';
+                badgePublicacion.className = 'badge-semaforo-rojo text-[11px]';
                 badgePublicacion.textContent = 'Borrador / Pausa';
                 descPublicacion.textContent = 'El contenido quedará guardado de forma privada. No será visible en el sitio web ni en el padrón de noticias.';
                 iconoPublicacion.innerHTML = `<svg class="w-5 h-5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>`;
 
             } else if (modo === 'INMEDIATA') {
-                if (!esInicial || !fechaInput.value) {
-                    fechaInput.value = obtenerFechaLocalISO();
-                }
+                fechaInput.value = obtenerFechaLocalISO();
                 fechaInput.readOnly = true;
                 fechaInput.classList.add('bg-slate-100', 'text-slate-600', 'cursor-not-allowed');
                 if (ayudaFecha) ayudaFecha.textContent = 'Se asigna la fecha y hora actual automáticamente para publicarse ya.';
@@ -487,7 +487,7 @@
                 // Card Verde / Esmeralda
                 boxPublicacion.className = 'p-3.5 rounded-xl border text-xs transition-all duration-300 flex items-start gap-3 bg-emerald-50 border-emerald-200 text-emerald-900';
                 if (labelPublicacion) labelPublicacion.className = 'font-bold uppercase tracking-wider text-[11px] text-emerald-800';
-                badgePublicacion.className = 'px-2 py-0.5 rounded-full font-semibold text-[11px] bg-emerald-100 text-emerald-800 border border-emerald-200';
+                badgePublicacion.className = 'badge-semaforo-verde text-[11px]';
                 badgePublicacion.textContent = 'Publicación Inmediata';
                 descPublicacion.textContent = 'El contenido se publicará inmediatamente al guardar y será visible según su nivel de visibilidad.';
                 iconoPublicacion.innerHTML = `<svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`;
@@ -506,7 +506,7 @@
                 // Card Amarilla / Ámbar
                 boxPublicacion.className = 'p-3.5 rounded-xl border text-xs transition-all duration-300 flex items-start gap-3 bg-amber-50 border-amber-200 text-amber-900';
                 if (labelPublicacion) labelPublicacion.className = 'font-bold uppercase tracking-wider text-[11px] text-amber-800';
-                badgePublicacion.className = 'px-2 py-0.5 rounded-full font-semibold text-[11px] bg-amber-100 text-amber-800 border border-amber-200';
+                badgePublicacion.className = 'badge-semaforo-amarillo text-[11px]';
                 badgePublicacion.textContent = 'Publicación Programada';
                 descPublicacion.textContent = 'El contenido se activará y publicará automáticamente cuando llegue la fecha y hora indicada.';
                 iconoPublicacion.innerHTML = `<svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`;

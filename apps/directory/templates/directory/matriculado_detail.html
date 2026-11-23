@@ -50,15 +50,15 @@
                             <h1 class="text-2xl font-bold text-slate-900">{{ matriculado.usuario.get_full_name|default:matriculado.usuario.username }}</h1>
                             {% with estado=matriculado.estado_actual %}
                                 {% if estado.estado == 'ACTIVA' %}
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary-100 text-primary-800">
+                                <span class="badge-semaforo-verde">
                                     {{ estado.get_estado_display }}
                                 </span>
                                 {% elif estado.estado == 'SUSPENDIDA' %}
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800">
+                                <span class="badge-semaforo-amarillo">
                                     {{ estado.get_estado_display }}
                                 </span>
                                 {% else %}
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-100 text-rose-800">
+                                <span class="badge-semaforo-rojo">
                                     {{ estado.get_estado_display|default:"Sin Estado" }}
                                 </span>
                                 {% endif %}
@@ -135,12 +135,12 @@
                     <div>
                         <div class="flex items-center space-x-2">
                             <h4 class="font-bold text-slate-900 text-sm">{{ titulo.denominacion }}</h4>
-                            <span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-100 text-slate-700">
+                            <span class="badge-documento">
                                 {{ titulo.get_tipo_display }}
                             </span>
                         </div>
                         <p class="text-xs text-slate-500 mt-1">
-                            Emitido por: <strong class="text-slate-700">{{ titulo.emitido_por.nombre }}</strong> ({{ titulo.emitido_por.sigla|default:titulo.emitido_por.pais.name }})
+                            Emitido por: <strong class="text-slate-700">{{ titulo.emitido_por.nombre }}</strong>{% if titulo.emitido_por.sigla %} ({{ titulo.emitido_por.sigla }}){% elif titulo.emitido_por.pais %} ({{ titulo.emitido_por.pais.name }}){% endif %}
                         </p>
                         <p class="text-xs text-slate-400 mt-0.5">
                             Egreso: {{ titulo.fecha_egreso|date:"d/m/Y" }} | Expedición diploma: {{ titulo.fecha_expedicion|date:"d/m/Y" }}
@@ -160,8 +160,13 @@
 
                         {% if perms.directory.change_titulo or user.is_superuser %}
                         <button type="button"
-                            onclick="openEditTituloModal('{{ titulo.id }}', '{{ titulo.denominacion|escapejs }}', '{{ titulo.tipo }}', '{{ titulo.emitido_por.id }}', '{{ titulo.fecha_egreso|date:"Y-m-d" }}', '{{ titulo.fecha_expedicion|date:"Y-m-d" }}')"
-                            class="inline-flex items-center text-xs font-semibold text-slate-700 hover:text-slate-900 bg-white px-2.5 py-1.5 rounded-lg border border-slate-300 shadow-xs hover:bg-slate-50 transition"
+                            class="btn-edit-titulo inline-flex items-center text-xs font-semibold text-slate-700 hover:text-slate-900 bg-white px-2.5 py-1.5 rounded-lg border border-slate-300 shadow-xs hover:bg-slate-50 transition"
+                            data-id="{{ titulo.id }}"
+                            data-denominacion="{{ titulo.denominacion }}"
+                            data-tipo="{{ titulo.tipo }}"
+                            data-emitido="{{ titulo.emitido_por.id }}"
+                            data-egreso="{{ titulo.fecha_egreso|date:'Y-m-d' }}"
+                            data-expedicion="{{ titulo.fecha_expedicion|date:'Y-m-d' }}"
                             title="Editar título">
                             <svg class="w-3.5 h-3.5 mr-1 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -207,11 +212,11 @@
                         <tr>
                             <td class="px-4 py-3 font-semibold">
                                 {% if est.estado == 'ACTIVA' %}
-                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs bg-primary-100 text-primary-800">Activa</span>
+                                <span class="badge-semaforo-verde">Activa</span>
                                 {% elif est.estado == 'SUSPENDIDA' %}
-                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs bg-amber-100 text-amber-800">Suspendida</span>
+                                <span class="badge-semaforo-amarillo">Suspendida</span>
                                 {% else %}
-                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs bg-rose-100 text-rose-800">Baja</span>
+                                <span class="badge-semaforo-rojo">Baja</span>
                                 {% endif %}
                             </td>
                             <td class="px-4 py-3 text-xs">
@@ -228,8 +233,14 @@
                             <td class="px-4 py-3 text-right text-xs">
                                 {% if perms.directory.change_historialestadomatricula or user.is_superuser %}
                                 <button type="button"
-                                    onclick="openEditEstadoModal('{{ est.id }}', '{{ est.estado }}', '{{ est.fecha_desde|date:"Y-m-d" }}', '{{ est.fecha_hasta|date:"Y-m-d"|default:"" }}', '{{ est.motivo|escapejs }}', '{{ est.resolucion_acta|escapejs }}', '{{ est.origen_sancion.id|default:"" }}')"
-                                    class="inline-flex items-center text-xs font-semibold text-slate-700 hover:text-slate-900 bg-white px-2.5 py-1 rounded-md border border-slate-300 shadow-xs hover:bg-slate-50 transition"
+                                    class="btn-edit-estado inline-flex items-center text-xs font-semibold text-slate-700 hover:text-slate-900 bg-white px-2.5 py-1 rounded-md border border-slate-300 shadow-xs hover:bg-slate-50 transition"
+                                    data-id="{{ est.id }}"
+                                    data-estado="{{ est.estado }}"
+                                    data-desde="{{ est.fecha_desde|date:'Y-m-d' }}"
+                                    data-hasta="{{ est.fecha_hasta|date:'Y-m-d'|default:'' }}"
+                                    data-motivo="{{ est.motivo }}"
+                                    data-acta="{{ est.resolucion_acta }}"
+                                    data-origen="{{ est.origen_sancion.id|default:'' }}"
                                     title="Editar estado">
                                     <svg class="w-3.5 h-3.5 mr-1 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -271,16 +282,20 @@
                             <span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-rose-50 text-rose-700 border border-rose-200">
                                 {{ ant.get_tipo_sancion_display }}
                             </span>
-                            <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-600">
-                                {{ ant.get_estado_expediente_display }}
-                            </span>
                         </div>
                         <div class="flex items-center space-x-2">
-                            <span class="text-xs text-slate-400">Resolución: {{ ant.fecha_resolucion|date:"d/m/Y" }}</span>
+                            <span class="text-xs text-slate-400">Firmeza: {{ ant.fecha_firmeza|date:"d/m/Y" }}</span>
                             {% if perms.directory.change_antecedentedisciplinario or user.is_superuser %}
                             <button type="button"
-                                onclick="openEditAntecedenteModal('{{ ant.id }}', '{{ ant.numero_expediente|escapejs }}', '{{ ant.estado_expediente }}', '{{ ant.tipo_sancion }}', '{{ ant.monto_multa|default:"" }}', '{{ ant.fecha_inicio_sancion|date:"Y-m-d"|default:"" }}', '{{ ant.fecha_fin_sancion|date:"Y-m-d"|default:"" }}', '{{ ant.fecha_resolucion|date:"Y-m-d"|default:"" }}', '{{ ant.fecha_firmeza|date:"Y-m-d"|default:"" }}', '{{ ant.descripcion|escapejs }}')"
-                                class="inline-flex items-center text-xs font-semibold text-slate-700 hover:text-slate-900 bg-white px-2 py-0.5 rounded-md border border-slate-300 shadow-xs hover:bg-slate-50 transition"
+                                class="btn-edit-antecedente inline-flex items-center text-xs font-semibold text-slate-700 hover:text-slate-900 bg-white px-2 py-0.5 rounded-md border border-slate-300 shadow-xs hover:bg-slate-50 transition"
+                                data-id="{{ ant.id }}"
+                                data-exp="{{ ant.numero_expediente }}"
+                                data-tipo="{{ ant.tipo_sancion }}"
+                                data-firmeza="{{ ant.fecha_firmeza|date:'Y-m-d' }}"
+                                data-monto="{{ ant.monto_multa|default:'' }}"
+                                data-iniciosusp="{{ ant.fecha_inicio_suspension|date:'Y-m-d'|default:'' }}"
+                                data-finsusp="{{ ant.fecha_fin_suspension|date:'Y-m-d'|default:'' }}"
+                                data-desc="{{ ant.descripcion }}"
                                 title="Editar antecedente">
                                 <svg class="w-3 h-3 mr-1 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -312,17 +327,23 @@
         <form id="form-titulo-modal" method="post" action="{% url 'directory:titulo_create' matriculado.pk %}" enctype="multipart/form-data" class="space-y-4">
             {% csrf_token %}
             <div>
-                <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Denominación</label>
+                <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Denominación <span class="text-red-600 font-bold">(OBLIGATORIO)</span></label>
                 {{ titulo_form.denominacion }}
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
                 <div>
-                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Nivel</label>
+                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">
+                        Nivel
+                        <span class="block text-xs text-red-600 font-bold normal-case mt-0.5">(OBLIGATORIO)</span>
+                    </label>
                     {{ titulo_form.tipo }}
                 </div>
                 <div>
                     <div class="flex items-center justify-between mb-1">
-                        <label class="block text-xs font-bold uppercase text-slate-600">Universidad</label>
+                        <label class="block text-xs font-bold uppercase text-slate-600">
+                            Universidad
+                            <span class="block text-xs text-red-600 font-bold normal-case mt-0.5">(OBLIGATORIO)</span>
+                        </label>
                         {% if perms.directory.add_universidad or user.is_superuser %}
                         <button type="button" onclick="openUniversidadModal()"
                             class="inline-flex items-center text-[11px] font-semibold text-primary-700 hover:text-primary-800 bg-primary-50 hover:bg-primary-100 px-2 py-0.5 rounded-md border border-primary-200 transition">
@@ -347,14 +368,14 @@
                 </div>
             </div>
             <div>
-                <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Escaneo del Diploma (PDF/Imagen)</label>
+                <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Escaneo del Diploma (PDF / Imagen)</label>
                 {{ titulo_form.escaneo_diploma }}
             </div>
             <div class="flex justify-end space-x-2 pt-4 border-t border-slate-100">
                 <button type="button" onclick="document.getElementById('modal-titulo').classList.add('hidden')"
-                    class="px-4 py-2 rounded-lg border border-slate-300 text-xs font-semibold text-slate-600">Cancelar</button>
+                    class="btn-secondary-sm">Cancelar</button>
                 <button type="submit"
-                    class="px-5 py-2 rounded-lg bg-primary-600 hover:bg-primary-700 text-white text-xs font-semibold">Guardar Título</button>
+                    class="btn-primary-sm">Guardar Título</button>
             </div>
         </form>
     </div>
@@ -368,12 +389,16 @@
         <form id="form-estado-modal" method="post" action="{% url 'directory:estado_create' matriculado.pk %}" class="space-y-4">
             {% csrf_token %}
             <div>
-                <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Nuevo Estado</label>
+                <label class="block text-xs font-bold uppercase text-slate-600 mb-1">
+                    Nuevo Estado <span class="text-red-600 font-bold">(OBLIGATORIO)</span>
+                </label>
                 {{ estado_form.estado }}
             </div>
             <div class="grid grid-cols-2 gap-3">
                 <div>
-                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Fecha Desde</label>
+                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">
+                        Fecha Desde <span class="text-red-600 font-bold">(OBLIGATORIO)</span>
+                    </label>
                     {{ estado_form.fecha_desde }}
                 </div>
                 <div>
@@ -382,7 +407,9 @@
                 </div>
             </div>
             <div>
-                <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Motivo</label>
+                <label class="block text-xs font-bold uppercase text-slate-600 mb-1">
+                    Motivo <span class="text-red-600 font-bold">(OBLIGATORIO)</span>
+                </label>
                 {{ estado_form.motivo }}
             </div>
             <div>
@@ -390,7 +417,7 @@
                 {{ estado_form.resolucion_acta }}
             </div>
             <div>
-                <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Origen de Sanción (Opcional)</label>
+                <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Origen de Sanción</label>
                 {{ estado_form.origen_sancion }}
             </div>
             <div class="flex justify-end space-x-2 pt-4 border-t border-slate-100">
@@ -410,44 +437,38 @@
         <p class="text-xs text-slate-500 mb-4">Cargue o modifique el expediente tramitado ante el Tribunal de Ética.</p>
         <form id="form-antecedente-modal" method="post" action="{% url 'directory:antecedente_create' matriculado.pk %}" class="space-y-4">
             {% csrf_token %}
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">N° Expediente</label>
-                    {{ antecedente_form.numero_expediente }}
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Estado Expediente</label>
-                    {{ antecedente_form.estado_expediente }}
-                </div>
+            <div>
+                <label class="block text-xs font-bold uppercase text-slate-600 mb-1">
+                    N° Expediente <span class="text-red-600 font-bold">(OBLIGATORIO)</span>
+                </label>
+                {{ antecedente_form.numero_expediente }}
             </div>
             <div class="grid grid-cols-2 gap-3">
                 <div>
-                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Tipo de Sanción</label>
+                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">
+                        Tipo de Sanción <span class="text-red-600 font-bold">(OBLIGATORIO)</span>
+                    </label>
                     {{ antecedente_form.tipo_sancion }}
                 </div>
                 <div>
-                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Monto Multa (Opcional)</label>
-                    {{ antecedente_form.monto_multa }}
-                </div>
-            </div>
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Inicio Sanción</label>
-                    {{ antecedente_form.fecha_inicio_sancion }}
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Fin Sanción</label>
-                    {{ antecedente_form.fecha_fin_sancion }}
-                </div>
-            </div>
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Fecha Resolución</label>
-                    {{ antecedente_form.fecha_resolucion }}
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Fecha Firmeza</label>
+                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">
+                        Fecha Firmeza <span class="text-red-600 font-bold">(OBLIGATORIO)</span>
+                    </label>
                     {{ antecedente_form.fecha_firmeza }}
+                </div>
+            </div>
+            <div id="modal-antecedente-monto-container">
+                <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Monto Multa</label>
+                {{ antecedente_form.monto_multa }}
+            </div>
+            <div id="modal-antecedente-suspension-container" class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Inicio Suspensión</label>
+                    {{ antecedente_form.fecha_inicio_suspension }}
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Fin Suspensión</label>
+                    {{ antecedente_form.fecha_fin_suspension }}
                 </div>
             </div>
             <div>
@@ -465,7 +486,7 @@
 </div>
 
 <!-- MODAL: CREAR NUEVA UNIVERSIDAD (AJAX) -->
-<div id="modal-universidad" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm hidden">
+<div id="modal-universidad" class="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm hidden">
     <div class="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-md p-6 m-4">
         <div class="flex items-center justify-between pb-3 border-b border-slate-100">
             <div>
@@ -620,7 +641,7 @@ function openEditEstadoModal(id, estado, fechaDesde, fechaHasta, motivo, resoluc
     modal.classList.remove('hidden');
 }
 
-function openEditAntecedenteModal(id, numExp, estadoExp, tipoSancion, montoMulta, inicioSancion, finSancion, resolucion, firmeza, descripcion) {
+function openEditAntecedenteModal(id, numExp, tipoSancion, firmeza, montoMulta, inicioSusp, finSusp, descripcion) {
     const modal = document.getElementById('modal-antecedente');
     const form = document.getElementById('form-antecedente-modal');
     document.getElementById('modal-antecedente-title').innerText = 'Editar Antecedente Exp. ' + numExp;
@@ -629,32 +650,126 @@ function openEditAntecedenteModal(id, numExp, estadoExp, tipoSancion, montoMulta
     const inputNum = form.querySelector('input[name="numero_expediente"]');
     if (inputNum) inputNum.value = numExp;
 
-    const selectEstado = form.querySelector('select[name="estado_expediente"]');
-    if (selectEstado) selectEstado.value = estadoExp;
-
     const selectTipo = form.querySelector('select[name="tipo_sancion"]');
-    if (selectTipo) selectTipo.value = tipoSancion;
+    if (selectTipo) {
+        selectTipo.value = tipoSancion;
+        actualizarCamposCondicionalesAntecedente(form);
+    }
+
+    const inputFir = form.querySelector('input[name="fecha_firmeza"]');
+    if (inputFir) inputFir.value = firmeza;
 
     const inputMonto = form.querySelector('input[name="monto_multa"]');
     if (inputMonto) inputMonto.value = montoMulta;
 
-    const inputInicio = form.querySelector('input[name="fecha_inicio_sancion"]');
-    if (inputInicio) inputInicio.value = inicioSancion;
+    const inputInicio = form.querySelector('input[name="fecha_inicio_suspension"]');
+    if (inputInicio) inputInicio.value = inicioSusp;
 
-    const inputFin = form.querySelector('input[name="fecha_fin_sancion"]');
-    if (inputFin) inputFin.value = finSancion;
-
-    const inputRes = form.querySelector('input[name="fecha_resolucion"]');
-    if (inputRes) inputRes.value = resolucion;
-
-    const inputFirm = form.querySelector('input[name="fecha_firmeza"]');
-    if (inputFirm) inputFirm.value = firmeza;
+    const inputFin = form.querySelector('input[name="fecha_fin_suspension"]');
+    if (inputFin) inputFin.value = finSusp;
 
     const inputDesc = form.querySelector('textarea[name="descripcion"]');
     if (inputDesc) inputDesc.value = descripcion;
 
     modal.classList.remove('hidden');
 }
+
+function actualizarCamposCondicionalesAntecedente(form) {
+    const tipoSelect = form.querySelector('select[name="tipo_sancion"]');
+    const tipo = tipoSelect ? tipoSelect.value : '';
+
+    const inputMonto = form.querySelector('input[name="monto_multa"]');
+    const containerMonto = form.querySelector('#modal-antecedente-monto-container');
+    const inputInicio = form.querySelector('input[name="fecha_inicio_suspension"]');
+    const inputFin = form.querySelector('input[name="fecha_fin_suspension"]');
+    const containerSusp = form.querySelector('#modal-antecedente-suspension-container');
+
+    const esMulta = (tipo === 'MULTA');
+    if (inputMonto) {
+        inputMonto.disabled = !esMulta;
+        if (!esMulta) inputMonto.value = '';
+    }
+    if (containerMonto) {
+        if (esMulta) {
+            containerMonto.classList.remove('opacity-40', 'pointer-events-none');
+        } else {
+            containerMonto.classList.add('opacity-40', 'pointer-events-none');
+        }
+    }
+
+    const esSuspension = (tipo === 'SUSPENSION');
+    if (inputInicio) {
+        inputInicio.disabled = !esSuspension;
+        if (!esSuspension) inputInicio.value = '';
+    }
+    if (inputFin) {
+        inputFin.disabled = !esSuspension;
+        if (!esSuspension) inputFin.value = '';
+    }
+    if (containerSusp) {
+        if (esSuspension) {
+            containerSusp.classList.remove('opacity-40', 'pointer-events-none');
+        } else {
+            containerSusp.classList.add('opacity-40', 'pointer-events-none');
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Delegación / listeners para botones de edición (Títulos, Estados, Antecedentes)
+    document.querySelectorAll('.btn-edit-titulo').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            openEditTituloModal(
+                this.dataset.id,
+                this.dataset.denominacion,
+                this.dataset.tipo,
+                this.dataset.emitido,
+                this.dataset.egreso,
+                this.dataset.expedicion
+            );
+        });
+    });
+
+    document.querySelectorAll('.btn-edit-estado').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            openEditEstadoModal(
+                this.dataset.id,
+                this.dataset.estado,
+                this.dataset.desde,
+                this.dataset.hasta,
+                this.dataset.motivo,
+                this.dataset.acta,
+                this.dataset.origen
+            );
+        });
+    });
+
+    document.querySelectorAll('.btn-edit-antecedente').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            openEditAntecedenteModal(
+                this.dataset.id,
+                this.dataset.exp,
+                this.dataset.tipo,
+                this.dataset.firmeza,
+                this.dataset.monto,
+                this.dataset.iniciosusp,
+                this.dataset.finsusp,
+                this.dataset.desc
+            );
+        });
+    });
+
+    const formDetalle = document.getElementById('form-antecedente-modal');
+    if (formDetalle) {
+        const selectTipo = formDetalle.querySelector('select[name="tipo_sancion"]');
+        if (selectTipo) {
+            selectTipo.addEventListener('change', function() {
+                actualizarCamposCondicionalesAntecedente(formDetalle);
+            });
+            actualizarCamposCondicionalesAntecedente(formDetalle);
+        }
+    }
+});
 </script>
 {% endblock %}
 

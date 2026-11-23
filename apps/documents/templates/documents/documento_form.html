@@ -41,7 +41,6 @@
                     <div>
                         <label for="{{ form.numero.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
                             Número o Identificación Oficial
-                            <span class="text-slate-400 font-normal">(Opcional)</span>
                         </label>
                         {{ form.numero }}
                         {% if form.numero.errors %}
@@ -52,7 +51,7 @@
 
                     <div>
                         <label for="{{ form.categoria.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
-                            Categoría *
+                            Categoría <span class="text-red-600 font-bold">(OBLIGATORIO)</span>
                         </label>
                         {{ form.categoria }}
                         {% if form.categoria.errors %}
@@ -64,7 +63,7 @@
                 <!-- Título -->
                 <div>
                     <label for="{{ form.titulo.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
-                        Título o Denominación Oficial *
+                        Título o Denominación Oficial <span class="text-red-600 font-bold">(OBLIGATORIO)</span>
                     </label>
                     {{ form.titulo }}
                     {% if form.titulo.errors %}
@@ -86,7 +85,7 @@
 
                     <div>
                         <label for="{{ form.visibilidad.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
-                            Nivel de Visibilidad *
+                            Nivel de Visibilidad <span class="text-red-600 font-bold">(OBLIGATORIO)</span>
                         </label>
                         {{ form.visibilidad }}
                         {% if form.visibilidad.errors %}
@@ -100,7 +99,6 @@
                 <div>
                     <label for="{{ form.descripcion.id_for_label }}" class="block text-xs font-semibold text-slate-700 mb-1">
                         Descripción o Resumen
-                        <span class="text-slate-400 font-normal">(Opcional)</span>
                     </label>
                     {{ form.descripcion }}
                     {% if form.descripcion.errors %}
@@ -109,17 +107,17 @@
                     <p class="text-[11px] text-slate-400 mt-1">Breve síntesis o detalle del contenido del documento.</p>
                 </div>
 
-                <!-- Archivo PDF -->
+                <!-- Archivo Digital -->
                 <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-2">
                     <label for="{{ form.archivo_almacenado.id_for_label }}" class="block text-xs font-bold text-slate-700">
-                        Archivo Digital (Solo formato PDF) *
+                        Archivo Digital <span class="text-red-600 font-bold">(OBLIGATORIO)</span>
                     </label>
                     {{ form.archivo_almacenado }}
                     {% if form.archivo_almacenado.errors %}
                     <p class="text-xs text-red-600 mt-1">{{ form.archivo_almacenado.errors.0 }}</p>
                     {% endif %}
                     <p class="text-[11px] text-slate-500">
-                        El archivo se resguardará de forma segura en Supabase Storage. Tamaño máximo: 10 MB.
+                        Formatos permitidos: PDF o Word (.docx/.doc). Tamaño máximo: 10 MB.
                     </p>
                 </div>
 

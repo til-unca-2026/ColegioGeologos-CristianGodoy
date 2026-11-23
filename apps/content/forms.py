@@ -93,6 +93,12 @@ class ContenidoForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # Requerir explícitamente selección sin opción por defecto
+        self.fields["tipo"].empty_label = "---------"
+        self.fields["visibilidad"].empty_label = "---------"
+        self.fields["tipo"].required = True
+        self.fields["visibilidad"].required = True
+
         # Formatear el valor inicial para datetime-local convirtiendo a hora local (Argentina/Catamarca)
         if self.instance and self.instance.pk:
             if self.instance.fecha_publicacion:
@@ -111,16 +117,17 @@ class DetalleEventoForm(forms.ModelForm):
         # Los campos no son required a nivel HTML para no bloquear submit en modo Noticia/Novedad
         for field in self.fields.values():
             field.required = False
+        self.fields["modalidad"].empty_label = "---------"
 
     class Meta:
         model = DetalleEvento
         fields = [
             "inicio",
             "fin",
-            "lugar",
             "modalidad",
-            "link_inscripcion",
+            "lugar",
             "cupo",
+            "link_inscripcion",
         ]
         widgets = {
             "inicio": forms.DateTimeInput(
@@ -131,36 +138,36 @@ class DetalleEventoForm(forms.ModelForm):
                 format="%Y-%m-%dT%H:%M",
                 attrs={"class": INPUT_CSS, "type": "datetime-local"},
             ),
+            "modalidad": forms.Select(attrs={"class": SELECT_CSS}),
             "lugar": forms.TextInput(attrs={
                 "class": INPUT_CSS,
                 "placeholder": "Ej: Sede del Colegio, Salón Auditorio / Enlace Meet",
-            }),
-            "modalidad": forms.Select(attrs={"class": SELECT_CSS}),
-            "link_inscripcion": forms.URLInput(attrs={
-                "class": INPUT_CSS,
-                "placeholder": "https://forms.gle/...",
             }),
             "cupo": forms.NumberInput(attrs={
                 "class": INPUT_CSS,
                 "placeholder": "Dejar vacío si no hay límite",
                 "min": 1,
             }),
+            "link_inscripcion": forms.URLInput(attrs={
+                "class": INPUT_CSS,
+                "placeholder": "https://forms.gle/...",
+            }),
         }
 
     def clean(self):
         cleaned_data = super().clean()
         inicio = cleaned_data.get("inicio")
-        lugar = cleaned_data.get("lugar")
         modalidad = cleaned_data.get("modalidad")
+        lugar = cleaned_data.get("lugar")
         fin = cleaned_data.get("fin")
 
-        # Si se completó algo de evento, inicio y lugar son requeridos
+        # Para eventos y capacitaciones: inicio, modalidad y lugar son obligatorios
         if not inicio:
-            self.add_error("inicio", "La fecha y hora de inicio es requerida para eventos.")
-        if not lugar:
-            self.add_error("lugar", "El lugar o plataforma es requerido.")
+            self.add_error("inicio", "La fecha y hora de inicio es obligatoria.")
         if not modalidad:
             self.add_error("modalidad", "Debe indicar la modalidad.")
+        if not lugar:
+            self.add_error("lugar", "El lugar o plataforma es obligatorio.")
 
         if inicio and fin and fin < inicio:
             self.add_error("fin", "La fecha de fin no puede ser anterior a la fecha de inicio.")

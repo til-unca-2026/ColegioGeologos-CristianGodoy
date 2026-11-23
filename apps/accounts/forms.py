@@ -80,11 +80,11 @@ class AdminUserCreateForm(forms.ModelForm):
     )
     group = forms.ModelChoiceField(
         queryset=Group.objects.exclude(name__iexact="matriculados").order_by("name"),
-        label="Rol / Grupo especial (Opcional)",
+        label="Rol / Grupo especial",
         required=False,
         empty_label="Sin grupo especial (Usuario estándar / Pendiente de matriculación)",
         widget=forms.Select(attrs={"class": SELECT_CSS}),
-        help_text="Opcional. Seleccione solo si el usuario cumplirá funciones especiales (Administradores o Colaboradores). El rol 'Matriculados' se asigna automáticamente al crear la matrícula.",
+        help_text="Seleccione solo si el usuario cumplirá funciones especiales (Administradores o Colaboradores). El rol 'Matriculados' se asigna automáticamente al crear la matrícula.",
     )
 
     class Meta:
@@ -225,7 +225,7 @@ class AdminUserEditForm(forms.ModelForm):
         help_text="Seleccione el grupo al que pertenece el usuario (Matriculados, Colaboradores o Administradores).",
     )
     new_password = forms.CharField(
-        label="Nueva contraseña (opcional)",
+        label="Nueva contraseña",
         widget=forms.PasswordInput(attrs={
             "class": INPUT_CSS,
             "placeholder": "Dejar en blanco para mantener la contraseña actual",
@@ -373,18 +373,28 @@ class MembresiaComisionForm(forms.ModelForm):
             "usuario": forms.Select(attrs={"class": SELECT_CSS}),
             "comision": forms.Select(attrs={"class": SELECT_CSS}),
             "cargo": forms.Select(attrs={"class": SELECT_CSS}),
-            "fecha_desde": forms.DateInput(attrs={"class": INPUT_CSS, "type": "date"}),
-            "fecha_hasta": forms.DateInput(attrs={"class": INPUT_CSS, "type": "date"}),
+            "fecha_desde": forms.DateInput(format="%Y-%m-%d", attrs={"class": INPUT_CSS, "type": "date"}),
+            "fecha_hasta": forms.DateInput(format="%Y-%m-%d", attrs={"class": INPUT_CSS, "type": "date"}),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            if self.instance.fecha_desde:
+                self.initial["fecha_desde"] = self.instance.fecha_desde.strftime("%Y-%m-%d")
+            if self.instance.fecha_hasta:
+                self.initial["fecha_hasta"] = self.instance.fecha_hasta.strftime("%Y-%m-%d")
         # Mostrar usuarios activos ordenados por apellido/nombre o username
         self.fields["usuario"].queryset = User.objects.filter(is_active=True).order_by("last_name", "first_name", "username")
         self.fields["usuario"].label_from_instance = lambda u: f"{u.get_full_name() or u.username} ({u.dni or '@' + u.username})"
+        self.fields["usuario"].empty_label = "---------"
+        self.fields["comision"].empty_label = "---------"
+        self.fields["cargo"].empty_label = "---------"
+        self.fields["usuario"].required = True
+        self.fields["comision"].required = True
+        self.fields["cargo"].required = True
         self.fields["fecha_desde"].required = True
-        self.fields["fecha_hasta"].required = False
-        self.fields["fecha_hasta"].help_text = "Dejar en blanco si el mandato continúa vigente."
+        self.fields["fecha_hasta"].required = True
 
     def clean(self):
         cleaned_data = super().clean()
@@ -465,7 +475,6 @@ class UserProfileUpdateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["email"].required = True
-        self.fields["domicilio_real_pais"].initial = self.instance.domicilio_real_pais or "AR"
 
     def clean_email(self):
         email = self.cleaned_data.get("email")

@@ -25,6 +25,9 @@ class HTMLSanitizer(HTMLParser):
         "code": {"class"},
         "pre": {"class"},
         "blockquote": {"class"},
+        "li": {"class", "data-list", "value"},
+        "ol": {"class"},
+        "ul": {"class"},
     }
 
     DISALLOWED_CONTENTS = {"script", "style", "iframe", "object", "embed", "applet"}

@@ -38,7 +38,7 @@
 
                 <div>
                     <label for="{{ form.usuario.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                        Persona / Usuario <span class="text-rose-600">*</span>
+                        Persona / Usuario <span class="text-red-600 font-bold">(OBLIGATORIO)</span>
                     </label>
                     {{ form.usuario }}
                     {% if form.usuario.errors %}
@@ -49,7 +49,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label for="{{ form.comision.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                            Comisión <span class="text-rose-600">*</span>
+                            Comisión <span class="text-red-600 font-bold">(OBLIGATORIO)</span>
                         </label>
                         {{ form.comision }}
                         {% if form.comision.errors %}
@@ -59,7 +59,7 @@
 
                     <div>
                         <label for="{{ form.cargo.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                            Puesto / Cargo <span class="text-rose-600">*</span>
+                            Puesto / Cargo <span class="text-red-600 font-bold">(OBLIGATORIO)</span>
                         </label>
                         {{ form.cargo }}
                         {% if form.cargo.errors %}
@@ -71,7 +71,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-100">
                     <div>
                         <label for="{{ form.fecha_desde.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                            Fecha de Asunción <span class="text-rose-600">*</span>
+                            Fecha de Asunción <span class="text-red-600 font-bold">(OBLIGATORIO)</span>
                         </label>
                         {{ form.fecha_desde }}
                         {% if form.fecha_desde.errors %}
@@ -81,12 +81,9 @@
 
                     <div>
                         <label for="{{ form.fecha_hasta.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                            Fecha de Finalización (Opcional)
+                            Fecha de Finalización <span class="text-red-600 font-bold">(OBLIGATORIO)</span>
                         </label>
                         {{ form.fecha_hasta }}
-                        {% if form.fecha_hasta.help_text %}
-                        <p class="mt-1 text-[11px] text-slate-400">{{ form.fecha_hasta.help_text }}</p>
-                        {% endif %}
                         {% if form.fecha_hasta.errors %}
                         <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.fecha_hasta.errors.0 }}</p>
                         {% endif %}

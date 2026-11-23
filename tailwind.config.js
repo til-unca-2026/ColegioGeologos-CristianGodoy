@@ -13,8 +13,44 @@ module.exports = {
     extend: {
       // 1. PALETA DE COLORES SEMÁNTICA
       colors: {
-        // Color Primario (identidad institucional: verde actual, fácilmente cambiable)
+        // ====================================================================
+        // SECCIÓN ETIQUETAS Y ESTADOS (Badges / Semáforos / Estados del Sistema)
+        // Comprende tanto las etiquetas informativas y semáforos como estados
+        // ====================================================================
+        badge: {
+          // 1. Estados / Etiquetas Semáforo
+          'semaforo-green-bg': '#dcfce7',      // Fondo verde suave
+          'semaforo-green-text': '#166534',    // Texto verde oscuro
+          'semaforo-green-dot': '#16a34a',     // Punto verde
+          'semaforo-green-border': '#bbf7d0',  // Borde verde suave
+
+          'semaforo-yellow-bg': '#fef3c7',     // Fondo amarillo suave
+          'semaforo-yellow-text': '#92400e',   // Texto ámbar oscuro
+          'semaforo-yellow-dot': '#f59e0b',    // Punto ámbar
+          'semaforo-yellow-border': '#fde68a', // Borde ámbar suave
+
+          'semaforo-red-bg': '#ffe4e6',        // Fondo rojo suave
+          'semaforo-red-text': '#9f1239',      // Texto rojo oscuro
+          'semaforo-red-dot': '#f43f5e',       // Punto rojo
+          'semaforo-red-border': '#fecdd3',    // Borde rojo suave
+
+          // 2. Etiquetas Informativas / Estándar (Documentos, Contenidos, Títulos, Comisiones, etc.)
+          'info-bg': '#eff6ff',                // Azul suave
+          'info-text': '#1e40af',              // Azul oscuro
+          'info-border': '#bfdbfe',            // Borde azul sutil
+        },
+
+        // ====================================================================
+        // COLORES INSTITUCIONALES (3 Pilares del Diseño)
+        // Modificar aquí en el futuro para cambiar la identidad del sitio completo
+        // ====================================================================
         primary: {
+          light: '#dcfce7',   // Fondo suave institucional
+          DEFAULT: '#15803d', // COLOR 1: Primario institucional (Verde base)
+          hover: '#166534',   // Interacción / Hover
+          dark: '#143d32',    // Header, menús oscuros, acento profundo
+          footer: '#0f2d24',  // Footer institucional
+          // Escala de compatibilidad para evitar rupturas visuales en componentes heredados
           50: '#f0fdf4',
           100: '#dcfce7',
           200: '#bbf7d0',
@@ -24,17 +60,20 @@ module.exports = {
           600: '#16a34a',
           700: '#15803d',
           800: '#166534',
-          900: '#143d32',   // Header / menús
-          dark: '#12372A',  // Tono institucional profundo
-          footer: '#0f2d24',// Footer actual
-          DEFAULT: '#15803d',
+          900: '#143d32',
         },
 
-        // Color Secundario / Acento (para llamadas a la acción, insignias, geología/tierra)
-        accent: {
-          light: '#fef3c7',
-          DEFAULT: '#d97706',
-          hover: '#b45309',
+        secondary: {
+          light: '#f1f5f9',   // Fondo neutro / slate suave
+          DEFAULT: '#475569', // COLOR 2: Secundario institucional (Gris pizarra / neutro elegante)
+          hover: '#334155',   // Hover secundario
+          border: '#cbd5e1',  // Bordes de botones secundarios
+        },
+
+        tertiary: {
+          light: '#fef3c7',   // Fondo suave acento
+          DEFAULT: '#d97706', // COLOR 3: Terciario institucional (Ámbar / Geología / Acento)
+          hover: '#b45309',   // Hover terciario
           dark: '#78350f',
         },
 
@@ -46,38 +85,6 @@ module.exports = {
           darkcard: '#152238',     // Tarjetas en modo oscuro
           border: '#e2e8f0',       // Bordes en modo claro
           darkborder: '#1e293b',   // Bordes en modo oscuro
-        },
-
-        // Estados del sistema (mensajes, alertas, validaciones)
-        state: {
-          success: '#15803d',
-          'success-bg': '#f0fdf4',
-          'success-border': '#bbf7d0',
-
-          error: '#b91c1c',
-          'error-bg': '#fef2f2',
-          'error-border': '#fecaca',
-
-          warning: '#b45309',
-          'warning-bg': '#fffbeb',
-          'warning-border': '#fde68a',
-
-          info: '#1d4ed8',
-          'info-bg': '#eff6ff',
-          'info-border': '#bfdbfe',
-        },
-
-        // Mantenemos compatibilidad con 'brand' por si alguna plantilla lo referencia
-        brand: {
-          50: '#f0fdf4',
-          100: '#dcfce7',
-          200: '#bbf7d0',
-          500: '#15803d',
-          600: '#166534',
-          700: '#1b4332',
-          800: '#143d32',
-          900: '#0d2821',
-          dark: '#12372A',
         },
       },
 
@@ -103,4 +110,3 @@ module.exports = {
   },
   plugins: [],
 };
-

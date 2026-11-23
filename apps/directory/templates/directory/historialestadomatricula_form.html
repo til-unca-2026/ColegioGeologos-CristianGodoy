@@ -36,7 +36,7 @@
 
                 <div>
                     <label for="{{ form.estado.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                        Nuevo Estado de Matrícula <span class="text-rose-600">*</span>
+                        Nuevo Estado de Matrícula <span class="text-red-600 font-bold">(OBLIGATORIO)</span>
                     </label>
                     {{ form.estado }}
                     {% if form.estado.errors %}
@@ -47,7 +47,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label for="{{ form.fecha_desde.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                            Fecha Desde <span class="text-rose-600">*</span>
+                            Fecha Desde <span class="text-red-600 font-bold">(OBLIGATORIO)</span>
                         </label>
                         {{ form.fecha_desde }}
                         {% if form.fecha_desde.errors %}
@@ -68,7 +68,7 @@
 
                 <div>
                     <label for="{{ form.motivo.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                        Motivo del Cambio de Estado
+                        Motivo del Cambio de Estado <span class="text-red-600 font-bold">(OBLIGATORIO)</span>
                     </label>
                     {{ form.motivo }}
                     {% if form.motivo.errors %}
@@ -89,7 +89,7 @@
 
                     <div>
                         <label for="{{ form.origen_sancion.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                            Origen de Sanción (Opcional)
+                            Origen de Sanción
                         </label>
                         {{ form.origen_sancion }}
                         {% if form.origen_sancion.errors %}

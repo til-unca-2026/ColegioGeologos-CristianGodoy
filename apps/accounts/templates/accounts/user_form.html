@@ -36,61 +36,11 @@
                 </div>
                 {% endif %}
 
-                <!-- SECCIÓN 1: ROL Y GRUPO DE ACCESO -->
+                <!-- SECCIÓN 1: IDENTIFICACIÓN Y CREDENCIALES -->
                 <div class="py-8 first:pt-0">
                     <div class="border-b border-slate-200 pb-3 mb-6">
                         <h2 class="text-base font-semibold text-slate-900 flex items-center gap-2.5">
                             <span class="flex h-6 w-6 items-center justify-center rounded-full bg-primary-100 text-primary-800 text-xs font-bold">1</span>
-                            Grupo Institucional y Nivel de Acceso (Opcional)
-                        </h2>
-                        <p class="text-xs text-slate-500 mt-1 ml-8">
-                            Seleccione un grupo solo si el usuario cumplirá funciones administrativas o de redacción. A los matriculados se les asigna su grupo automáticamente al matricularlos.
-                        </p>
-                    </div>
-
-                    <div class="ml-8 space-y-5">
-                        <div>
-                            <label for="{{ form.group.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                                {{ form.group.label }}
-                            </label>
-                            {{ form.group }}
-                            {% if form.group.help_text %}
-                            <p class="mt-1 text-xs text-slate-500">{{ form.group.help_text }}</p>
-                            {% endif %}
-                            {% if form.group.errors %}
-                            <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.group.errors.0 }}</p>
-                            {% endif %}
-                        </div>
-
-                        <!-- Tarjetas explicativas de grupos -->
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-1">
-                            <div class="p-3.5 rounded-lg border border-slate-200 bg-slate-50/70">
-                                <span class="text-xs font-bold text-slate-800 block">Sin Grupo / Estándar</span>
-                                <span class="text-[11px] text-slate-600 leading-tight block mt-0.5">
-                                    Usuario base. Si se trata de un profesional, el rol de Matriculado se le otorgará automáticamente al registrar su matrícula.
-                                </span>
-                            </div>
-                            <div class="p-3.5 rounded-lg border border-purple-200 bg-purple-50/50">
-                                <span class="text-xs font-bold text-purple-800 block">Colaboradores</span>
-                                <span class="text-[11px] text-purple-700 leading-tight block mt-0.5">
-                                    Permisos especiales para redactar y publicar contenidos (noticias, capacitaciones, novedades).
-                                </span>
-                            </div>
-                            <div class="p-3.5 rounded-lg border border-rose-200 bg-rose-50/50">
-                                <span class="text-xs font-bold text-rose-800 block">Administradores</span>
-                                <span class="text-[11px] text-rose-700 leading-tight block mt-0.5">
-                                    Permisos integrales de administración desde el Dashboard del Colegio.
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- SECCIÓN 2: IDENTIFICACIÓN Y CREDENCIALES -->
-                <div class="py-8">
-                    <div class="border-b border-slate-200 pb-3 mb-6">
-                        <h2 class="text-base font-semibold text-slate-900 flex items-center gap-2.5">
-                            <span class="flex h-6 w-6 items-center justify-center rounded-full bg-primary-100 text-primary-800 text-xs font-bold">2</span>
                             Credenciales de Inicio de Sesión
                         </h2>
                         <p class="text-xs text-slate-500 mt-1 ml-8">
@@ -101,7 +51,7 @@
                     <div class="ml-8 grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
                             <label for="{{ form.username.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                                Nombre de usuario <span class="text-rose-600">*</span>
+                                Nombre de usuario <span class="text-rose-600 font-bold">(OBLIGATORIO)</span>
                             </label>
                             {{ form.username }}
                             {% if form.username.errors %}
@@ -111,7 +61,7 @@
 
                         <div>
                             <label for="{{ form.email.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                                Correo electrónico <span class="text-rose-600">*</span>
+                                Correo electrónico <span class="text-rose-600 font-bold">(OBLIGATORIO)</span>
                             </label>
                             {{ form.email }}
                             {% if form.email.errors %}
@@ -122,7 +72,7 @@
                         {% if not is_edit %}
                         <div class="md:col-span-2">
                             <label for="{{ form.password.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                                Contraseña inicial <span class="text-rose-600">*</span>
+                                Contraseña inicial <span class="text-rose-600 font-bold">(OBLIGATORIO)</span>
                             </label>
                             {{ form.password }}
                             {% if form.password.help_text %}
@@ -149,11 +99,11 @@
                     </div>
                 </div>
 
-                <!-- SECCIÓN 3: DATOS PERSONALES Y DE IDENTIDAD -->
+                <!-- SECCIÓN 2: DATOS PERSONALES Y DE IDENTIDAD -->
                 <div class="py-8">
                     <div class="border-b border-slate-200 pb-3 mb-6">
                         <h2 class="text-base font-semibold text-slate-900 flex items-center gap-2.5">
-                            <span class="flex h-6 w-6 items-center justify-center rounded-full bg-primary-100 text-primary-800 text-xs font-bold">3</span>
+                            <span class="flex h-6 w-6 items-center justify-center rounded-full bg-primary-100 text-primary-800 text-xs font-bold">2</span>
                             Datos de Identidad Personal
                         </h2>
                         <p class="text-xs text-slate-500 mt-1 ml-8">
@@ -164,7 +114,7 @@
                     <div class="ml-8 grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
                             <label for="{{ form.first_name.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                                Nombre de pila <span class="text-rose-600">*</span>
+                                Nombre de pila <span class="text-rose-600 font-bold">(OBLIGATORIO)</span>
                             </label>
                             {{ form.first_name }}
                             {% if form.first_name.errors %}
@@ -174,7 +124,7 @@
 
                         <div>
                             <label for="{{ form.last_name.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                                Apellido <span class="text-rose-600">*</span>
+                                Apellido <span class="text-rose-600 font-bold">(OBLIGATORIO)</span>
                             </label>
                             {{ form.last_name }}
                             {% if form.last_name.errors %}
@@ -184,7 +134,7 @@
 
                         <div>
                             <label for="{{ form.dni.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                                DNI / Documento <span class="text-rose-600">*</span>
+                                DNI / Documento <span class="text-rose-600 font-bold">(OBLIGATORIO)</span>
                             </label>
                             {{ form.dni }}
                             {% if form.dni.errors %}
@@ -194,7 +144,7 @@
 
                         <div>
                             <label for="{{ form.cuil_cuit.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                                CUIL / CUIT (Opcional)
+                                CUIL / CUIT
                             </label>
                             {{ form.cuil_cuit }}
                             {% if form.cuil_cuit.errors %}
@@ -204,7 +154,7 @@
 
                         <div>
                             <label for="{{ form.fecha_nacimiento.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                                Fecha de nacimiento (Opcional)
+                                Fecha de nacimiento
                             </label>
                             {{ form.fecha_nacimiento }}
                             {% if form.fecha_nacimiento.errors %}
@@ -214,7 +164,7 @@
 
                         <div>
                             <label for="{{ form.lugar_nacimiento.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                                Lugar de nacimiento (Opcional)
+                                Lugar de nacimiento
                             </label>
                             {{ form.lugar_nacimiento }}
                             {% if form.lugar_nacimiento.errors %}
@@ -234,12 +184,12 @@
                     </div>
                 </div>
 
-                <!-- SECCIÓN 4: DOMICILIO REAL (Opcional) -->
+                <!-- SECCIÓN 3: DOMICILIO REAL -->
                 <div class="py-8">
                     <div class="border-b border-slate-200 pb-3 mb-6">
                         <h2 class="text-base font-semibold text-slate-900 flex items-center gap-2.5">
-                            <span class="flex h-6 w-6 items-center justify-center rounded-full bg-primary-100 text-primary-800 text-xs font-bold">4</span>
-                            Domicilio Real (Opcional)
+                            <span class="flex h-6 w-6 items-center justify-center rounded-full bg-primary-100 text-primary-800 text-xs font-bold">3</span>
+                            Domicilio Real
                         </h2>
                         <p class="text-xs text-slate-500 mt-1 ml-8">
                             Lugar de residencia particular del usuario. Puede completarse posteriormente en autogestión.
@@ -343,12 +293,12 @@
                     </div>
                 </div>
 
-                <!-- SECCIÓN 5: CONTACTO Y FOTO (Opcional) -->
+                <!-- SECCIÓN 4: CONTACTO Y FOTO -->
                 <div class="py-8">
                     <div class="border-b border-slate-200 pb-3 mb-6">
                         <h2 class="text-base font-semibold text-slate-900 flex items-center gap-2.5">
-                            <span class="flex h-6 w-6 items-center justify-center rounded-full bg-primary-100 text-primary-800 text-xs font-bold">5</span>
-                            Contacto y Foto de Perfil (Opcional)
+                            <span class="flex h-6 w-6 items-center justify-center rounded-full bg-primary-100 text-primary-800 text-xs font-bold">4</span>
+                            Contacto y Foto de Perfil
                         </h2>
                         <p class="text-xs text-slate-500 mt-1 ml-8">
                             Canal de comunicación telefónico y fotografía institucional.
@@ -369,7 +319,7 @@
 
                             <div>
                                 <label for="{{ form.profile_picture.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                                    Foto de perfil (Supabase Storage)
+                                    Foto de perfil
                                 </label>
                                 {{ form.profile_picture }}
                                 {% if form.profile_picture.errors %}
@@ -411,6 +361,56 @@
                             </div>
                         </div>
                         {% endif %}
+                    </div>
+                </div>
+
+                <!-- SECCIÓN 5: ROL Y GRUPO DE ACCESO -->
+                <div class="py-8">
+                    <div class="border-b border-slate-200 pb-3 mb-6">
+                        <h2 class="text-base font-semibold text-slate-900 flex items-center gap-2.5">
+                            <span class="flex h-6 w-6 items-center justify-center rounded-full bg-primary-100 text-primary-800 text-xs font-bold">5</span>
+                            Grupo Institucional y Nivel de Acceso
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-1 ml-8">
+                            Seleccione un grupo solo si el usuario cumplirá funciones administrativas o de redacción. A los matriculados se les asigna su grupo automáticamente al matricularlos.
+                        </p>
+                    </div>
+
+                    <div class="ml-8 space-y-5">
+                        <div>
+                            <label for="{{ form.group.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                                {{ form.group.label }}
+                            </label>
+                            {{ form.group }}
+                            {% if form.group.help_text %}
+                            <p class="mt-1 text-xs text-slate-500">{{ form.group.help_text }}</p>
+                            {% endif %}
+                            {% if form.group.errors %}
+                            <p class="mt-1 text-xs text-rose-600 font-medium">{{ form.group.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        <!-- Tarjetas explicativas de grupos -->
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-1">
+                            <div class="p-3.5 rounded-lg border border-slate-200 bg-slate-50/70">
+                                <span class="text-xs font-bold text-slate-800 block">Sin Grupo / Estándar</span>
+                                <span class="text-[11px] text-slate-600 leading-tight block mt-0.5">
+                                    Usuario base. Si se trata de un profesional, el rol de Matriculado se le otorgará automáticamente al registrar su matrícula.
+                                </span>
+                            </div>
+                            <div class="p-3.5 rounded-lg border border-amber-200 bg-amber-50/50">
+                                <span class="text-xs font-bold text-amber-800 block">Colaboradores</span>
+                                <span class="text-[11px] text-amber-700 leading-tight block mt-0.5">
+                                    Permisos especiales para redactar y publicar contenidos (noticias, capacitaciones, novedades).
+                                </span>
+                            </div>
+                            <div class="p-3.5 rounded-lg border border-rose-200 bg-rose-50/50">
+                                <span class="text-xs font-bold text-rose-800 block">Administradores</span>
+                                <span class="text-[11px] text-rose-700 leading-tight block mt-0.5">
+                                    Permisos integrales de administración desde el Dashboard del Colegio.
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

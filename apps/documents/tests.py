@@ -286,3 +286,81 @@ class DocumentoDashboardAndAdminViewsTests(TestCase):
         self.assertEqual(doc.descripcion, "")
         self.assertEqual(str(doc), "Formulario de Solicitud de Trámite")
 
+
+class DocumentoFileValidationTests(TestCase):
+    def test_validador_rechaza_archivos_ejecutables(self):
+        from apps.documents.validators import validate_document_file
+        from django.core.exceptions import ValidationError
+        bad_file = SimpleUploadedFile("peligroso.exe", b"MZ...", content_type="application/x-msdownload")
+        with self.assertRaises(ValidationError) as ctx:
+            validate_document_file(bad_file)
+        self.assertIn("Solo se permiten archivos en formato PDF", str(ctx.exception))
+
+    def test_validador_rechaza_extensiones_no_permitidas(self):
+        from apps.documents.validators import validate_document_file
+        from django.core.exceptions import ValidationError
+        for ext in ["script.py", "foto.png", "datos.zip"]:
+            bad_file = SimpleUploadedFile(ext, b"contenido dummy", content_type="application/octet-stream")
+            with self.assertRaises(ValidationError):
+                validate_document_file(bad_file)
+
+    def test_validador_acepta_pdf_y_word(self):
+        from apps.documents.validators import validate_document_file
+        pdf_file = SimpleUploadedFile("resolucion.pdf", b"%PDF-1.4...", content_type="application/pdf")
+        docx_file = SimpleUploadedFile("convenio.docx", b"PK...", content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+        doc_file = SimpleUploadedFile("estatuto.doc", b"\xd0\xcf\x11\xe0...", content_type="application/msword")
+
+        # No deben lanzar excepción
+        validate_document_file(pdf_file)
+        validate_document_file(docx_file)
+        validate_document_file(doc_file)
+
+    def test_validador_rechaza_archivos_superiores_a_10mb(self):
+        from apps.documents.validators import validate_document_file
+        from django.core.exceptions import ValidationError
+        oversized_file = SimpleUploadedFile("gigante.pdf", b"a" * 100, content_type="application/pdf")
+        oversized_file.size = 11 * 1024 * 1024  # 11 MB
+        with self.assertRaises(ValidationError) as ctx:
+            validate_document_file(oversized_file)
+        self.assertIn("no puede superar los 10 MB", str(ctx.exception))
+
+
+class DocumentoPublicListFilterTests(TestCase):
+    def setUp(self):
+        self.admin = User.objects.create_superuser(
+            username="admin_doc_filters",
+            password="AdminPassword123!",
+            must_change_password=False,
+        )
+        self.doc1 = Documento.objects.create(
+            titulo="Estatuto Social Reformado",
+            numero="Ley 4118",
+            categoria=Documento.Categoria.ESTATUTO,
+            visibilidad=Documento.Visibilidad.PUBLICO,
+            vigente=True,
+            creado_por=self.admin,
+        )
+        self.doc2 = Documento.objects.create(
+            titulo="Resolución de Directorio Anual",
+            numero="Res 10/2026",
+            categoria=Documento.Categoria.RESOLUCION,
+            visibilidad=Documento.Visibilidad.PUBLICO,
+            vigente=True,
+            creado_por=self.admin,
+        )
+
+    def test_filtro_por_categoria_en_listado(self):
+        url = reverse("documents:documento_list")
+        response = self.client.get(url, {"categoria": Documento.Categoria.ESTATUTO})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Estatuto Social Reformado")
+        self.assertNotContains(response, "Resolución de Directorio Anual")
+
+    def test_busqueda_por_texto_en_listado(self):
+        url = reverse("documents:documento_list")
+        response = self.client.get(url, {"q": "Reformado"})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Estatuto Social Reformado")
+        self.assertNotContains(response, "Resolución de Directorio Anual")
+
+
