@@ -16,6 +16,8 @@ Las siguientes funcionalidades no forman parte del alcance del proyecto, ya sea 
 * Aplicación móvil nativa para Android o iOS.
 * Integraciones con sistemas externos de terceros.
 * Biblioteca digital avanzada con funcionalidades adicionales a la consulta y descarga de documentos contemplados.
+* Exportación o generación de reportes y listados del padrón de matriculados en formatos de hoja de cálculo (ej. Excel, CSV).
+* Registro y validación de tipos de documentos de identidad extranjeros (ej. pasaportes o cédulas de identidad extranjeras) y tipologías documentales alternativas al DNI argentino.
 * Registro autónomo de usuarios desde la web pública (las cuentas son gestionadas exclusivamente por la administración).
 
 ## ***Desestimaciones por conflicto legal y de fe pública***

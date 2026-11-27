@@ -157,7 +157,7 @@ Historial cronológico del estado de la matrícula (activa, suspendida o de baja
 | matriculado | Relación → Matriculado | Matriculado al que corresponde el estado. Obligatorio. |
 | estado | Choice | Estado del ejercicio profesional: ACTIVA, SUSPENDIDA, BAJA. Obligatorio sin valor por defecto. (Público) |
 | fecha\_desde | Date | Fecha desde la que rige el estado. Obligatorio sin valor por defecto. |
-| fecha\_hasta | Date, opcional | Solo se completa en SUSPENDIDA: es la fecha en que termina la suspensión, según el antecedente disciplinario. En los demás estados queda vacía. |
+| fecha\_hasta | Date, opcional | En estado ACTIVA delimita el fin del periodo de vigencia de 12 meses (Art. 46). En SUSPENDIDA es la fecha en que termina la suspensión, si fue temporal. En BAJA queda vacía. |
 | motivo | String | Razón del cambio de estado, por ejemplo una sanción o un pedido del propio matriculado. Obligatorio. |
 | origen\_sancion | Relación → AntecedenteDisciplinario, opcional | Antecedente que originó el cambio de estado, si lo hubo. Opcional, sin valor por defecto. Varias filas pueden apuntar al mismo antecedente. |
 | resolucion\_acta | String, opcional | Referencia de la resolución o del acta que dispuso el cambio. Opcional. |

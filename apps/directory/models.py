@@ -316,8 +316,37 @@ class Matriculado(models.Model):
 
     @property
     def estado_actual(self):
-        """Retorna el registro vigente más reciente en el historial de estados."""
-        return self.estados.order_by("-fecha_desde", "-fecha_creacion").first()
+        """
+        Retorna el registro vigente más reciente en el historial de estados.
+        Si el estado más reciente es ACTIVA pero su fecha_hasta ya expiró respecto a hoy,
+        realiza una transición pasiva ('Just-in-Time') creando un nuevo registro en
+        HistorialEstadoMatricula con estado SUSPENDIDA por fin de vigencia (Art. 46).
+        """
+        estado = self.estados.order_by("-fecha_desde", "-fecha_creacion").first()
+        if not estado:
+            return None
+
+        # Evaluación de vencimiento del periodo de vigencia (Art. 46)
+        if estado.estado == HistorialEstadoMatricula.Estado.ACTIVA and estado.fecha_hasta:
+            from datetime import timedelta
+            from django.utils import timezone
+            hoy = timezone.localdate()
+            if estado.fecha_hasta < hoy:
+                # Transición Just-in-Time: Registrar suspensión auditable
+                # La inhabilitación rige a partir del día siguiente al fin de la vigencia
+                fecha_inicio_suspension = estado.fecha_hasta + timedelta(days=1)
+                nuevo_estado = HistorialEstadoMatricula.objects.create(
+                    matriculado=self,
+                    estado=HistorialEstadoMatricula.Estado.SUSPENDIDA,
+                    fecha_desde=fecha_inicio_suspension,
+                    fecha_hasta=None,
+                    motivo="Período de vigencia finalizado",
+                    resolucion_acta=estado.resolucion_acta or "",
+                    creado_por=None,
+                )
+                return nuevo_estado
+
+        return estado
 
     def puede_iniciar_sesion(self):
         """
@@ -639,7 +668,7 @@ class HistorialEstadoMatricula(models.Model):
         null=True,
         blank=True,
         verbose_name="Fecha hasta",
-        help_text="Solo se completa en caso de SUSPENDIDA.",
+        help_text="En ACTIVA delimita el fin del periodo de vigencia (12 meses). En SUSPENDIDA el fin de la sanción temporal.",
     )
     motivo = models.CharField(
         max_length=255,
@@ -711,8 +740,8 @@ class HistorialEstadoMatricula(models.Model):
         else:
             self.resolucion_acta = ""
 
-        # Limpieza de fecha_hasta para estados definitivos
-        if self.estado in [self.Estado.ACTIVA, self.Estado.BAJA]:
+        # Limpieza de fecha_hasta para estado definitivo BAJA
+        if self.estado == self.Estado.BAJA:
             self.fecha_hasta = None
 
     def validar_datos(self):

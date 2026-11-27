@@ -108,19 +108,29 @@ class MatriculadoCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateV
                 titulo.creado_por = self.request.user
                 titulo.save()
 
-            # Generar estado inicial ACTIVA automáticamente
-            from django.utils import timezone
-            fecha_inicio = matriculado.fecha_matriculacion or timezone.localdate()
-            folio_txt = matriculado.folio if matriculado.folio is not None else '-'
-            libro_txt = matriculado.libro or '-'
-            HistorialEstadoMatricula.objects.create(
-                matriculado=matriculado,
-                estado=HistorialEstadoMatricula.Estado.ACTIVA,
-                fecha_desde=fecha_inicio,
-                motivo="Alta inicial en el padrón de matriculados",
-                resolucion_acta=f"Libro {libro_txt} Folio {folio_txt}",
-                creado_por=self.request.user,
-            )
+            # Generar estado inicial ACTIVA automáticamente solo si se especificó fecha_matriculacion
+            if matriculado.fecha_matriculacion:
+                from datetime import date, timedelta
+                fecha_inicio = matriculado.fecha_matriculacion
+                # Fin del periodo de vigencia: exactamente 12 meses menos 1 día
+                try:
+                    aniversario = fecha_inicio.replace(year=fecha_inicio.year + 1)
+                except ValueError:
+                    # Caso bisiesto: 29 de febrero -> 28 de febrero del año siguiente
+                    aniversario = date(fecha_inicio.year + 1, 2, 28)
+                fecha_fin = aniversario - timedelta(days=1)
+
+                folio_txt = matriculado.folio if matriculado.folio is not None else '-'
+                libro_txt = matriculado.libro or '-'
+                HistorialEstadoMatricula.objects.create(
+                    matriculado=matriculado,
+                    estado=HistorialEstadoMatricula.Estado.ACTIVA,
+                    fecha_desde=fecha_inicio,
+                    fecha_hasta=fecha_fin,
+                    motivo="Alta inicial en el padrón de matriculados",
+                    resolucion_acta=f"Libro {libro_txt} Folio {folio_txt}",
+                    creado_por=self.request.user,
+                )
 
             # Asignar automáticamente el grupo 'matriculados' al usuario
             from django.contrib.auth.models import Group

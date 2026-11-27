@@ -54,17 +54,15 @@
 
                 <!-- Estado del Profesional -->
                 <div class="self-start sm:self-center">
-                    {% if estado_actual.estado == 'ACTIVA' %}
-                    <span class="badge-semaforo-verde">
-                        Habilitado para el ejercicio profesional
-                    </span>
-                    {% elif estado_actual.estado == 'SUSPENDIDA' %}
-                    <span class="badge-semaforo-amarillo">
-                        Matrícula Suspendida
+                    {% if estado_actual and estado_actual.estado == 'ACTIVA' %}
+                    <span class="badge-semaforo-verde whitespace-nowrap">
+                        <span class="hidden sm:inline">Habilitado para el ejercicio profesional</span>
+                        <span class="sm:hidden">Habilitado</span>
                     </span>
                     {% else %}
-                    <span class="badge-semaforo-rojo">
-                        Matrícula en Baja
+                    <span class="badge-semaforo-rojo whitespace-nowrap">
+                        <span class="hidden sm:inline">Inhabilitado para el ejercicio profesional</span>
+                        <span class="sm:hidden">Inhabilitado</span>
                     </span>
                     {% endif %}
                 </div>

@@ -48,6 +48,7 @@ class DirectoryModelAndLoginRestrictionTests(TestCase):
             matriculado=self.matriculado,
             estado=HistorialEstadoMatricula.Estado.ACTIVA,
             fecha_desde=date(2020, 1, 1),
+            fecha_hasta=timezone.localdate() + timedelta(days=30),
             motivo="Alta original",
         )
         self.assertEqual(self.matriculado.estado_actual.estado, HistorialEstadoMatricula.Estado.ACTIVA)
@@ -55,12 +56,32 @@ class DirectoryModelAndLoginRestrictionTests(TestCase):
         self.assertTrue(puede)
         self.assertEqual(msg, "")
 
-        # Test login HTTP exitoso
+    def test_matriculado_activa_vencida_hace_transicion_a_suspendida(self):
+        # Estado ACTIVA con fecha_hasta en el pasado
+        HistorialEstadoMatricula.objects.create(
+            matriculado=self.matriculado,
+            estado=HistorialEstadoMatricula.Estado.ACTIVA,
+            fecha_desde=date(2023, 1, 1),
+            fecha_hasta=date(2024, 1, 1),
+            motivo="Periodo 2023",
+        )
+        # Al consultar estado_actual, debe disparar la transición Just-in-Time
+        estado = self.matriculado.estado_actual
+        self.assertEqual(estado.estado, HistorialEstadoMatricula.Estado.SUSPENDIDA)
+        self.assertEqual(estado.fecha_desde, date(2024, 1, 2))
+        self.assertEqual(estado.motivo, "Período de vigencia finalizado")
+
+        # Y no debe poder iniciar sesión por estar suspendida
+        puede, msg = self.matriculado.puede_iniciar_sesion()
+        self.assertFalse(puede)
+
+        # Test login HTTP bloqueado
         response = self.client.post(
             reverse("accounts:login"),
             {"username": "geologo_test", "password": "Password123!"},
         )
-        self.assertRedirects(response, reverse("home"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "suspendida")
 
     def test_matriculado_baja_no_puede_iniciar_sesion(self):
         HistorialEstadoMatricula.objects.create(
@@ -203,10 +224,10 @@ class DirectoryPublicViewsTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Carlos García")
         self.assertContains(response, "Lucía Fernández")
-        # Regla de fe pública (RF-07): Roberto (Suspendido) debe figurar en el directorio con su estado real
+        # Regla de fe pública (RF-07): Roberto (Suspendido) debe figurar en el directorio con su estado real (Inhabilitado)
         self.assertContains(response, "Roberto Inactivo")
         self.assertContains(response, "MP-003")
-        self.assertContains(response, "Matrícula Suspendida")
+        self.assertContains(response, "Inhabilitado para el ejercicio profesional")
 
         # Búsqueda por texto (nombre)
         res_busqueda = self.client.get(url, {"q": "Carlos"})
