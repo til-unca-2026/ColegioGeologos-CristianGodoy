@@ -47,6 +47,7 @@ El sitio público organiza sus contenidos en las siguientes secciones principale
 ## ***Administración***
 
 * Alta y modificación de matriculados (gestión manual por parte de la administración del Colegio; no se contempla autoregistro público).
+* Asignación automática de periodo de vigencia de 12 meses (Art. 46) a partir de la fecha de alta o renovación, con registro y trazabilidad auditable de vencimientos.
 * Gestión de los estados de matrícula: activo, suspendido y dado de baja.
 * Gestión del catálogo de especialidades.
 * Creación y administración de cuentas de usuario (incluyendo asignación de cargos en la comisión directiva y foto institucional).

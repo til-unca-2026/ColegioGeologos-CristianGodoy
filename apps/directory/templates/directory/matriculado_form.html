@@ -85,6 +85,7 @@
                                 {{ form.fecha_matriculacion.label }}
                             </label>
                             {{ form.fecha_matriculacion }}
+                            <p class="text-[11px] text-slate-500 mt-1">Inicio del periodo de vigencia de 12 meses</p>
                             {% if form.fecha_matriculacion.errors %}
                             <p class="text-xs text-red-600 mt-1">{{ form.fecha_matriculacion.errors.0 }}</p>
                             {% endif %}

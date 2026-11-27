@@ -130,20 +130,15 @@
                     <div class="flex items-center justify-between lg:justify-end space-x-3 shrink-0 pt-2 lg:pt-0 border-t lg:border-t-0 border-slate-100">
                         <div>
                             {% with estado=mat.estado_actual %}
-                                {% if estado.estado == 'ACTIVA' %}
+                                {% if estado and estado.estado == 'ACTIVA' %}
                                 <span class="badge-semaforo-verde whitespace-nowrap">
                                     <span class="hidden sm:inline">Habilitado para el ejercicio profesional</span>
                                     <span class="sm:hidden">Habilitado</span>
                                 </span>
-                                {% elif estado.estado == 'SUSPENDIDA' %}
-                                <span class="badge-semaforo-amarillo whitespace-nowrap">
-                                    <span class="hidden sm:inline">Matrícula Suspendida</span>
-                                    <span class="sm:hidden">Suspendido</span>
-                                </span>
                                 {% else %}
                                 <span class="badge-semaforo-rojo whitespace-nowrap">
-                                    <span class="hidden sm:inline">Matrícula en Baja</span>
-                                    <span class="sm:hidden">Baja</span>
+                                    <span class="hidden sm:inline">Inhabilitado para el ejercicio profesional</span>
+                                    <span class="sm:hidden">Inhabilitado</span>
                                 </span>
                                 {% endif %}
                             {% endwith %}
